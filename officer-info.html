@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ====================================================================
+         [ตั้งค่าระบบ] นำ URL Web App จาก Google Apps Script มาวางที่นี่ครับ
+         ==================================================================== -->
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxedqm0PRfKD9eWlTJDpXalUd6aEmthBghP-qDRzJgyNb2p6QbSSooOTvxmbUBQA_6PVA/exec';
+    </script>
+    <!-- ==================================================================== -->
+
+    <title>ข้อมูลเจ้าหน้าที่ - สภ.พระธาตุช่อแฮ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SortableJS สำหรับการลากวาง -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+    <style>
+        :root { 
+            --primary: #2c3e50; --accent: #c0392b; --bg: #f4f7f6; --card: #fff; --radius: 15px;
+            --text-label: #546e7a; --text-input: #2c3e50; --disabled: #bdc3c7;
+        }
+        body { font-family: 'Kanit', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: var(--text-input); }
+        
+        nav { background: var(--card); padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10; }
+        .back-btn { font-size: 1.2rem; color: #333; margin-right: 15px; text-decoration: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
+        .back-btn:hover { background: #f0f0f0; }
+        .page-title { font-weight: 600; color: var(--primary); font-size: 1.1rem; }
+
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+
+        .role-section { background: var(--card); padding: 25px; border-radius: var(--radius); box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .role-row { margin-bottom: 20px; }
+        .role-label { font-size: 0.95rem; color: var(--text-label); font-weight: 500; margin-bottom: 8px; display: block; }
+        .role-select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Kanit'; font-size: 1rem; background: #fff; color: var(--text-input); }
+        
+        .btn-save-roles {
+            background: var(--accent); color: white; border: none; padding: 12px 25px;
+            border-radius: 50px; cursor: pointer; font-family: 'Kanit'; font-size: 0.95rem;
+            margin-top: 10px; transition: 0.3s;
+        }
+        .btn-save-roles:disabled { background: var(--disabled); cursor: not-allowed; opacity: 0.7; box-shadow: none; transform: none !important; }
+        .btn-save-roles:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3); }
+
+        /* Table Header with Sort Button */
+        .table-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .btn-sort {
+            background: #fff; border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px;
+            font-family: 'Kanit'; font-size: 0.9rem; cursor: pointer; color: var(--primary); transition: 0.2s;
+        }
+        .btn-sort:hover { background: #f0f0f0; }
+        .btn-sort.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .table-responsive { overflow-x: auto; background: var(--card); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+        th { background: #f1f3f5; color: var(--primary); font-weight: 600; padding: 15px; text-align: left; font-size: 0.95rem; }
+        td { padding: 12px 15px; border-bottom: 1px solid #eee; font-size: 0.95rem; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        
+        .action-btn { border: none; background: none; cursor: pointer; font-size: 1.1rem; padding: 5px 8px; transition: 0.2s; }
+        .btn-edit { color: #f39c12; }
+        .btn-delete { color: #e74c3c; }
+        .action-btn:hover { transform: scale(1.2); }
+        
+        /* Drag Handle */
+        .drag-handle { cursor: grab; color: #95a5a6; font-size: 1.2rem; }
+        .drag-handle:active { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.4; background: #eee; }
+
+        .fab {
+            position: fixed; bottom: 25px; right: 25px; height: 55px; padding: 0 25px;
+            background: var(--primary); color: white; border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 1rem; box-shadow: 0 5px 20px rgba(44, 62, 80, 0.4); cursor: pointer; transition: 0.3s; border: none; z-index: 99; font-family: 'Kanit';
+        }
+        .fab:hover { transform: scale(1.05); }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-card { background: white; width: 95%; max-width: 700px; border-radius: var(--radius); padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popUp 0.3s ease; max-height: 90vh; overflow-y: auto; }
+        
+        /* เพิ่ม Gap ให้ห่างขึ้น */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .form-group { margin-bottom: 5px; }
+        .form-group.full { grid-column: span 2; }
+        
+        .form-label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-label); font-weight: 500; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 10px; font-family: 'Kanit'; font-size: 1rem; color: var(--text-input); }
+        .form-input:focus { border-color: var(--primary); outline: none; }
+        
+        .btn-submit { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s; font-family: 'Kanit'; }
+        .btn-submit:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.7; }
+
+        .swal2-popup { font-family: 'Kanit', sans-serif !important; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="staff.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="page-title">ข้อมูลเจ้าหน้าที่</div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="role-section">
+            <div class="role-row">
+                <label class="role-label"><i class="fa-solid fa-star"></i> หัวหน้าสถานี</label>
+                <select id="selectChiefStation" class="role-select">
+                    <option value="">-- เลือก --</option>
+                </select>
+            </div>
+            <div class="role-row">
+                <label class="role-label"><i class="fa-solid fa-magnifying-glass"></i> หัวหน้างานสอบสวน</label>
+                <select id="selectChiefInvest" class="role-select">
+                    <option value="">-- เลือก --</option>
+                </select>
+            </div>
+            <button class="btn-save-roles" id="btnSaveRoles" onclick="confirmSaveRoles()" disabled>
+                <i class="fa-solid fa-save"></i> บันทึกการแก้ไขหัวหน้า
+            </button>
+        </div>
+
+        <div class="table-header-row">
+            <h3 style="color:var(--primary); font-size:1.1rem;">รายชื่อเจ้าหน้าที่</h3>
+            <button class="btn-sort" id="btnSort" onclick="toggleSortMode()">
+                <i class="fa-solid fa-sort"></i> จัดเรียง
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table id="officerTable">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">จัดการ</th>
+                        <th>ชื่อ-สกุล</th>
+                        <th>ตำแหน่งย่อ</th>
+                        <th>หน้าที่</th>
+                        <th>โทรศัพท์</th>
+                        <th>Email Police</th>
+                        <th>Gmail</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="7" style="text-align:center; padding: 20px;">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button class="fab" onclick="openModal('add')">
+        <i class="fa-solid fa-plus"></i> เพิ่มเจ้าหน้าที่
+    </button>
+
+    <div id="officerModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="modalTitle" style="margin-top:0; color:var(--primary); margin-bottom: 25px;">เพิ่มเจ้าหน้าที่</h3>
+            
+            <form id="officerForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">ยศ</label>
+                        <input type="text" class="form-input required" id="inpA">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ยศเต็ม</label>
+                        <input type="text" class="form-input required" id="inpB">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ชื่อ</label>
+                        <input type="text" class="form-input required" id="inpC">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">สกุล</label>
+                        <input type="text" class="form-input required" id="inpD">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ตำแหน่งย่อ</label>
+                        <input type="text" class="form-input required" id="inpG">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ตำแหน่งเต็ม</label>
+                        <input type="text" class="form-input required" id="inpH">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">หน้าที่</label>
+                        <select class="form-input required" id="inpI">
+                            <option value="">-- เลือกหน้าที่ --</option>
+                            <option value="พนักงานสอบสวน">พนักงานสอบสวน</option>
+                            <option value="ผู้ช่วยพนักงานสอบสวน">ผู้ช่วยพนักงานสอบสวน</option>
+                            <option value="เสมียนประจำวัน">เสมียนประจำวัน</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">โทรศัพท์</label>
+                        <input type="text" class="form-input required" id="inpK">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Police <small>(ไม่บังคับ)</small></label>
+                        <input type="text" class="form-input" id="inpL">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gmail <small>(ไม่บังคับ)</small></label>
+                        <input type="text" class="form-input" id="inpM">
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:15px; margin-top:25px;">
+                    <button type="button" class="btn-submit" style="background:#ecf0f1; color:#333;" onclick="closeModal()">ยกเลิก</button>
+                    <button type="button" class="btn-submit" id="btnSave" disabled onclick="saveData()">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let allOfficers = [];
+        let currentMode = 'add';
+        let editIndex = -1;
+        let originalValues = {};
+        let originalRoles = { station: "", invest: "" };
+        let isSortMode = false;
+        let sortableInstance = null;
+
+        async function loadData() {
+            try {
+                const res = await fetch(API_URL + '?action=getOfficers');
+                const json = await res.json();
+                allOfficers = json.officers;
+                renderTable(allOfficers);
+                renderDropdowns(allOfficers, json.roles);
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'โหลดข้อมูลไม่สำเร็จ', 'error');
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">ไม่พบข้อมูล</td></tr>';
+                return;
+            }
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.dataset.index = index; // เก็บ index เดิมไว้สำหรับ Sort
+                
+                // เช็คโหมดแสดงผล (ปกติ หรือ จัดเรียง)
+                let actionHtml = '';
+                if (isSortMode) {
+                    actionHtml = `<i class="fa-solid fa-grip-lines drag-handle"></i>`;
+                } else {
+                    actionHtml = `
+                        <button class="action-btn btn-edit" onclick="openModal('edit', ${index})"><i class="fa-solid fa-pen"></i></button>
+                        <button class="action-btn btn-delete" onclick="deleteItem(${index})"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td style="text-align:center;">${actionHtml}</td>
+                    <td>${row[4]}</td>
+                    <td>${row[6]}</td>
+                    <td>${row[8]}</td>
+                    <td>${row[10]}</td>
+                    <td>${row[11]}</td>
+                    <td>${row[12]}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- ระบบจัดเรียง (Sort) ---
+        function toggleSortMode() {
+            isSortMode = !isSortMode;
+            const btnSort = document.getElementById('btnSort');
+            const tbody = document.getElementById('tableBody');
+
+            if (isSortMode) {
+                btnSort.classList.add('active');
+                btnSort.innerHTML = '<i class="fa-solid fa-check"></i> บันทึกการจัดเรียง';
+                renderTable(allOfficers); // รีเฟรชเพื่อโชว์ปุ่มลาก
+                
+                // เปิดใช้งาน SortableJS
+                sortableInstance = new Sortable(tbody, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    ghostClass: 'sortable-ghost'
+                });
+
+            } else {
+                // กดบันทึกการจัดเรียง
+                saveReorder();
+            }
+        }
+
+        async function saveReorder() {
+            const btnSort = document.getElementById('btnSort');
+            btnSort.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
+            
+            // ดึงลำดับใหม่จาก DOM
+            const rows = document.querySelectorAll('#tableBody tr');
+            const newOrderData = [];
+            rows.forEach(row => {
+                const oldIndex = row.dataset.index;
+                newOrderData.push(allOfficers[oldIndex]);
+            });
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reorderOfficers', data: newOrderData })
+                });
+                
+                // อัปเดตข้อมูลในตัวแปร
+                allOfficers = newOrderData;
+                
+                // ปิดโหมด Sort
+                isSortMode = false;
+                btnSort.classList.remove('active');
+                btnSort.innerHTML = '<i class="fa-solid fa-sort"></i> จัดเรียง';
+                if (sortableInstance) sortableInstance.destroy();
+                
+                renderTable(allOfficers);
+                Swal.fire({ icon: 'success', title: 'จัดเรียงเรียบร้อย', timer: 1500, showConfirmButton: false });
+
+            } catch (err) {
+                Swal.fire('Error', 'จัดเรียงไม่สำเร็จ', 'error');
+                isSortMode = false; // กลับสู่สภาพเดิม
+                renderTable(allOfficers);
+            }
+        }
+
+        // --- ระบบหัวหน้า ---
+        function renderDropdowns(data, roles) {
+            const selStation = document.getElementById('selectChiefStation');
+            const selInvest = document.getElementById('selectChiefInvest');
+            let options = '<option value="">-- เลือก --</option>';
+            data.forEach(row => { options += `<option value="${row[4]}">${row[4]}</option>`; });
+            selStation.innerHTML = options;
+            selInvest.innerHTML = options;
+            
+            selStation.value = roles.chiefStation;
+            selInvest.value = roles.chiefInvest;
+
+            // เก็บค่าเดิมไว้เช็ค
+            originalRoles = { station: roles.chiefStation, invest: roles.chiefInvest };
+            checkRolesChange();
+        }
+
+        // เช็คการเปลี่ยนแปลงหัวหน้า
+        document.getElementById('selectChiefStation').addEventListener('change', checkRolesChange);
+        document.getElementById('selectChiefInvest').addEventListener('change', checkRolesChange);
+
+        function checkRolesChange() {
+            const curStation = document.getElementById('selectChiefStation').value;
+            const curInvest = document.getElementById('selectChiefInvest').value;
+            const btn = document.getElementById('btnSaveRoles');
+            
+            const isChanged = (curStation !== originalRoles.station) || (curInvest !== originalRoles.invest);
+            btn.disabled = !isChanged;
+        }
+
+        function confirmSaveRoles() {
+            const chiefStation = document.getElementById('selectChiefStation').value;
+            const chiefInvest = document.getElementById('selectChiefInvest').value;
+            if (chiefStation && chiefStation === chiefInvest) {
+                Swal.fire('ข้อผิดพลาด', 'หัวหน้าสถานีและหัวหน้างานสอบสวน ต้องไม่ใช่คนเดียวกัน', 'warning');
+                return;
+            }
+            Swal.fire({
+                title: 'ยืนยันการบันทึก?',
+                text: "ต้องการบันทึกตำแหน่งหัวหน้าใช่หรือไม่",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'บันทึก',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#2c3e50'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        await fetch(API_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'saveChiefs', chiefStation: chiefStation, chiefInvest: chiefInvest })
+                        });
+                        Swal.fire('สำเร็จ', 'บันทึกตำแหน่งเรียบร้อย', 'success');
+                        setTimeout(loadData, 1000);
+                    } catch (err) { Swal.fire('Error', 'บันทึกไม่สำเร็จ', 'error'); }
+                }
+            });
+        }
+
+        // --- Modal & Form ---
+        function openModal(mode, index) {
+            currentMode = mode;
+            editIndex = index;
+            const modal = document.getElementById('officerModal');
+            const title = document.getElementById('modalTitle');
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(inp => inp.value = '');
+            document.getElementById('btnSave').disabled = true;
+
+            if (mode === 'edit') {
+                title.innerText = 'แก้ไขข้อมูลเจ้าหน้าที่';
+                const d = allOfficers[index];
+                document.getElementById('inpA').value = d[0];
+                document.getElementById('inpB').value = d[1];
+                document.getElementById('inpC').value = d[2];
+                document.getElementById('inpD').value = d[3];
+                document.getElementById('inpG').value = d[6];
+                document.getElementById('inpH').value = d[7];
+                document.getElementById('inpI').value = d[8];
+                document.getElementById('inpK').value = d[10];
+                document.getElementById('inpL').value = d[11];
+                document.getElementById('inpM').value = d[12];
+                originalValues = { A: d[0], B: d[1], C: d[2], D: d[3], G: d[6], H: d[7], I: d[8], K: d[10], L: d[11], M: d[12] };
+            } else {
+                title.innerText = 'เพิ่มเจ้าหน้าที่';
+                originalValues = {};
+            }
+            modal.style.display = 'flex';
+            checkFormValidity();
+        }
+
+        function closeModal() { document.getElementById('officerModal').style.display = 'none'; }
+
+        const allInputs = document.querySelectorAll('.form-input');
+        allInputs.forEach(inp => {
+            inp.addEventListener('input', checkFormValidity);
+            inp.addEventListener('change', checkFormValidity);
+        });
+
+        function checkFormValidity() {
+            let isValid = true;
+            let isChanged = false;
+            const requiredInputs = document.querySelectorAll('.required');
+            requiredInputs.forEach(inp => { if (inp.value.trim() === '') isValid = false; });
+
+            if (currentMode === 'edit') {
+                const currentValues = {
+                    A: document.getElementById('inpA').value,
+                    B: document.getElementById('inpB').value,
+                    C: document.getElementById('inpC').value,
+                    D: document.getElementById('inpD').value,
+                    G: document.getElementById('inpG').value,
+                    H: document.getElementById('inpH').value,
+                    I: document.getElementById('inpI').value,
+                    K: document.getElementById('inpK').value,
+                    L: document.getElementById('inpL').value,
+                    M: document.getElementById('inpM').value
+                };
+                if (JSON.stringify(currentValues) !== JSON.stringify(originalValues)) isChanged = true;
+            } else { isChanged = true; }
+            document.getElementById('btnSave').disabled = !(isValid && isChanged);
+        }
+
+        async function saveData() {
+            const btn = document.getElementById('btnSave');
+            btn.innerHTML = 'กำลังบันทึก...';
+            btn.disabled = true;
+            const dataToSend = [
+                document.getElementById('inpA').value,
+                document.getElementById('inpB').value,
+                document.getElementById('inpC').value,
+                document.getElementById('inpD').value,
+                document.getElementById('inpG').value,
+                document.getElementById('inpH').value,
+                document.getElementById('inpI').value,
+                document.getElementById('inpK').value,
+                document.getElementById('inpL').value,
+                document.getElementById('inpM').value
+            ];
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'saveOfficer', mode: currentMode, rowIndex: editIndex, data: dataToSend })
+                });
+                closeModal();
+                Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                loadData();
+            } catch (err) { Swal.fire('Error', 'บันทึกไม่สำเร็จ', 'error'); } 
+            finally { btn.innerHTML = 'บันทึก'; }
+        }
+
+        function deleteItem(index) {
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "คุณต้องการลบรายการนี้ใช่หรือไม่",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#95a5a6',
+                confirmButtonText: 'ลบเลย',
+                cancelButtonText: 'ยกเลิก'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        await fetch(API_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'deleteOfficer', rowIndex: index })
+                        });
+                        Swal.fire('ลบแล้ว!', 'ข้อมูลถูกลบเรียบร้อย', 'success');
+                        loadData();
+                    } catch (err) { Swal.fire('Error', 'ลบไม่สำเร็จ', 'error'); }
+                }
+            });
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

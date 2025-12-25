@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ====================================================================
+         [ตั้งค่าระบบ] นำ URL Web App จาก Google Apps Script มาวางที่นี่ครับ
+         ==================================================================== -->
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxedqm0PRfKD9eWlTJDpXalUd6aEmthBghP-qDRzJgyNb2p6QbSSooOTvxmbUBQA_6PVA/exec';
+    </script>
+    <!-- ==================================================================== -->
+
+    <title>แก้ไขข้อมูลสถานี - สภ.พระธาตุช่อแฮ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #2c3e50; --accent: #c0392b; --bg: #f4f7f6; --card: #ffffff;
+            --text-label: #546e7a; --text-input: #2c3e50; --disabled: #bdc3c7;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Kanit', sans-serif; background: var(--bg); color: var(--text-input); padding-bottom: 50px; }
+        nav { background: var(--card); padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .back-btn { font-size: 1.2rem; color: var(--text-input); margin-right: 15px; text-decoration: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
+        .back-btn:hover { background: #f0f0f0; }
+        .page-title { font-weight: 600; color: var(--primary); font-size: 1.1rem; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .form-card { background: var(--card); padding: 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
+        .full-width { grid-column: span 2; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } .form-card { padding: 25px; } }
+        .form-group { display: flex; flex-direction: column; }
+        .form-label { margin-bottom: 8px; font-weight: 500; color: var(--text-label); font-size: 0.95rem; }
+        .form-input { width: 100%; padding: 12px 15px; border: 1px solid #e0e0e0; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; color: var(--text-input); background: #fff; transition: 0.3s; }
+        .form-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1); }
+        .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        .spinner { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 50px; font-size: 1rem; cursor: pointer; transition: 0.3s; font-family: 'Kanit'; }
+        .btn-cancel { background: #ecf0f1; color: var(--text-input); }
+        .btn-cancel:hover { background: #dfe6e9; }
+        .btn-save { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3); }
+        .btn-save:disabled { background: var(--disabled); color: #fff; cursor: not-allowed; box-shadow: none; transform: none !important; }
+        .btn-save:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4); }
+        .swal2-popup { font-family: 'Kanit', sans-serif !important; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="staff.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="page-title">ข้อมูลสถานีตำรวจ</div>
+    </nav>
+    <div class="container">
+        <div class="form-card">
+            <div id="loading" class="loading-overlay">
+                <i class="fa-solid fa-circle-notch fa-spin spinner"></i>
+                <p>กำลังโหลดข้อมูล...</p>
+            </div>
+            <form id="stationForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">ชื่อสถานีแบบเต็ม</label>
+                        <input type="text" class="form-input" id="field0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ชื่อสถานีแบบย่อ</label>
+                        <input type="text" class="form-input" id="field1">
+                    </div>
+                    <!-- ปรับให้อยู่บรรทัดเดียวกัน (เอา full-width ออก) -->
+                    <div class="form-group">
+                        <label class="form-label">ตำแหน่งหัวหน้าสถานีแบบเต็ม</label>
+                        <input type="text" class="form-input" id="field2">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ตำแหน่งหัวหน้าสถานีแบบย่อ</label>
+                        <input type="text" class="form-input" id="field3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ตำบล</label>
+                        <input type="text" class="form-input" id="field4">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">อำเภอ</label>
+                        <input type="text" class="form-input" id="field5">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">จังหวัด</label>
+                        <input type="text" class="form-input" id="field6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">รหัสไปรษณีย์</label>
+                        <input type="number" class="form-input" id="field7">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">หัวหนังสือราชการ</label>
+                        <input type="text" class="form-input" id="field8">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-cancel" onclick="resetForm()">ยกเลิก</button>
+                    <button type="button" class="btn btn-save" id="btnSave" onclick="saveData()" disabled>บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        let originalData = [];
+        const inputs = document.querySelectorAll('.form-input');
+        const btnSave = document.getElementById('btnSave');
+        const loading = document.getElementById('loading');
+        async function loadData() {
+            try {
+                const response = await fetch(API_URL + '?action=getStation');
+                const data = await response.json();
+                originalData = data;
+                inputs.forEach((input, index) => { input.value = data[index] || ''; });
+                loading.style.display = 'none';
+            } catch (error) {
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                loading.innerHTML = '<p style="color:red">โหลดข้อมูลไม่สำเร็จ</p>';
+            }
+        }
+        function checkChanges() {
+            let hasChange = false;
+            inputs.forEach((input, index) => {
+                if (input.value !== String(originalData[index] || '')) hasChange = true;
+            });
+            btnSave.disabled = !hasChange;
+        }
+        inputs.forEach(input => { input.addEventListener('input', checkChanges); });
+        function resetForm() {
+            inputs.forEach((input, index) => { input.value = originalData[index] || ''; });
+            checkChanges();
+        }
+        async function saveData() {
+            btnSave.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
+            btnSave.disabled = true;
+            const newData = Array.from(inputs).map(input => input.value);
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'saveStation', data: newData })
+                });
+                originalData = [...newData];
+                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ!', timer: 2000, showConfirmButton: false });
+                btnSave.innerHTML = 'บันทึก';
+                checkChanges();
+            } catch (error) {
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+                btnSave.innerHTML = 'บันทึก';
+                btnSave.disabled = false;
+            }
+        }
+        loadData();
+    </script>
+</body>
+</html>
