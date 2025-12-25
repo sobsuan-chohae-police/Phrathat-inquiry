@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>งานสอบสวน สภ.พระธาตุช่อแฮ</title>
+    
+    <!-- Google Fonts: Kanit (ฟอนต์มาตรฐาน ทันสมัย อ่านง่าย) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables & Reset --- */
+        :root {
+            --primary-color: #2c3e50; /* สีกรมท่า ตำรวจ สุขุม */
+            --accent-color: #c0392b; /* สีแดงเลือดหมู สำหรับจุดเด่น */
+            --bg-color: #f4f7f6; /* สีพื้นหลังเทาอ่อน สบายตา */
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-light: #777777;
+            --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
+            --shadow-hover: 0 15px 35px rgba(0,0,0,0.1);
+            --radius-xl: 30px; /* ความโค้งสไตล์ One UI */
+            --radius-md: 20px;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* Animation นุ่มนวล */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- Navigation Bar --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px); /* Glassmorphism */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i { color: var(--accent-color); }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 25px;
+            border-radius: 50px; /* ปุ่มกลมมน */
+            font-weight: 400;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .btn-home {
+            color: var(--text-main);
+        }
+        .btn-home:hover {
+            background-color: #eee;
+        }
+
+        .btn-staff {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        }
+        .btn-staff:hover {
+            background-color: #1a252f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
+        }
+
+        /* --- Hero Section --- */
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeUp 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- Cards Container --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+            cursor: default;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: #eef2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .card:hover .icon-box {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            nav { padding: 1rem; }
+            .nav-btn { padding: 8px 15px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span>งานสอบสวน</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn btn-home">หน้าหลัก</a>
+            <!-- ลิงก์ไปยังหน้า staff.html (ซึ่งเราจะสร้างในอนาคต) -->
+            <a href="staff.html" class="nav-btn btn-staff">
+                <i class="fa-solid fa-user-shield"></i> สำหรับเจ้าหน้าที่
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header>
+        <h1>สภ.พระธาตุช่อแฮ</h1>
+        <p class="subtitle">ระบบบริหารจัดการงานสอบสวนและอำนวยความสะดวกประชาชน<br>ทันสมัย รวดเร็ว โปร่งใส ตรวจสอบได้</p>
+    </header>
+
+    <!-- Content Cards -->
+    <section class="container">
+        <!-- Card 1 -->
+        <div class="card">
+            <div class="icon-box">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <h3>ตารางเวร</h3>
+            <p>ตรวจสอบรายชื่อพนักงานสอบสวนและเจ้าหน้าที่เวรสอบสวน สภ.พระธาตุช่อแฮ</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card">
+            <div class="icon-box">
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+            <h3>รายงานผลการปฏิบัติ</h3>
+            <p>สรุปผลการดำเนินงาน สถิติคดี และผลการปฏิบัติงาน</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card">
+            <div class="icon-box">
+                <i class="fa-solid fa-bullhorn"></i>
+            </div>
+            <h3>แจ้งข่าวประชาสัมพันธ์</h3>
+            <p>ข่าวสาร กิจกรรม และประกาศสำคัญจากสถานีตำรวจภูธรพระธาตุช่อแฮ</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 งานสอบสวน สถานีตำรวจภูธรพระธาตุช่อแฮ. สงวนลิขสิทธิ์.</p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">พัฒนาเพื่อประสิทธิภาพการทำงานสูงสุด</p>
+    </footer>
+
+</body>
+</html>
