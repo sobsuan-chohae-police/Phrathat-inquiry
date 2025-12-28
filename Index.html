@@ -37,14 +37,19 @@
             box-sizing: border-box;
         }
 
+        /* เพิ่มสีพื้นหลังให้ html เพื่อแก้ปัญหาภาพลวงตาว่า Footer ยาวเกินจริงในจอคอม */
+        html {
+            background-color: var(--bg-color);
+        }
+
         body {
             font-family: 'Kanit', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
             overflow-x: hidden;
-            /* เอา min-height และ flex ออก เพื่อให้จบแค่เนื้อหา */
             display: block; 
+            min-height: auto; /* มั่นใจว่าไม่ยืดเต็มจอ */
         }
 
         a { text-decoration: none; color: inherit; }
@@ -84,9 +89,8 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px 40px; /* ลด padding ล่าง */
+            padding: 0 20px 40px;
             display: grid;
-            /* ค่าเริ่มต้นสำหรับ PC (อาจจะเรียง 3 หรือ 2 แล้วแต่ความกว้าง) */
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
         }
@@ -145,13 +149,22 @@
         /* --- Footer --- */
         footer {
             text-align: center;
-            padding: 30px 20px;
+            /* ลด Padding ด้านล่างเหลือ 15px เพื่อให้จบหลังข้อความ */
+            padding: 25px 20px 15px; 
             color: var(--text-light);
             font-size: 0.85rem;
             border-top: 1px solid #e0e0e0;
             background: #fff;
-            /* เพิ่ม margin-top เพื่อให้ห่างจาก content เล็กน้อย */
             margin-top: 20px; 
+        }
+        
+        /* ลบ Margin ของ p ใน Footer เพื่อไม่ให้ดันพื้นที่ */
+        footer p {
+            margin: 0;
+            margin-bottom: 5px;
+        }
+        footer p:last-child {
+            margin-bottom: 0;
         }
 
         /* --- Animations --- */
@@ -162,10 +175,9 @@
 
         /* --- Responsive Design (Mobile & Tablet) --- */
         @media (max-width: 900px) {
-            /* บังคับให้เรียง 1 คอลัมน์ (แนวตั้ง) เมื่อหน้าจอเล็กกว่า 900px (มือถือ/แท็บเล็ตแนวตั้ง) */
             .container {
                 grid-template-columns: 1fr; 
-                max-width: 500px; /* จำกัดความกว้างไม่ให้ยืดเกินไปในแท็บเล็ต */
+                max-width: 500px;
             }
 
             header {
@@ -173,7 +185,7 @@
             }
 
             .title-group h1 {
-                font-size: 2rem; /* ลดขนาดหัวข้อ */
+                font-size: 2rem;
             }
 
             p.subtitle {
@@ -183,7 +195,6 @@
 
             .card {
                 padding: 30px 20px;
-                /* ให้การ์ดมีความสูงพอดีเนื้อหา ไม่ยืด */
                 height: auto; 
             }
         }
@@ -245,7 +256,7 @@
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 สถานีตำรวจภูธรพระธาตุช่อแฮ. สงวนลิขสิทธิ์.</p>
-        <p style="margin-top: 5px;">พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น เพื่ออำนวยความสะดวก และประสิทธิภาพการทำงานสูงสุด</p>
+        <p>พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น เพื่ออำนวยความสะดวก และประสิทธิภาพการทำงานสูงสุด</p>
     </footer>
 
     <script>
