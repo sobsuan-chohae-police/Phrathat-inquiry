@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ระบบงานสอบสวน สภ.พระธาตุช่อแฮ อำนวยความสะดวกประชาชน">
-    <!-- ปรับสีแถบ Browser ในมือถือให้กลืนกับเว็บ -->
     <meta name="theme-color" content="#f4f7f6">
     
     <title>งานสอบสวน สภ.พระธาตุช่อแฮ</title>
     
-    <!-- Google Fonts: Kanit (Preconnect เพื่อโหลดเร็วขึ้น) -->
+    <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -28,10 +27,10 @@
             --text-main: #2d3436;
             --text-light: #636e72;
             
-            /* Gradient สีใหม่: เลือดหมู -> ม่วง -> น้ำเงินลึก */
+            /* Gradient สี: เลือดหมู -> ม่วง -> น้ำเงินลึก */
             --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
             
-            /* เงาแบบ Soft Depth (นุ่มลึก ดูแพง) */
+            /* เงาแบบ Soft Depth */
             --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
             --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
             
@@ -56,7 +55,6 @@
             flex-direction: column;
             min-height: 100vh;
             
-            /* เทคนิคเพิ่มความคมชัดของตัวอักษร */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
@@ -83,25 +81,23 @@
         }
 
         .title-group h1 {
-            font-size: 3.5rem; /* เพิ่มขนาดให้ดูสง่า */
+            font-size: 3.5rem;
             font-weight: 700;
             line-height: 1.1;
             margin: 0;
-            letter-spacing: -0.5px; /* บีบตัวอักษรนิดนึงให้ดูแน่น */
+            letter-spacing: -0.5px;
             
-            /* เทคนิคไล่สีตัวอักษร (Gradient Text) */
             background: var(--header-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             
-            /* เงาฟุ้งๆ ด้านหลังช่วยดันให้ลอยเด่น */
             filter: drop-shadow(0 2px 10px rgba(142, 68, 173, 0.2));
         }
 
         .title-group h1:first-child {
             margin-bottom: 5px;
-            font-size: 2.8rem; /* บรรทัดบนเล็กกว่านิดหน่อย */
+            font-size: 2.8rem;
             opacity: 0.9;
         }
 
@@ -126,7 +122,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
             justify-content: center;
-            animation: fadeUp 1s ease-out 0.2s backwards; /* Delay นิดนึงให้มาทีหลังหัวข้อ */
+            animation: fadeUp 1s ease-out 0.2s backwards;
         }
 
         .card {
@@ -137,7 +133,7 @@
             box-shadow: var(--shadow-soft);
             transition: var(--transition);
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.8); /* ขอบขาวจางๆ เพิ่มมิติ */
+            border: 1px solid rgba(255,255,255,0.8);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -146,7 +142,6 @@
             overflow: hidden;
         }
 
-        /* Effect แสงวิ่งผ่านเมื่อเอาเมาส์ชี้ */
         .card::after {
             content: '';
             position: absolute;
@@ -173,15 +168,14 @@
             justify-content: center;
             margin-bottom: 25px;
             font-size: 2rem;
-            color: #2c3e50; /* สีไอคอนตั้งต้น */
+            color: #2c3e50;
             transition: var(--transition);
         }
 
-        /* เมื่อ Hover การ์ด ให้ไอคอนเปลี่ยนสีตามธีมหัวข้อ */
         .card:hover .icon-box {
             background: linear-gradient(135deg, #c0392b, #8e44ad);
             color: white;
-            transform: rotate(5deg); /* หมุนนิดๆ ให้ดูมีชีวิตชีวา */
+            transform: rotate(5deg);
         }
 
         .card h3 {
@@ -244,7 +238,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.2) !important;
         }
         .swal2-confirm {
-            background: var(--header-gradient) !important; /* ปุ่มใช้สีเดียวกับหัวข้อ */
+            background: var(--header-gradient) !important;
             border-radius: 50px !important;
             box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3) !important;
         }
@@ -303,8 +297,8 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 สถานีตำรวจภูธรพระธาตุช่อแฮ. สงวนลิขสิทธิ์.</p>
-        <p>พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น เพื่ออำนวยความสะดวก และประสิทธิภาพการทำงานสูงสุด</p>
+        <p>&copy; 2025 พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น</p>
+        <p>เพื่ออำนวยความสะดวก และประสิทธิภาพการทำงานสูงสุด</p>
     </footer>
 
     <script>
