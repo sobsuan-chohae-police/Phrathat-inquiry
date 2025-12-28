@@ -10,14 +10,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        /* --- CSS Variables & Reset --- */
+        /* --- CSS Variables --- */
         :root {
             --primary-color: #2c3e50;
             --accent-color: #c0392b;
@@ -37,9 +37,8 @@
             box-sizing: border-box;
         }
 
-        /* เพิ่มสีพื้นหลังให้ html เพื่อแก้ปัญหาภาพลวงตาว่า Footer ยาวเกินจริงในจอคอม */
         html {
-            background-color: var(--bg-color);
+            height: 100%; /* สำคัญ */
         }
 
         body {
@@ -47,17 +46,30 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
-            overflow-x: hidden;
-            display: block; 
-            min-height: auto; /* มั่นใจว่าไม่ยืดเต็มจอ */
+            
+            /* --- เทคนิค Sticky Footer --- */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* สูงเต็มจอเสมอ */
+            margin: 0;
         }
 
         a { text-decoration: none; color: inherit; }
 
+        /* --- Main Wrapper (คลุม Header + Content) --- */
+        /* ส่วนนี้จะขยายตัวเพื่อดัน Footer ลงล่าง */
+        main {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* จัดกึ่งกลางแนวตั้ง (ถ้าชอบ) */
+            padding-bottom: 40px; /* เว้นระยะห่างจาก Footer */
+        }
+
         /* --- Hero Section --- */
         header {
             text-align: center;
-            padding: 50px 20px 30px;
+            padding: 60px 20px 40px;
             max-width: 1000px;
             margin: 0 auto;
             animation: fadeUp 1s ease-out;
@@ -79,7 +91,7 @@
             font-size: 1.2rem;
             color: var(--text-light);
             margin-top: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
@@ -87,18 +99,21 @@
 
         /* --- Cards Container --- */
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px 40px;
+            padding: 0 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            /* Responsive Grid: ปรับอัตโนมัติ */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            justify-content: center;
         }
 
         .card {
             background: var(--card-bg);
             border-radius: var(--radius-xl);
-            padding: 35px 25px;
+            padding: 40px 30px;
             text-align: center;
             box-shadow: var(--shadow-soft);
             transition: var(--transition);
@@ -107,24 +122,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
+            height: 100%; /* ให้การ์ดสูงเท่ากันในแถว */
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
             box-shadow: var(--shadow-hover);
         }
 
         .icon-box {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             background: #eef2f5;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            margin-bottom: 25px;
+            font-size: 2rem;
             color: var(--primary-color);
             transition: var(--transition);
         }
@@ -135,36 +150,30 @@
         }
 
         .card h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: var(--text-main);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .card p {
             color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 0.95rem;
         }
 
         /* --- Footer --- */
         footer {
             text-align: center;
-            /* ลด Padding ด้านล่างเหลือ 15px เพื่อให้จบหลังข้อความ */
-            padding: 25px 20px 15px; 
+            padding: 25px 20px;
             color: var(--text-light);
             font-size: 0.85rem;
             border-top: 1px solid #e0e0e0;
             background: #fff;
-            margin-top: 20px; 
+            width: 100%;
+            flex-shrink: 0; /* ห้ามหดตัว */
         }
         
-        /* ลบ Margin ของ p ใน Footer เพื่อไม่ให้ดันพื้นที่ */
         footer p {
-            margin: 0;
-            margin-bottom: 5px;
-        }
-        footer p:last-child {
-            margin-bottom: 0;
+            margin: 5px 0;
         }
 
         /* --- Animations --- */
@@ -174,12 +183,7 @@
         }
 
         /* --- Responsive Design (Mobile & Tablet) --- */
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr; 
-                max-width: 500px;
-            }
-
+        @media (max-width: 768px) {
             header {
                 padding: 40px 20px 20px;
             }
@@ -190,15 +194,39 @@
 
             p.subtitle {
                 font-size: 1rem;
-                margin-bottom: 20px;
+                margin-bottom: 30px;
+            }
+
+            /* บนมือถือ ให้เรียง 1 คอลัมน์เต็มความกว้าง */
+            .container {
+                grid-template-columns: 1fr;
+                max-width: 500px; /* จำกัดความกว้างไม่ให้ยืดเกินไป */
             }
 
             .card {
                 padding: 30px 20px;
-                height: auto; 
+                flex-direction: row; /* ปรับเป็นแนวนอนในมือถือเพื่อให้ประหยัดที่ (Optional) */
+                align-items: center;
+                text-align: left;
+                gap: 20px;
+            }
+            
+            /* ถ้าอยากให้การ์ดเป็นแนวตั้งเหมือนเดิมในมือถือ ให้ลบส่วน flex-direction: row ออก */
+            /* แต่แบบแนวนอน (Row) จะดู Modern กว่าในมือถือ */
+            
+            .card {
+                flex-direction: column; /* กลับมาใช้แนวตั้งตามเดิมเพื่อให้เหมือน One UI */
+                text-align: center;
+            }
+
+            .icon-box {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
             }
         }
-        
+
         /* SweetAlert Style */
         .swal2-popup {
             font-family: 'Kanit', sans-serif !important;
@@ -212,46 +240,55 @@
 </head>
 <body>
 
-    <!-- Hero Header -->
-    <header>
-        <div class="title-group">
-            <h1>งานสอบสวน</h1>
-            <h1>สภ.พระธาตุช่อแฮ</h1>
-        </div>
-        <p class="subtitle">ระบบบริหารจัดการงานสอบสวนและอำนวยความสะดวกประชาชน<br>ทันสมัย รวดเร็ว โปร่งใส ตรวจสอบได้</p>
-    </header>
-
-    <!-- Content Cards -->
-    <section class="container">
-        
-        <!-- Card 1: ระบบสำหรับเจ้าหน้าที่ -->
-        <a href="staff.html" class="card">
-            <div class="icon-box">
-                <i class="fa-solid fa-user-shield"></i>
+    <!-- ใช้ Main Wrapper เพื่อดัน Footer -->
+    <main>
+        <!-- Hero Header -->
+        <header>
+            <div class="title-group">
+                <h1>งานสอบสวน</h1>
+                <h1>สภ.พระธาตุช่อแฮ</h1>
             </div>
-            <h3>ระบบสำหรับเจ้าหน้าที่</h3>
-            <p>ระบบบริหารจัดการและอำนวยความสะดวกให้เจ้าหน้าที่และประชาชน</p>
-        </a>
+            <p class="subtitle">ระบบบริหารจัดการงานสอบสวนและอำนวยความสะดวกประชาชน<br>ทันสมัย รวดเร็ว โปร่งใส ตรวจสอบได้</p>
+        </header>
 
-        <!-- Card 2: ตารางเวร -->
-        <div class="card" onclick="showDevPopup('ตารางเวร')">
-            <div class="icon-box">
-                <i class="fa-solid fa-calendar-days"></i>
+        <!-- Content Cards -->
+        <section class="container">
+            
+            <!-- Card 1 -->
+            <a href="staff.html" class="card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <h3>ระบบสำหรับเจ้าหน้าที่</h3>
+                    <p>ระบบบริหารจัดการและอำนวยความสะดวกให้เจ้าหน้าที่และประชาชน</p>
+                </div>
+            </a>
+
+            <!-- Card 2 -->
+            <div class="card" onclick="showDevPopup('ตารางเวร')">
+                <div class="icon-box">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div>
+                    <h3>ตารางเวร</h3>
+                    <p>ตรวจสอบรายชื่อพนักงานสอบสวนและเจ้าหน้าที่เวรสอบสวน</p>
+                </div>
             </div>
-            <h3>ตารางเวร</h3>
-            <p>ตรวจสอบรายชื่อพนักงานสอบสวนและเจ้าหน้าที่เวรสอบสวน</p>
-        </div>
 
-        <!-- Card 3: รายงานผลการปฏิบัติ -->
-        <div class="card" onclick="showDevPopup('รายงานผลการปฏิบัติ')">
-            <div class="icon-box">
-                <i class="fa-solid fa-clipboard-list"></i>
+            <!-- Card 3 -->
+            <div class="card" onclick="showDevPopup('รายงานผลการปฏิบัติ')">
+                <div class="icon-box">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <div>
+                    <h3>รายงานผลการปฏิบัติ</h3>
+                    <p>สรุปผลการดำเนินงาน สถิติคดี และผลการปฏิบัติงาน</p>
+                </div>
             </div>
-            <h3>รายงานผลการปฏิบัติ</h3>
-            <p>สรุปผลการดำเนินงาน สถิติคดี และผลการปฏิบัติงาน</p>
-        </div>
 
-    </section>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer>
