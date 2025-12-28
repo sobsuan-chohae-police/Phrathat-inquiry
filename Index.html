@@ -13,15 +13,15 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- SweetAlert2 (สำหรับ Pop-up สวยๆ) -->
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         /* --- CSS Variables & Reset --- */
         :root {
-            --primary-color: #2c3e50; /* สีกรมท่า ตำรวจ */
-            --accent-color: #c0392b; /* สีแดงเลือดหมู */
-            --bg-color: #f4f7f6; /* พื้นหลังเทาอ่อน */
+            --primary-color: #2c3e50;
+            --accent-color: #c0392b;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
             --text-main: #333333;
             --text-light: #777777;
@@ -53,21 +53,20 @@
         /* --- Hero Section --- */
         header {
             text-align: center;
-            padding: 60px 20px 40px; /* ลด padding บนลงนิดหน่อยเพราะไม่มี navbar */
+            padding: 60px 20px 40px;
             max-width: 1000px;
             margin: 0 auto;
             animation: fadeUp 1s ease-out;
         }
 
         .title-group h1 {
-            font-size: 3rem;
+            font-size: 3rem; /* ขนาดปกติสำหรับ PC */
             color: var(--primary-color);
             font-weight: 600;
             line-height: 1.2;
             margin: 0;
         }
 
-        /* เพิ่มระยะห่างเล็กน้อยระหว่างบรรทัด */
         .title-group h1:first-child {
             margin-bottom: 5px;
         }
@@ -88,9 +87,10 @@
             margin: 0 auto;
             padding: 0 20px 60px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            /* ปรับ minmax จาก 300px เป็น 260px เพื่อให้พอดีกับมือถือจอเล็ก */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 30px;
-            flex: 1; /* ดัน Footer ลงล่างสุด */
+            flex: 1;
         }
 
         .card {
@@ -105,7 +105,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
+            height: 100%; /* ให้การ์ดสูงเท่ากันเสมอ */
         }
 
         .card:hover {
@@ -159,13 +159,45 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Responsive --- */
+        /* --- Responsive Design (Mobile & Tablet Vertical) --- */
         @media (max-width: 768px) {
-            .title-group h1 { font-size: 2.2rem; }
-            header { padding-top: 40px; }
+            header {
+                padding: 40px 20px 20px; /* ลด Padding บนมือถือ */
+            }
+
+            .title-group h1 {
+                font-size: 2rem; /* ลดขนาดฟอนต์หัวข้อ */
+            }
+
+            p.subtitle {
+                font-size: 1rem; /* ลดขนาดคำอธิบาย */
+                margin-bottom: 30px;
+            }
+
+            .container {
+                gap: 20px; /* ลดช่องว่างระหว่างการ์ด */
+                padding-bottom: 40px;
+            }
+
+            .card {
+                padding: 30px 20px; /* ลด Padding ในการ์ด */
+            }
+
+            .icon-box {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* สำหรับมือถือจอเล็กมาก (เช่น iPhone SE) */
+        @media (max-width: 380px) {
+            .title-group h1 { font-size: 1.8rem; }
+            .container { grid-template-columns: 1fr; } /* เรียงเดี่ยวเต็มจอ */
         }
         
-        /* ปรับแต่ง SweetAlert ให้เข้ากับธีม */
+        /* SweetAlert Style */
         .swal2-popup {
             font-family: 'Kanit', sans-serif !important;
             border-radius: 20px !important;
@@ -190,7 +222,7 @@
     <!-- Content Cards -->
     <section class="container">
         
-        <!-- Card 1: ระบบสำหรับเจ้าหน้าที่ (Link to staff.html) -->
+        <!-- Card 1: ระบบสำหรับเจ้าหน้าที่ -->
         <a href="staff.html" class="card">
             <div class="icon-box">
                 <i class="fa-solid fa-user-shield"></i>
@@ -199,7 +231,7 @@
             <p>ระบบบริหารจัดการและอำนวยความสะดวกให้เจ้าหน้าที่และประชาชน</p>
         </a>
 
-        <!-- Card 2: ตารางเวร (Popup) -->
+        <!-- Card 2: ตารางเวร -->
         <div class="card" onclick="showDevPopup('ตารางเวร')">
             <div class="icon-box">
                 <i class="fa-solid fa-calendar-days"></i>
@@ -208,7 +240,7 @@
             <p>ตรวจสอบรายชื่อพนักงานสอบสวนและเจ้าหน้าที่เวรสอบสวน</p>
         </div>
 
-        <!-- Card 3: รายงานผลการปฏิบัติ (Popup) -->
+        <!-- Card 3: รายงานผลการปฏิบัติ -->
         <div class="card" onclick="showDevPopup('รายงานผลการปฏิบัติ')">
             <div class="icon-box">
                 <i class="fa-solid fa-clipboard-list"></i>
@@ -222,20 +254,17 @@
     <!-- Footer -->
     <footer>
         <p>&copy; 2025 งานสอบสวน สถานีตำรวจภูธรพระธาตุช่อแฮ. สงวนลิขสิทธิ์.</p>
-        <p style="margin-top: 5px;">พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น เพื่ออำนวยความสะดวกประสิทธิภาพการทำงานสูงสุด</p>
+        <p style="margin-top: 5px;">พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น เพื่ออำนวยความสะดวกและประสิทธิภาพการทำงานสูงสุด</p>
     </footer>
 
     <script>
-        // ฟังก์ชันแสดง Popup "อยู่ระหว่างพัฒนา"
         function showDevPopup(menuName) {
             Swal.fire({
                 icon: 'info',
                 title: menuName,
                 text: 'ระบบส่วนนี้อยู่ระหว่างการพัฒนา',
                 confirmButtonText: 'ตกลง',
-                backdrop: `
-                    rgba(0,0,0,0.4)
-                `
+                backdrop: `rgba(0,0,0,0.4)`
             });
         }
     </script>
