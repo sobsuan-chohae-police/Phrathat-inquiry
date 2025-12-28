@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ระบบงานสอบสวน สภ.พระธาตุช่อแฮ อำนวยความสะดวกประชาชน">
+    <!-- ปรับสีแถบ Browser ในมือถือให้กลืนกับเว็บ -->
+    <meta name="theme-color" content="#f4f7f6">
+    
     <title>งานสอบสวน สภ.พระธาตุช่อแฮ</title>
     
-    <!-- Google Fonts: Kanit -->
+    <!-- Google Fonts: Kanit (Preconnect เพื่อโหลดเร็วขึ้น) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,16 +23,20 @@
     <style>
         /* --- CSS Variables --- */
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #c0392b;
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-light: #777777;
-            --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
-            --shadow-hover: 0 15px 35px rgba(0,0,0,0.1);
-            --radius-xl: 30px;
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            
+            /* Gradient สีใหม่: เลือดหมู -> ม่วง -> น้ำเงินลึก */
+            --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
+            
+            /* เงาแบบ Soft Depth (นุ่มลึก ดูแพง) */
+            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
+            --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
+            
+            --radius-xl: 24px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         * {
@@ -37,33 +45,32 @@
             box-sizing: border-box;
         }
 
-        html {
-            height: 100%; /* สำคัญ */
-        }
+        html { height: 100%; }
 
         body {
             font-family: 'Kanit', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
-            
-            /* --- เทคนิค Sticky Footer --- */
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* สูงเต็มจอเสมอ */
-            margin: 0;
+            min-height: 100vh;
+            
+            /* เทคนิคเพิ่มความคมชัดของตัวอักษร */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         a { text-decoration: none; color: inherit; }
 
-        /* --- Main Wrapper (คลุม Header + Content) --- */
-        /* ส่วนนี้จะขยายตัวเพื่อดัน Footer ลงล่าง */
+        /* --- Main Wrapper --- */
         main {
             flex: 1; 
             display: flex;
             flex-direction: column;
-            justify-content: center; /* จัดกึ่งกลางแนวตั้ง (ถ้าชอบ) */
-            padding-bottom: 40px; /* เว้นระยะห่างจาก Footer */
+            justify-content: center;
+            padding-bottom: 40px;
         }
 
         /* --- Hero Section --- */
@@ -72,29 +79,41 @@
             padding: 60px 20px 40px;
             max-width: 1000px;
             margin: 0 auto;
-            animation: fadeUp 1s ease-out;
+            animation: fadeUp 0.8s ease-out;
         }
 
         .title-group h1 {
-            font-size: 3rem;
-            color: var(--primary-color);
-            font-weight: 600;
-            line-height: 1.2;
+            font-size: 3.5rem; /* เพิ่มขนาดให้ดูสง่า */
+            font-weight: 700;
+            line-height: 1.1;
             margin: 0;
+            letter-spacing: -0.5px; /* บีบตัวอักษรนิดนึงให้ดูแน่น */
+            
+            /* เทคนิคไล่สีตัวอักษร (Gradient Text) */
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            
+            /* เงาฟุ้งๆ ด้านหลังช่วยดันให้ลอยเด่น */
+            filter: drop-shadow(0 2px 10px rgba(142, 68, 173, 0.2));
         }
 
         .title-group h1:first-child {
             margin-bottom: 5px;
+            font-size: 2.8rem; /* บรรทัดบนเล็กกว่านิดหน่อย */
+            opacity: 0.9;
         }
 
         p.subtitle {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             color: var(--text-light);
-            margin-top: 20px;
+            margin-top: 25px;
             margin-bottom: 20px;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+            font-weight: 300;
         }
 
         /* --- Cards Container --- */
@@ -104,10 +123,10 @@
             margin: 0 auto;
             padding: 0 20px;
             display: grid;
-            /* Responsive Grid: ปรับอัตโนมัติ */
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
             justify-content: center;
+            animation: fadeUp 1s ease-out 0.2s backwards; /* Delay นิดนึงให้มาทีหลังหัวข้อ */
         }
 
         .card {
@@ -118,46 +137,64 @@
             box-shadow: var(--shadow-soft);
             transition: var(--transition);
             cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid rgba(255,255,255,0.8); /* ขอบขาวจางๆ เพิ่มมิติ */
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%; /* ให้การ์ดสูงเท่ากันในแถว */
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Effect แสงวิ่งผ่านเมื่อเอาเมาส์ชี้ */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.8), rgba(255,255,255,0));
+            opacity: 0;
+            transition: var(--transition);
         }
 
         .card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-8px) scale(1.01);
             box-shadow: var(--shadow-hover);
         }
+        
+        .card:hover::after { opacity: 0.3; }
 
         .icon-box {
             width: 80px;
             height: 80px;
-            background: #eef2f5;
+            background: #f0f2f5;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 25px;
             font-size: 2rem;
-            color: var(--primary-color);
+            color: #2c3e50; /* สีไอคอนตั้งต้น */
             transition: var(--transition);
         }
 
+        /* เมื่อ Hover การ์ด ให้ไอคอนเปลี่ยนสีตามธีมหัวข้อ */
         .card:hover .icon-box {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, #c0392b, #8e44ad);
             color: white;
+            transform: rotate(5deg); /* หมุนนิดๆ ให้ดูมีชีวิตชีวา */
         }
 
         .card h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: var(--text-main);
-            font-size: 1.3rem;
+            font-size: 1.35rem;
+            font-weight: 600;
         }
 
         .card p {
             color: var(--text-light);
             font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         /* --- Footer --- */
@@ -166,81 +203,55 @@
             padding: 25px 20px;
             color: var(--text-light);
             font-size: 0.85rem;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid rgba(0,0,0,0.05);
             background: #fff;
             width: 100%;
-            flex-shrink: 0; /* ห้ามหดตัว */
+            flex-shrink: 0;
         }
         
-        footer p {
-            margin: 5px 0;
-        }
+        footer p { margin: 5px 0; }
 
         /* --- Animations --- */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Responsive Design (Mobile & Tablet) --- */
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
-            header {
-                padding: 40px 20px 20px;
-            }
+            header { padding: 40px 20px 20px; }
 
-            .title-group h1 {
-                font-size: 2rem;
-            }
+            .title-group h1 { font-size: 2.2rem; }
+            .title-group h1:first-child { font-size: 1.8rem; }
 
-            p.subtitle {
-                font-size: 1rem;
-                margin-bottom: 30px;
-            }
+            p.subtitle { font-size: 1rem; margin-bottom: 30px; }
 
-            /* บนมือถือ ให้เรียง 1 คอลัมน์เต็มความกว้าง */
             .container {
                 grid-template-columns: 1fr;
-                max-width: 500px; /* จำกัดความกว้างไม่ให้ยืดเกินไป */
-            }
-
-            .card {
-                padding: 30px 20px;
-                flex-direction: row; /* ปรับเป็นแนวนอนในมือถือเพื่อให้ประหยัดที่ (Optional) */
-                align-items: center;
-                text-align: left;
+                max-width: 500px;
                 gap: 20px;
             }
-            
-            /* ถ้าอยากให้การ์ดเป็นแนวตั้งเหมือนเดิมในมือถือ ให้ลบส่วน flex-direction: row ออก */
-            /* แต่แบบแนวนอน (Row) จะดู Modern กว่าในมือถือ */
-            
-            .card {
-                flex-direction: column; /* กลับมาใช้แนวตั้งตามเดิมเพื่อให้เหมือน One UI */
-                text-align: center;
-            }
 
-            .icon-box {
-                width: 70px;
-                height: 70px;
-                font-size: 1.8rem;
-                margin-bottom: 15px;
-            }
+            .card { padding: 30px 25px; }
+            
+            .icon-box { width: 70px; height: 70px; font-size: 1.8rem; margin-bottom: 15px; }
         }
 
-        /* SweetAlert Style */
+        /* SweetAlert Customization */
         .swal2-popup {
             font-family: 'Kanit', sans-serif !important;
-            border-radius: 20px !important;
+            border-radius: 24px !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2) !important;
         }
         .swal2-confirm {
-            background-color: var(--primary-color) !important;
+            background: var(--header-gradient) !important; /* ปุ่มใช้สีเดียวกับหัวข้อ */
             border-radius: 50px !important;
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3) !important;
         }
     </style>
 </head>
 <body>
 
-    <!-- ใช้ Main Wrapper เพื่อดัน Footer -->
     <main>
         <!-- Hero Header -->
         <header>
@@ -303,7 +314,7 @@
                 title: menuName,
                 text: 'ระบบส่วนนี้อยู่ระหว่างการพัฒนา',
                 confirmButtonText: 'ตกลง',
-                backdrop: `rgba(0,0,0,0.4)`
+                backdrop: `rgba(0,0,0,0.3)`
             });
         }
     </script>
