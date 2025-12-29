@@ -2,16 +2,16 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="ระบบงานสอบสวน สภ.พระธาตุช่อแฮ อำนวยความสะดวกประชาชน">
     <meta name="theme-color" content="#f4f7f6">
     
     <title>งานสอบสวน สภ.พระธาตุช่อแฮ</title>
     
-    <!-- Google Fonts: Kanit -->
+    <!-- Google Fonts: Kanit (เพิ่มน้ำหนัก 500) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,8 +24,10 @@
         :root {
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-main: #2d3436;
-            --text-light: #636e72;
+            
+            /* ปรับสีให้เข้มขึ้นเพื่อความคมชัด (High Contrast) */
+            --text-main: #1a1a1a; 
+            --text-light: #555555;
             
             /* Gradient สี: เลือดหมู -> ม่วง -> น้ำเงินลึก */
             --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
@@ -55,9 +57,13 @@
             flex-direction: column;
             min-height: 100vh;
             
+            /* --- สูตรลับความคมชัด (Native App Feel) --- */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
+            -webkit-text-size-adjust: 100%;
+            letter-spacing: 0.3px;
+            font-weight: 400;
         }
 
         a { text-decoration: none; color: inherit; }
@@ -183,12 +189,14 @@
             color: var(--text-main);
             font-size: 1.35rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .card p {
             color: var(--text-light);
             font-size: 0.95rem;
             line-height: 1.5;
+            font-weight: 400;
         }
 
         /* --- Footer --- */
@@ -205,7 +213,7 @@
         
         footer p { margin: 5px 0; }
 
-        /* --- Animations --- */
+        /* --- Animations (Fade Up) --- */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -231,16 +239,19 @@
             .icon-box { width: 70px; height: 70px; font-size: 1.8rem; margin-bottom: 15px; }
         }
 
-        /* SweetAlert Customization */
+        /* SweetAlert Customization (Capsule Style) */
         .swal2-popup {
             font-family: 'Kanit', sans-serif !important;
             border-radius: 24px !important;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2) !important;
         }
+        .swal2-title { color: var(--text-main) !important; font-weight: 600 !important; }
+        .swal2-html-container { color: var(--text-light) !important; }
         .swal2-confirm {
             background: var(--header-gradient) !important;
-            border-radius: 50px !important;
+            border-radius: 50px !important; /* Capsule */
             box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3) !important;
+            padding: 10px 25px !important;
         }
     </style>
 </head>

@@ -2,16 +2,16 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#f4f7f6">
     <title>ระบบสำหรับเจ้าหน้าที่</title>
     
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts & Icons (เพิ่มน้ำหนัก 500) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- Animation: Fade Up (ลอยขึ้นนิ่มๆ) --- */
+        /* --- Animation: Fade Up --- */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -20,8 +20,11 @@
         :root {
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-main: #2d3436;
-            --text-light: #636e72;
+            
+            /* ปรับสีให้เข้มขึ้นเพื่อความคมชัด */
+            --text-main: #1a1a1a; 
+            --text-light: #555555;
+            
             --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
             --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
             --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
@@ -36,13 +39,20 @@
             background-color: var(--bg-color); 
             color: var(--text-main); 
             min-height: 100vh;
+            
+            /* --- สูตรลับความคมชัด (Native App Feel) --- */
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            -webkit-text-size-adjust: 100%;
+            letter-spacing: 0.3px;
+            font-weight: 400;
         }
 
-        /* Navbar (Fixed - No Animation) */
+        /* Navbar (Glassmorphism) */
         nav {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
@@ -50,7 +60,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 1px 0px rgba(0,0,0,0.05);
         }
 
         .nav-left { display: flex; align-items: center; gap: 15px; }
@@ -65,11 +75,12 @@
         .back-btn:hover { background: #f0f2f5; transform: translateX(-3px); }
         
         .page-title { 
-            font-weight: 700; 
+            font-weight: 600; 
             font-size: 1.2rem; 
             background: var(--header-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
         }
         
         .settings-btn {
@@ -78,18 +89,16 @@
         }
         .settings-btn:hover { background: #f0f2f5; color: #8e44ad; transform: rotate(90deg); }
 
-        /* Container (Apply Animation Here) */
+        /* Container */
         .container { 
             padding: 30px 20px; 
             max-width: 800px; 
             margin: 0 auto; 
-            
-            /* ใส่ Animation ให้เนื้อหาลอยขึ้นมา */
             animation: fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         
         .section-label {
-            font-size: 1rem; color: var(--text-light); margin-bottom: 20px; font-weight: 300;
+            font-size: 1rem; color: var(--text-light); margin-bottom: 20px; font-weight: 500;
         }
 
         /* Menu Card */
@@ -129,28 +138,26 @@
             transition: var(--transition);
         }
 
-        /* สีเฉพาะสำหรับไอคอนสีแดง (เมาขับ) */
         .menu-icon.icon-red {
-            color: #c0392b; /* สีแดงเข้ม */
-            background-color: #ffebee; /* สีพื้นหลังแดงอ่อน */
+            color: #c0392b; 
+            background-color: #ffebee; 
         }
 
-        /* เมื่อ Hover ให้เปลี่ยนเป็น Gradient เหมือนเดิม */
         .menu-card:hover .menu-icon {
             background: var(--header-gradient);
             color: white;
             transform: scale(1.1) rotate(5deg);
         }
 
-        .menu-info h3 { font-size: 1.2rem; margin-bottom: 5px; color: var(--text-main); font-weight: 600; }
-        .menu-info p { font-size: 0.9rem; color: var(--text-light); }
+        .menu-info h3 { font-size: 1.2rem; margin-bottom: 5px; color: var(--text-main); font-weight: 600; letter-spacing: 0.5px; }
+        .menu-info p { font-size: 0.9rem; color: var(--text-light); font-weight: 400; }
         .menu-arrow { margin-left: auto; color: #dfe6e9; transition: var(--transition); }
         .menu-card:hover .menu-arrow { color: #8e44ad; transform: translateX(5px); }
 
         /* Modal */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
             z-index: 999; align-items: center; justify-content: center;
         }
         .modal-content {
@@ -162,7 +169,7 @@
             margin-bottom: 25px; border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; 
         }
         .modal-header h3 { 
-            font-size: 1.3rem; 
+            font-size: 1.3rem; font-weight: 600;
             background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .close-modal { background: none; border: none; font-size: 1.2rem; color: #b2bec3; cursor: pointer; transition: 0.2s; }
@@ -196,7 +203,7 @@
     <div class="container">
         <p class="section-label">เลือกรายการที่ต้องการปฏิบัติ</p>
         
-        <!-- ลิงก์ไปยังหน้าทำงาน (เพิ่ม class icon-red) -->
+        <!-- ลิงก์ไปยังหน้าทำงาน -->
         <a href="drunk-case.html" class="menu-card">
             <div class="menu-icon icon-red"><i class="fa-solid fa-wine-bottle"></i></div>
             <div class="menu-info">

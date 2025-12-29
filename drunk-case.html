@@ -2,7 +2,8 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f4f7f6">
     <title>ฟ้องวาจาเมาขับ</title>
     
     <!-- ====================================================================
@@ -14,7 +15,7 @@
     <!-- ==================================================================== -->
 
     <!-- Libraries -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -22,78 +23,251 @@
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
 
     <style>
+        /* --- Theme Variables --- */
         :root {
-            --primary: #2c3e50; --accent: #c0392b; --bg: #f4f7f6; --card: #fff;
-            --text: #333; --border: #e0e0e0; --radius: 20px;
-            --tab-height: 55px;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a; 
+            --text-light: #555555;
+            --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
+            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
+            --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
+            --radius-xl: 24px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --primary: #2c3e50; 
         }
-        body { font-family: 'Kanit', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
-        
-        /* Navbar */
-        nav { background: var(--card); padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .back-btn { font-size: 1.2rem; color: var(--text); margin-right: 15px; text-decoration: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; }
-        .back-btn:hover { background: #f0f0f0; }
-        .page-title { font-weight: 600; color: var(--primary); font-size: 1.1rem; }
 
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        /* --- Global Styles --- */
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding-bottom: 100px;
+            
+            /* Font Rendering Optimization */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            -webkit-text-size-adjust: 100%;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+        }
 
-        /* Table */
-        .table-card { background: var(--card); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; }
+        /* --- Animations --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popUp { 
+            from { transform: scale(0.95); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
+        }
+
+        /* --- Navbar --- */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 0px rgba(0,0,0,0.05);
+        }
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .back-btn { 
+            font-size: 1.2rem; color: var(--text-main); 
+            width: 40px; height: 40px; 
+            display: flex; align-items: center; justify-content: center; 
+            border-radius: 50%; transition: var(--transition);
+            text-decoration: none;
+        }
+        .back-btn:hover { background: #f0f2f5; transform: translateX(-3px); }
+        .page-title { 
+            font-weight: 600; 
+            font-size: 1.25rem; 
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Container & Table Card --- */
+        .container { 
+            max-width: 1200px; margin: 30px auto; padding: 0 20px; 
+            animation: fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .table-card { 
+            background: var(--card-bg); 
+            border-radius: var(--radius-xl); 
+            box-shadow: var(--shadow-soft); 
+            overflow: hidden; 
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
         .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { background: #f8f9fa; color: var(--primary); font-weight: 600; padding: 15px; text-align: center; font-size: 0.9rem; border-bottom: 2px solid var(--border); }
-        td { padding: 12px 15px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: middle; text-align: center; }
-        td:nth-child(2) { text-align: left; }
         
-        .action-btn { border: none; background: none; cursor: pointer; font-size: 1.1rem; padding: 5px; transition: 0.2s; margin-right: 5px; }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+        
+        th { 
+            background: #f8f9fa; 
+            color: var(--text-light); 
+            font-weight: 600; 
+            padding: 18px 15px; 
+            text-align: center; 
+            font-size: 0.95rem; 
+            border-bottom: 2px solid #eee; 
+            letter-spacing: 0.5px;
+        }
+        
+        td { 
+            padding: 16px 15px; 
+            border-bottom: 1px solid #f0f2f5; 
+            font-size: 1rem; 
+            vertical-align: middle; 
+            text-align: center; 
+            color: var(--text-main);
+            font-weight: 400;
+        }
+        td:nth-child(2) { text-align: left; font-weight: 500; color: #000; }
+        
+        tr:hover td { background-color: #fafbfc; }
+
+        /* --- Action Buttons --- */
+        .action-btn { 
+            border: none; background: none; cursor: pointer; 
+            font-size: 1.15rem; padding: 6px; transition: 0.2s; 
+            margin-right: 8px; 
+        }
         .btn-edit { color: #f39c12; }
         .btn-delete { color: #e74c3c; }
+        .action-btn:hover { transform: scale(1.15); }
         
-        .doc-icon { font-size: 1.4rem; cursor: pointer; text-decoration: none; color: var(--text); display: inline-block; }
-        .doc-icon:hover { color: var(--primary); transform: scale(1.1); transition: 0.2s; }
-        .no-doc { color: #eee; cursor: default; font-size: 1.4rem; }
-
-        .pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-top: 1px solid #eee; }
-        .page-btn { background: #fff; border: 1px solid var(--border); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-family: 'Kanit'; }
-        .page-btn:disabled { opacity: 0.5; cursor: default; }
-
-        .fab { position: fixed; bottom: 25px; right: 25px; height: 55px; padding: 0 25px; background: var(--primary); color: white; border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; box-shadow: 0 5px 20px rgba(44, 62, 80, 0.4); cursor: pointer; transition: 0.3s; border: none; z-index: 90; font-family: 'Kanit'; }
-        .fab:hover { transform: scale(1.05); }
-
-        /* Modal */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        .modal-card { background: white; width: 95%; max-width: 800px; border-radius: var(--radius); padding: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; height: 90vh; max-height: 800px; position: relative; }
+        /* --- Doc Icons (Purple Hover) --- */
+        .doc-icon { 
+            font-size: 1.4rem; cursor: pointer; text-decoration: none; 
+            color: var(--text-main); display: inline-flex; 
+            align-items: center; justify-content: center;
+            width: 38px; height: 38px; border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0.8;
+        }
         
-        .close-modal-btn { position: absolute; top: 10px; right: 10px; background: #f1f1f1; border: none; font-size: 1.2rem; color: #555; cursor: pointer; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; z-index: 1002; }
-        .close-modal-btn:hover { background: #e0e0e0; color: #000; }
+        /* Hover Effect: Purple Theme */
+        .doc-icon:hover { 
+            background: #8e44ad; /* Theme Purple */
+            color: white; 
+            transform: scale(1.1) rotate(-5deg); 
+            opacity: 1;
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
+        }
+        
+        .no-doc { color: #e0e0e0; cursor: default; font-size: 1.4rem; }
 
-        .modal-tabs { display: flex; border-bottom: 1px solid #eee; background: #f8f9fa; border-radius: var(--radius) var(--radius) 0 0; height: var(--tab-height); flex-shrink: 0; padding-right: 50px; }
-        .tab-item { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; color: #999; background: #f8f9fa; transition: 0.2s; border-bottom: 3px solid transparent; box-sizing: border-box; }
-        .tab-item.active { color: var(--primary); font-weight: 600; border-bottom-color: var(--primary); background: #fff; }
-        .tab-item.disabled { cursor: not-allowed; opacity: 0.6; }
+        /* --- Pagination --- */
+        .pagination { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px; border-top: 1px solid #f0f2f5; 
+        }
+        .page-btn { 
+            background: #fff; border: 1px solid #e0e0e0; 
+            width: 38px; height: 38px; border-radius: 50%; 
+            cursor: pointer; transition: var(--transition); 
+            color: var(--text-main); display: inline-flex; 
+            align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .page-btn:hover:not(:disabled) { background: var(--text-main); color: white; border-color: var(--text-main); }
+        .page-btn:disabled { opacity: 0.4; cursor: default; background: #f9f9f9; }
+        #pageInfo { font-size: 0.95rem; color: var(--text-main); font-weight: 500; }
 
+        /* --- FAB --- */
+        .fab { 
+            position: fixed; bottom: 30px; right: 30px; 
+            height: 56px; padding: 0 28px; 
+            background: var(--header-gradient); 
+            color: white; border-radius: 16px; 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 10px; font-size: 1.1rem; font-weight: 500;
+            box-shadow: 0 8px 20px rgba(142, 68, 173, 0.35); 
+            cursor: pointer; transition: var(--transition); 
+            border: none; z-index: 90; font-family: 'Kanit'; 
+            letter-spacing: 0.5px;
+        }
+        .fab:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(142, 68, 173, 0.45); }
+
+        /* --- Modal --- */
+        .modal-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); 
+            z-index: 999; align-items: center; justify-content: center; 
+        }
+        .modal-card { 
+            background: white; width: 95%; max-width: 800px; 
+            border-radius: var(--radius-xl); padding: 0; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            display: flex; flex-direction: column; 
+            height: 90vh; max-height: 800px; position: relative; 
+            animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .close-modal-btn { 
+            position: absolute; top: 15px; right: 15px; 
+            background: #f1f5f9; border: none; font-size: 1.1rem; 
+            color: var(--text-light); cursor: pointer; 
+            width: 36px; height: 36px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: var(--transition); z-index: 1002; 
+        }
+        .close-modal-btn:hover { background: #e74c3c; color: white; transform: rotate(90deg); }
+
+        /* --- Tabs --- */
+        .modal-tabs { 
+            display: flex; border-bottom: 1px solid #f0f2f5; 
+            background: #fff; border-radius: var(--radius-xl) var(--radius-xl) 0 0; 
+            height: 60px; flex-shrink: 0; padding-right: 50px; 
+        }
+        .tab-item { 
+            flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; 
+            font-size: 1rem; cursor: pointer; color: var(--text-light); 
+            background: transparent; transition: var(--transition); 
+            border-bottom: 2px solid transparent; 
+            font-weight: 500; letter-spacing: 0.3px;
+        }
+        .tab-item.active { 
+            background: var(--header-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom-color: #8e44ad; 
+            font-weight: 600;
+        }
+        .tab-item.disabled { cursor: not-allowed; opacity: 0.4; }
+
+        /* --- Modal Body & Form --- */
         .modal-body { padding: 30px; overflow-y: auto; flex-grow: 1; scroll-behavior: smooth; }
-        .step-content { display: none; animation: fadeIn 0.3s ease; }
+        .step-content { display: none; animation: fadeUp 0.4s ease; }
         .step-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Grid System */
-        .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+        
+        /* Grid Spans */
         .col-12 { grid-column: span 12; }
+        .col-8 { grid-column: span 8; }
         .col-6 { grid-column: span 6; }
         .col-4 { grid-column: span 4; }
         .col-3 { grid-column: span 3; }
-        .col-8 { grid-column: span 8; }
         
-        /* Custom Grids */
+        /* Custom Grid Spans */
         .col-id { grid-column: span 6; }
         .col-age { grid-column: span 2; }
         .col-phone { grid-column: span 4; }
-        
         .col-date-rec { grid-column: span 6; }
         .col-time-rec { grid-column: span 4; }
         .col-log-no { grid-column: span 2; }
-        
         .col-vehicle { grid-column: span 8; }
         .col-alcohol { grid-column: span 4; }
 
@@ -103,50 +277,95 @@
         }
 
         .form-group { margin-bottom: 5px; }
-        .form-label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
+        .form-label { 
+            display: block; margin-bottom: 8px; font-size: 0.95rem; 
+            color: var(--text-main); font-weight: 500; 
+        }
         
-        /* --- แก้ไข CSS Input --- */
         .form-input { 
-            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; 
-            font-family: 'Kanit'; font-size: 1rem; box-sizing: border-box; transition: 0.2s; 
-            background-color: #fff; /* บังคับพื้นขาวเสมอ */
+            width: 100%; padding: 12px 15px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 12px; 
+            font-family: 'Kanit'; font-size: 1rem; color: var(--text-main);
+            transition: var(--transition); background-color: #fff; 
+            font-weight: 400;
+            -webkit-appearance: none;
         }
-        .form-input:focus { border-color: var(--primary); outline: none; }
+        .form-input:focus { 
+            border-color: #8e44ad; outline: none; 
+            box-shadow: 0 0 0 4px rgba(142, 68, 173, 0.1); 
+        }
         
-        /* คลาสใหม่สำหรับช่องที่ถูกล็อก (Fixed) */
         .form-input.locked {
-            background-color: #f0f0f0 !important;
-            color: #777;
-            pointer-events: none; /* ห้ามคลิก */
-            border-color: #eee;
+            background-color: #f1f5f9 !important;
+            color: #64748b;
+            pointer-events: none;
+            border-color: #e2e8f0;
         }
-        
-        /* Disabled จริงๆ (เช่น ตอนเลือกไม่ประกันตัว) */
         .form-input:disabled { 
-            background-color: #f0f0f0 !important; 
-            color: #aaa; 
+            background-color: #f1f5f9 !important; 
+            color: #94a3b8; 
             cursor: not-allowed; 
-            border-color: #eee; 
+            border-color: #e2e8f0; 
         }
 
-        .modal-footer { padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; flex-shrink: 0; background: #fff; border-radius: 0 0 var(--radius) var(--radius); }
-        .btn-step { padding: 10px 25px; border-radius: 50px; border: none; cursor: pointer; font-family: 'Kanit'; font-size: 1rem; transition: 0.2s; }
-        .btn-prev { background: #ecf0f1; color: #333; }
-        .btn-next { background: var(--primary); color: white; }
-        .btn-save { background: var(--accent); color: white; }
-        .btn-step:disabled { background: #bdc3c7; cursor: not-allowed; }
+        /* --- Modal Footer --- */
+        .modal-footer { 
+            padding: 20px 30px; border-top: 1px solid #f0f2f5; 
+            display: flex; justify-content: space-between; flex-shrink: 0; 
+            background: #fff; border-radius: 0 0 var(--radius-xl) var(--radius-xl); 
+        }
+        .btn-step { 
+            padding: 12px 30px; border-radius: 50px; border: none; 
+            cursor: pointer; font-family: 'Kanit'; font-size: 1rem; 
+            font-weight: 500; transition: var(--transition); letter-spacing: 0.5px;
+        }
+        .btn-prev { background: #f1f5f9; color: var(--text-main); }
+        .btn-prev:hover { background: #e2e8f0; }
+        
+        .btn-next { 
+            background: var(--header-gradient); color: white; 
+            box-shadow: 0 4px 12px rgba(142, 68, 173, 0.25);
+        }
+        .btn-next:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(142, 68, 173, 0.35); }
+        
+        .btn-save { 
+            background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; 
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.25);
+        }
+        .btn-save:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(39, 174, 96, 0.35); }
+        
+        .btn-step:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .swal2-popup { font-family: 'Kanit', sans-serif !important; }
-        .loading-spinner { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
-        .flatpickr-today-btn { text-align: center; padding: 5px; background: #f1f1f1; cursor: pointer; font-family: 'Kanit'; font-size: 0.9rem; color: var(--primary); border-top: 1px solid #eee; }
-        .flatpickr-today-btn:hover { background: #e0e0e0; }
+        /* --- SweetAlert Custom --- */
+        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 24px !important; }
+        .swal2-title { font-weight: 600 !important; color: var(--text-main) !important; }
+        .swal2-html-container { color: var(--text-light) !important; font-size: 1rem !important; }
+        .swal2-confirm, .swal2-cancel { border-radius: 50px !important; font-size: 1rem !important; padding: 10px 24px !important; }
+        .swal2-confirm { background: var(--header-gradient) !important; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3) !important; }
+        .swal2-cancel { background: #f1f5f9 !important; color: var(--text-main) !important; }
+        
+        .loading-spinner { font-size: 1.5rem; color: #8e44ad; margin-bottom: 0; vertical-align: middle; }
+        
+        /* Flatpickr Custom */
+        .flatpickr-calendar { border-radius: 16px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; border: none !important; }
+        .flatpickr-day.selected { background: #8e44ad !important; border-color: #8e44ad !important; }
+        .flatpickr-today-btn { 
+            text-align: center; padding: 12px; background: #f8f9fa; 
+            cursor: pointer; font-family: 'Kanit'; font-size: 0.95rem; 
+            color: #8e44ad; border-top: 1px solid #eee; font-weight: 500;
+            border-radius: 0 0 16px 16px;
+        }
+        .flatpickr-today-btn:hover { background: #f0f2f5; }
     </style>
 </head>
 <body>
 
     <nav>
-        <a href="staff.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="page-title">ฟ้องวาจาเมาขับ</div>
+        <div class="nav-left">
+            <a href="staff.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            <span class="page-title">ฟ้องวาจาเมาขับ</span>
+        </div>
     </nav>
 
     <div class="container">
@@ -167,9 +386,10 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td colspan="8" style="text-align:center; padding:40px;">
+                            <!-- ปรับความสูงตอนโหลดให้เท่ากับ 1 แถวปกติ (padding 20px) -->
+                            <td colspan="8" style="text-align:center; padding:20px;">
                                 <i class="fa-solid fa-circle-notch fa-spin loading-spinner"></i>
-                                <p>กำลังโหลดข้อมูล...</p>
+                                <span style="color:var(--text-light); margin-left:10px;">กำลังโหลดข้อมูล...</span>
                             </td>
                         </tr>
                     </tbody>
@@ -285,7 +505,7 @@
                     <div id="step2" class="step-content">
                         <div class="form-grid">
                             <div class="form-group col-12">
-                                <label class="form-label">เลขคดี</label>
+                                <label class="form-label">เลขคดี (คำตอบ เช่น xxx/25xx)</label>
                                 <input type="text" class="form-input required-s2" name="เลขคดี" style="width:50%;">
                             </div>
 
@@ -314,21 +534,20 @@
                                 <datalist id="listPlaces"></datalist>
                             </div>
 
-                            <!-- เขตเทศบาล (ปรับ Layout + Spacer) -->
+                            <!-- เขตเทศบาล (ปรับปรุงใหม่ตามตรรกะคำนำหน้า) -->
                             <div class="form-group col-6">
                                 <label class="form-label">เขตเทศบาล</label>
-                                <select class="form-input required-s2" onchange="checkMunicipality(this)" id="municipalitySelect">
+                                <select class="form-input required-s2" name="เขตเทศบาล" id="municipalitySelect" onchange="checkMunicipality(this)">
                                     <option value="">-- เลือก --</option>
-                                    <option value="no">ไม่อยู่ในเขตเทศบาล</option>
-                                    <option value="yes">อยู่ในเขตเทศบาล...</option>
+                                    <option value="ไม่อยู่ในเขตเทศบาล">ไม่อยู่ในเขตเทศบาล</option>
+                                    <option value="other">อยู่ในเขตเทศบาล...</option>
                                 </select>
-                                <input type="hidden" name="เขตเทศบาล" id="municipalityHidden">
                             </div>
                             <div class="form-group col-6" id="divMunicipalityText" style="display:none;">
-                                <label class="form-label">ชื่อเทศบาล</label>
-                                <input type="text" class="form-input" id="municipalityText" placeholder="ระบุชื่อเทศบาล">
+                                <label class="form-label">ชื่อเทศบาล (คำตอบ เช่น เทศบาลตำบล...)</label>
+                                <input type="text" class="form-input" name="เขตเทศบาล_other" id="municipalityText" placeholder="ระบุชื่อเทศบาล">
                             </div>
-                            <!-- Spacer Div: แสดงเมื่อ Text ซ่อน เพื่อดันวันที่ลงไปบรรทัดใหม่ -->
+                            <!-- Spacer Div -->
                             <div class="col-6" id="divMunicipalitySpacer"></div>
 
                             <div class="form-group col-6">
@@ -341,7 +560,7 @@
                             </div>
 
                             <div class="form-group col-vehicle">
-                                <label class="form-label">รถที่ขับ</label>
+                                <label class="form-label">รายละเอียดรถที่ขับ</label>
                                 <input type="text" class="form-input required-s2" name="รถที่ขับ">
                             </div>
                             <div class="form-group col-alcohol">
@@ -532,7 +751,8 @@
 
         async function loadTable(page) {
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;"><i class="fa-solid fa-circle-notch fa-spin loading-spinner"></i><p>กำลังโหลดข้อมูล...</p></td></tr>';
+            // ปรับความสูงตอนโหลดให้เท่ากับ 1 แถวปกติ (padding 20px)
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;"><i class="fa-solid fa-circle-notch fa-spin loading-spinner"></i><span style="color:var(--text-light); margin-left:10px;">กำลังโหลดข้อมูล...</span></td></tr>';
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -542,20 +762,21 @@
                 allData = json.data;
                 renderTable(allData);
                 updatePagination(page, json.total);
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">โหลดข้อมูลไม่สำเร็จ</td></tr>'; }
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#e74c3c;">โหลดข้อมูลไม่สำเร็จ</td></tr>'; }
         }
 
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">ไม่พบข้อมูล</td></tr>'; return; }
+            if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-light);">ไม่พบข้อมูล</td></tr>'; return; }
             data.forEach((row, index) => {
                 const tr = document.createElement('tr');
+                
                 let caseIcon = `<span class="no-doc"><i class="fa-solid fa-file-circle-xmark"></i></span>`;
                 if (row.display.linkCase) caseIcon = `<a href="${row.display.linkCase}" target="_blank" class="doc-icon doc-case"><i class="fa-solid fa-file-contract"></i></a>`;
                 let bailIcon = `<span class="no-doc"><i class="fa-solid fa-file-circle-xmark"></i></span>`;
                 if (row.display.linkBail) bailIcon = `<a href="${row.display.linkBail}" target="_blank" class="doc-icon doc-bail"><i class="fa-solid fa-file-circle-check"></i></a>`;
-                else if (row.display.bailStatus === 'ไม่ประกันตัว') bailIcon = `<span style="font-size:0.8rem; color:#777;">ไม่ประกันตัว</span>`;
+                else if (row.display.bailStatus === 'ไม่ประกันตัว') bailIcon = `<span style="font-size:0.8rem; color:#b2bec3;">ไม่ประกันตัว</span>`;
 
                 tr.innerHTML = `
                     <td>
@@ -605,6 +826,8 @@
             
             document.getElementById('prefixSuspectOther').style.display = 'none';
             document.getElementById('prefixBailerOther').style.display = 'none';
+            
+            // รีเซ็ตเขตเทศบาล
             document.getElementById('divMunicipalityText').style.display = 'none';
             document.getElementById('divMunicipalitySpacer').style.display = 'block';
             
@@ -648,20 +871,20 @@
                 other.style.display = 'block'; other.value = prefixSus;
             }
 
-            const muni = data['เขตเทศบาล'];
-            if (muni === 'ไม่อยู่ในเขตเทศบาล') {
-                document.getElementById('municipalitySelect').value = 'no';
-                document.getElementById('divMunicipalityText').style.display = 'none';
-                document.getElementById('divMunicipalitySpacer').style.display = 'block';
-            } else if (muni && muni.startsWith('เขตเทศบาล')) {
-                document.getElementById('municipalitySelect').value = 'yes';
-                const textDiv = document.getElementById('divMunicipalityText');
-                const textInput = document.getElementById('municipalityText');
-                textDiv.style.display = 'block';
-                document.getElementById('divMunicipalitySpacer').style.display = 'none';
-                textInput.value = muni.replace('เขตเทศบาล', '');
-                textInput.classList.add('required-s2');
+            // --- ตรรกะเขตเทศบาล (แบบเดียวกับคำนำหน้า) ---
+            const muniValue = data['เขตเทศบาล'];
+            if (muniValue === 'ไม่อยู่ในเขตเทศบาล') {
+                document.getElementById('municipalitySelect').value = 'ไม่อยู่ในเขตเทศบาล';
+                checkMunicipality(document.getElementById('municipalitySelect'));
+            } else if (muniValue) {
+                document.getElementById('municipalitySelect').value = 'other';
+                checkMunicipality(document.getElementById('municipalitySelect'));
+                document.getElementById('municipalityText').value = muniValue;
+            } else {
+                document.getElementById('municipalitySelect').value = '';
+                checkMunicipality(document.getElementById('municipalitySelect'));
             }
+            // ------------------------------------------------
 
             const bailSt = data['การประกันตัว'];
             if (bailSt === 'ประกันตัว') {
@@ -674,7 +897,6 @@
                     otherB.style.display = 'block'; otherB.value = prefixBail;
                 }
                 
-                // *** FIX: Trigger AutoFill if Self-Bail ***
                 if (data['ผู้ประกัน'] === 'ประกันตนเอง') {
                     autoFillBailer();
                 }
@@ -734,12 +956,14 @@
             else { otherInput.style.display = 'none'; otherInput.classList.remove('required-bail'); otherInput.value = ''; }
             validateStep();
         }
+        
+        // --- ฟังก์ชันเช็คเขตเทศบาล (ปรับปรุงใหม่) ---
         function checkMunicipality(select) {
             const textDiv = document.getElementById('divMunicipalityText');
             const textInput = document.getElementById('municipalityText');
             const spacerDiv = document.getElementById('divMunicipalitySpacer');
             
-            if (select.value === 'yes') { 
+            if (select.value === 'other') { 
                 textDiv.style.display = 'block'; 
                 spacerDiv.style.display = 'none';
                 textInput.classList.add('required-s2'); 
@@ -751,6 +975,8 @@
             }
             validateStep();
         }
+        // ----------------------------------------
+
         function toggleBailFields() {
             const status = document.getElementById('bailStatus').value;
             const inputs = document.querySelectorAll('#bailFields .form-input');
@@ -786,14 +1012,12 @@
                 }
 
                 ['nameBailer', 'surnameBailer', 'ageBailer', 'phoneBailer', 'addressBailer', 'prefixBailer', 'prefixBailerOther'].forEach(id => {
-                    // *** FIX: Use class 'locked' instead of readOnly ***
                     const el = document.getElementById(id);
                     el.classList.add('locked');
                     if(id.includes('prefix')) el.style.pointerEvents = 'none';
                 });
             } else {
                 ['nameBailer', 'surnameBailer', 'ageBailer', 'phoneBailer', 'addressBailer', 'prefixBailer', 'prefixBailerOther'].forEach(id => {
-                    // *** FIX: Remove class 'locked' ***
                     const el = document.getElementById(id);
                     el.classList.remove('locked');
                     el.value = '';
@@ -867,7 +1091,12 @@
                     
                     if (document.getElementById('prefixSuspect').value === 'other') dataObj['คำนำชื่อ ผตห'] = dataObj['คำนำชื่อ ผตห_other'];
                     if (document.getElementById('prefixBailer').value === 'other') dataObj['คำนำชื่อ นปก'] = dataObj['คำนำชื่อ นปก_other'];
-                    if (document.getElementById('municipalityText').offsetParent !== null) dataObj['เขตเทศบาล'] = 'เขตเทศบาล' + document.getElementById('municipalityText').value;
+                    
+                    // --- ตรรกะบันทึกเขตเทศบาล (แบบเดียวกับคำนำหน้า) ---
+                    if (document.getElementById('municipalitySelect').value === 'other') {
+                        dataObj['เขตเทศบาล'] = dataObj['เขตเทศบาล_other'];
+                    }
+                    // ------------------------------------------------
 
                     const dateFields = ['วันที่รับคดี คศ', 'วันที่เกิดเหตุ คศ', 'วันที่ส่งฟ้อง คศ', 'วันที่ปล่อยตัว คศ'];
                     dateFields.forEach(field => {
