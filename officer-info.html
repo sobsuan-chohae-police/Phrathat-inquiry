@@ -54,8 +54,14 @@
         }
         
         /* --- Animations --- */
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        @keyframes popUp { 
+            from { transform: scale(0.95); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
+        }
 
         /* --- Navbar (Glassmorphism) --- */
         nav {
@@ -68,6 +74,9 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 1px 0px rgba(0,0,0,0.05);
+            
+            /* Performance Tuning */
+            will-change: transform;
         }
         .back-btn { 
             font-size: 1.2rem; color: var(--text-main); 
@@ -86,6 +95,9 @@
         .container { 
             max-width: 1200px; margin: 30px auto; padding: 0 20px; 
             animation: fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            
+            /* Performance Tuning */
+            will-change: opacity, transform;
         }
 
         /* --- Role Section --- */
@@ -95,6 +107,9 @@
             box-shadow: var(--shadow-soft); 
             margin-bottom: 30px; 
             border: 1px solid rgba(0,0,0,0.05);
+            
+            /* Performance Tuning: Force GPU Layer */
+            transform: translateZ(0);
         }
         .role-row { margin-bottom: 20px; }
         .role-label { font-size: 0.95rem; color: var(--text-main); font-weight: 500; margin-bottom: 8px; display: block; }
@@ -112,6 +127,9 @@
             border-radius: 50px; cursor: pointer; font-family: 'Kanit'; font-size: 1rem; font-weight: 500;
             margin-top: 10px; transition: var(--transition); letter-spacing: 0.5px;
             box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
+            
+            /* Performance Tuning */
+            will-change: transform;
         }
         .btn-save-roles:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
         .btn-save-roles:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(142, 68, 173, 0.4); }
@@ -121,6 +139,9 @@
         .btn-sort {
             background: #fff; border: 1px solid #e0e0e0; padding: 8px 20px; border-radius: 50px;
             font-family: 'Kanit'; font-size: 0.95rem; cursor: pointer; color: var(--text-main); transition: var(--transition);
+            
+            /* Performance Tuning */
+            will-change: transform;
         }
         .btn-sort:hover { background: #f8f9fa; border-color: #d1d1d1; }
         .btn-sort.active { background: var(--primary); color: white; border-color: var(--primary); }
@@ -131,6 +152,9 @@
             border-radius: var(--radius-xl); 
             box-shadow: var(--shadow-soft); 
             border: 1px solid rgba(0,0,0,0.05);
+            
+            /* Performance Tuning */
+            transform: translateZ(0);
         }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th { 
@@ -146,7 +170,10 @@
         tr:hover td { background-color: #fafbfc; }
         
         /* Action Buttons (Original Style) */
-        .action-btn { border: none; background: none; cursor: pointer; font-size: 1.15rem; padding: 6px; transition: 0.2s; margin-right: 5px; }
+        .action-btn { 
+            border: none; background: none; cursor: pointer; 
+            font-size: 1.15rem; padding: 6px; transition: 0.2s; margin-right: 5px; 
+        }
         .btn-edit { color: #f39c12; }
         .btn-delete { color: #e74c3c; }
         .action-btn:hover { transform: scale(1.2); }
@@ -166,6 +193,9 @@
             font-size: 1.1rem; font-weight: 500; box-shadow: 0 8px 20px rgba(142, 68, 173, 0.35); 
             cursor: pointer; transition: var(--transition); border: none; z-index: 99; font-family: 'Kanit';
             letter-spacing: 0.5px;
+            
+            /* Performance Tuning */
+            will-change: transform;
         }
         .fab:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(142, 68, 173, 0.45); }
 
@@ -174,6 +204,9 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); 
             z-index: 999; align-items: center; justify-content: center; 
+            
+            /* Performance Tuning */
+            will-change: opacity;
         }
         .modal-card { 
             background: white; width: 95%; max-width: 700px; 
@@ -181,6 +214,10 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
             animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
             max-height: 90vh; overflow-y: auto; 
+            
+            /* Performance Tuning: Force GPU Layer */
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -202,6 +239,9 @@
             cursor: pointer; font-size: 1rem; margin-top: 10px; 
             transition: var(--transition); font-family: 'Kanit'; font-weight: 500;
             box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
+            
+            /* Performance Tuning */
+            will-change: transform;
         }
         .btn-submit:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
         .btn-submit:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(142, 68, 173, 0.4); }
