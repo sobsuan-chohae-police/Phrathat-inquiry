@@ -84,6 +84,9 @@
             max-width: 1000px;
             margin: 0 auto;
             animation: fadeUp 0.8s ease-out;
+            
+            /* Performance Tuning: บอก Browser ว่าส่วนนี้จะมีการขยับ */
+            will-change: transform, opacity;
         }
 
         .title-group h1 {
@@ -129,6 +132,9 @@
             gap: 30px;
             justify-content: center;
             animation: fadeUp 1s ease-out 0.2s backwards;
+            
+            /* Performance Tuning */
+            will-change: transform, opacity;
         }
 
         .card {
@@ -146,6 +152,10 @@
             height: 100%;
             position: relative;
             overflow: hidden;
+            
+            /* Performance Tuning: เตรียม GPU สำหรับการ Hover */
+            will-change: transform;
+            transform: translateZ(0); /* Force GPU Layer */
         }
 
         .card::after {
