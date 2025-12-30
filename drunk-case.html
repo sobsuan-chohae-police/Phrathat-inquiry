@@ -35,6 +35,10 @@
             --radius-xl: 24px;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             --primary: #2c3e50; 
+            
+            /* สีสำหรับคำอธิบายเพิ่มเติม */
+            --hint-gray: #95a5a6;
+            --hint-brown: #8d6e63;
         }
 
         /* --- Global Styles --- */
@@ -76,6 +80,7 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 1px 0px rgba(0,0,0,0.05);
+            will-change: transform; 
         }
         .nav-left { display: flex; align-items: center; gap: 15px; }
         .back-btn { 
@@ -99,6 +104,7 @@
         .container { 
             max-width: 1200px; margin: 30px auto; padding: 0 20px; 
             animation: fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            will-change: opacity, transform;
         }
 
         .table-card { 
@@ -147,7 +153,7 @@
         .btn-delete { color: #e74c3c; }
         .action-btn:hover { transform: scale(1.15); }
         
-        /* --- Doc Icons (Purple Hover) --- */
+        /* --- Doc Icons --- */
         .doc-icon { 
             font-size: 1.4rem; cursor: pointer; text-decoration: none; 
             color: var(--text-main); display: inline-flex; 
@@ -156,16 +162,13 @@
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             opacity: 0.8;
         }
-        
-        /* Hover Effect: Purple Theme */
         .doc-icon:hover { 
-            background: #8e44ad; /* Theme Purple */
+            background: #8e44ad; 
             color: white; 
             transform: scale(1.1) rotate(-5deg); 
             opacity: 1;
             box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
         }
-        
         .no-doc { color: #e0e0e0; cursor: default; font-size: 1.4rem; }
 
         /* --- Pagination --- */
@@ -197,6 +200,7 @@
             cursor: pointer; transition: var(--transition); 
             border: none; z-index: 90; font-family: 'Kanit'; 
             letter-spacing: 0.5px;
+            will-change: transform;
         }
         .fab:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(142, 68, 173, 0.45); }
 
@@ -205,6 +209,7 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); 
             z-index: 999; align-items: center; justify-content: center; 
+            will-change: opacity;
         }
         .modal-card { 
             background: white; width: 95%; max-width: 800px; 
@@ -213,6 +218,8 @@
             display: flex; flex-direction: column; 
             height: 90vh; max-height: 800px; position: relative; 
             animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity; 
+            transform: translateZ(0); 
         }
         
         .close-modal-btn { 
@@ -281,6 +288,10 @@
             display: block; margin-bottom: 8px; font-size: 0.95rem; 
             color: var(--text-main); font-weight: 500; 
         }
+        
+        /* CSS Classes for Label Hints */
+        .hint-gray { color: var(--hint-gray); font-weight: 400; margin-left: 8px; font-size: 0.9rem; }
+        .hint-brown { color: var(--hint-brown); font-weight: 500; margin-left: 8px; font-size: 0.9rem; }
         
         .form-input { 
             width: 100%; padding: 12px 15px; 
@@ -443,7 +454,7 @@
 
                             <div class="form-group col-6">
                                 <label class="form-label">ชื่อ</label>
-                                <input type="text" class="form-input required-s1 sync-source" name="ชื่อ ผตห" id="nameSuspect">
+                                <input type="text" class="form-input required-s1 sync-source" name="ชื่อ ผตห" id="nameSuspect" placeholder="ไม่ต้องใส่คำนำหน้า">
                             </div>
                             <div class="form-group col-6">
                                 <label class="form-label">นามสกุล</label>
@@ -455,7 +466,7 @@
                                 <input type="text" class="form-input required-s1" name="เลขประจำตัว ผตห">
                             </div>
                             <div class="form-group col-age">
-                                <label class="form-label">อายุ (ปี)</label>
+                                <label class="form-label">อายุ</label>
                                 <input type="number" class="form-input required-s1 sync-source" name="อายุ ผตห" id="ageSuspect">
                             </div>
                             <div class="form-group col-phone">
@@ -505,7 +516,7 @@
                     <div id="step2" class="step-content">
                         <div class="form-grid">
                             <div class="form-group col-12">
-                                <label class="form-label">เลขคดี (คำตอบ เช่น xxx/25xx)</label>
+                                <label class="form-label">เลขคดี <span class="hint-gray">เช่น</span> <span class="hint-brown">99/2568</span></label>
                                 <input type="text" class="form-input required-s2" name="เลขคดี" style="width:50%;">
                             </div>
 
@@ -519,7 +530,7 @@
                             </div>
                             <div class="form-group col-log-no">
                                 <label class="form-label">ปจว ข้อ</label>
-                                <input type="text" class="form-input required-s2" name="ปจว ข้อ">
+                                <input type="number" class="form-input required-s2" name="ปจว ข้อ">
                             </div>
 
                             <div class="form-group col-12">
@@ -534,7 +545,7 @@
                                 <datalist id="listPlaces"></datalist>
                             </div>
 
-                            <!-- เขตเทศบาล (ปรับปรุงใหม่ตามตรรกะคำนำหน้า) -->
+                            <!-- เขตเทศบาล -->
                             <div class="form-group col-6">
                                 <label class="form-label">เขตเทศบาล</label>
                                 <select class="form-input required-s2" name="เขตเทศบาล" id="municipalitySelect" onchange="checkMunicipality(this)">
@@ -544,8 +555,8 @@
                                 </select>
                             </div>
                             <div class="form-group col-6" id="divMunicipalityText" style="display:none;">
-                                <label class="form-label">ชื่อเทศบาล (คำตอบ เช่น เทศบาลตำบล...)</label>
-                                <input type="text" class="form-input" name="เขตเทศบาล_other" id="municipalityText" placeholder="ระบุชื่อเทศบาล">
+                                <label class="form-label">ชื่อเทศบาล <span class="hint-gray">เช่น</span> <span class="hint-brown">เทศบาลตำบลบ้านฉัน</span></label>
+                                <input type="text" class="form-input" name="เขตเทศบาล_other" id="municipalityText">
                             </div>
                             <!-- Spacer Div -->
                             <div class="col-6" id="divMunicipalitySpacer"></div>
@@ -564,8 +575,8 @@
                                 <input type="text" class="form-input required-s2" name="รถที่ขับ">
                             </div>
                             <div class="form-group col-alcohol">
-                                <label class="form-label">ปริมาณแอลกอฮอล์ (มก.%)</label>
-                                <input type="text" class="form-input required-s2" name="แอลกอฮอล์">
+                                <label class="form-label">ปริมาณแอลกอฮอล์</label>
+                                <input type="number" class="form-input required-s2" name="แอลกอฮอล์" placeholder="มิลลิกรัมเปอร์เซ็นต์">
                             </div>
 
                             <div class="form-group col-12">
@@ -641,7 +652,7 @@
 
                                 <div class="form-group col-6">
                                     <label class="form-label">ชื่อ (นายประกัน)</label>
-                                    <input type="text" class="form-input required-bail" name="ชื่อ นปก" id="nameBailer" disabled>
+                                    <input type="text" class="form-input required-bail" name="ชื่อ นปก" id="nameBailer" disabled placeholder="ไม่ต้องใส่คำนำหน้า">
                                 </div>
                                 <div class="form-group col-6">
                                     <label class="form-label">สกุล (นายประกัน)</label>
@@ -650,7 +661,7 @@
 
                                 <div class="form-group col-6">
                                     <label class="form-label">อายุ (นายประกัน)</label>
-                                    <input type="text" class="form-input required-bail" name="อายุ นปก" id="ageBailer" disabled>
+                                    <input type="number" class="form-input required-bail" name="อายุ นปก" id="ageBailer" disabled>
                                 </div>
                                 <div class="form-group col-6">
                                     <label class="form-label">โทรศัพท์ (นายประกัน)</label>
@@ -663,12 +674,12 @@
                                 </div>
 
                                 <div class="form-group col-8">
-                                    <label class="form-label">หลักทรัพย์ที่ใช้ประกัน (คำตอบ เช่น เงินสด xx,xxx บาท)</label>
+                                    <label class="form-label">หลักทรัพย์ที่ใช้ประกัน <span class="hint-gray">เช่น</span> <span class="hint-brown">เงินสด 10,000 บาท</span></label>
                                     <input type="text" class="form-input required-bail" name="หลักทรัพย์" disabled>
                                 </div>
                                 <div class="form-group col-4">
                                     <label class="form-label">มูลค่า (บาท)</label>
-                                    <input type="text" class="form-input required-bail" name="มูลค่า" disabled>
+                                    <input type="number" class="form-input required-bail" name="มูลค่า" disabled>
                                 </div>
 
                                 <div class="form-group col-6">
