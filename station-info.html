@@ -3,155 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <!-- ====================================================================
-         [ตั้งค่าระบบ] นำ URL Web App จาก Google Apps Script มาวางที่นี่ครับ
-         ==================================================================== -->
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxedqm0PRfKD9eWlTJDpXalUd6aEmthBghP-qDRzJgyNb2p6QbSSooOTvxmbUBQA_6PVA/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
     </script>
-    <!-- ==================================================================== -->
-
     <title>แก้ไขข้อมูลสถานี - สภ.พระธาตุช่อแฮ</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="auth.js"></script>
     <style>
-        /* --- Theme Variables --- */
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-main: #1a1a1a; 
-            --text-light: #555555;
-            --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
-            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
-            --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
-            --radius-xl: 24px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --primary: #2c3e50; 
-        }
-
+        /* (CSS เหมือนเดิมของคุณทั้งหมด) */
+        :root { --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #1a1a1a; --text-light: #555555; --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%); --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08); --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15); --radius-xl: 24px; --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); --primary: #2c3e50; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Kanit', sans-serif; 
-            background: var(--bg-color); 
-            color: var(--text-main); 
-            padding-bottom: 50px;
-            
-            /* Font Rendering Optimization */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            -webkit-text-size-adjust: 100%;
-            letter-spacing: 0.3px;
-            font-weight: 400;
-        }
-
-        /* --- Animations --- */
-        @keyframes fadeUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* --- Navbar (Glassmorphism) --- */
-        nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 0px rgba(0,0,0,0.05);
-            
-            /* Performance Tuning */
-            will-change: transform;
-        }
-        .back-btn { 
-            font-size: 1.2rem; color: var(--text-main); 
-            width: 40px; height: 40px; 
-            display: flex; align-items: center; justify-content: center; 
-            border-radius: 50%; transition: var(--transition);
-            text-decoration: none; margin-right: 15px;
-        }
+        body { font-family: 'Kanit', sans-serif; background: var(--bg-color); color: var(--text-main); padding-bottom: 50px; -webkit-font-smoothing: antialiased; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 0px rgba(0,0,0,0.05); }
+        .back-btn { font-size: 1.2rem; color: var(--text-main); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); text-decoration: none; margin-right: 15px; }
         .back-btn:hover { background: #f0f2f5; transform: translateX(-3px); }
-        .page-title { 
-            font-weight: 600; font-size: 1.25rem; 
-            background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 0.5px;
-        }
-
-        .container { 
-            max-width: 800px; margin: 30px auto; padding: 0 20px; 
-            animation: fadeUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-            
-            /* Performance Tuning */
-            will-change: opacity, transform;
-        }
-
-        .form-card { 
-            background: var(--card-bg); padding: 40px; 
-            border-radius: var(--radius-xl); 
-            box-shadow: var(--shadow-soft); 
-            position: relative; 
-            border: 1px solid rgba(0,0,0,0.05);
-            
-            /* Performance Tuning: Force GPU Layer */
-            transform: translateZ(0);
-        }
-        
+        .page-title { font-weight: 600; font-size: 1.25rem; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; animation: fadeUp 0.6s forwards; }
+        .form-card { background: var(--card-bg); padding: 40px; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); position: relative; border: 1px solid rgba(0,0,0,0.05); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
         .full-width { grid-column: span 2; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } .form-card { padding: 25px; } }
-        
         .form-group { display: flex; flex-direction: column; }
         .form-label { margin-bottom: 8px; font-weight: 500; color: var(--text-main); font-size: 0.95rem; }
-        .form-input { 
-            width: 100%; padding: 12px 15px; 
-            border: 1px solid #cbd5e1; border-radius: 12px; 
-            font-family: 'Kanit'; font-size: 1rem; color: var(--text-main); 
-            background: #fff; transition: var(--transition);
-        }
+        .form-input { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; color: var(--text-main); background: #fff; transition: var(--transition); }
         .form-input:focus { border-color: #8e44ad; outline: none; box-shadow: 0 0 0 4px rgba(142, 68, 173, 0.1); }
-        
-        .loading-overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(5px);
-            border-radius: var(--radius-xl); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            z-index: 10; 
-            will-change: opacity;
-        }
+        .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
         .spinner { font-size: 2rem; color: #8e44ad; margin-bottom: 10px; }
-        
         .btn-group { display: flex; gap: 15px; margin-top: 30px; }
-        .btn { 
-            flex: 1; padding: 15px; border: none; border-radius: 50px; 
-            font-size: 1rem; cursor: pointer; transition: var(--transition); 
-            font-family: 'Kanit'; font-weight: 500; letter-spacing: 0.5px;
-            
-            /* Performance Tuning */
-            will-change: transform;
-        }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 50px; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: 'Kanit'; font-weight: 500; }
         .btn-cancel { background: #f1f5f9; color: var(--text-main); }
         .btn-cancel:hover { background: #e2e8f0; }
-        
-        .btn-save { 
-            background: var(--header-gradient); color: white; 
-            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3);
-        }
-        .btn-save:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none !important; }
+        .btn-save { background: var(--header-gradient); color: white; box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3); }
+        .btn-save:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
         .btn-save:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(142, 68, 173, 0.4); }
-        
-        /* SweetAlert Custom (Capsule) */
         .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 24px !important; }
-        .swal2-title { font-weight: 600 !important; color: var(--text-main) !important; }
-        .swal2-confirm, .swal2-cancel { border-radius: 50px !important; font-size: 1rem !important; padding: 10px 24px !important; }
-        .swal2-confirm { background: var(--header-gradient) !important; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3) !important; }
-        .swal2-cancel { background: #f1f5f9 !important; color: var(--text-main) !important; }
+        .swal2-confirm { background: var(--header-gradient) !important; border-radius: 50px !important; }
     </style>
 </head>
 <body>
@@ -167,42 +56,15 @@
             </div>
             <form id="stationForm">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">ชื่อสถานีแบบเต็ม</label>
-                        <input type="text" class="form-input" id="field0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ชื่อสถานีแบบย่อ</label>
-                        <input type="text" class="form-input" id="field1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ตำแหน่งหัวหน้าสถานีแบบเต็ม</label>
-                        <input type="text" class="form-input" id="field2">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ตำแหน่งหัวหน้าสถานีแบบย่อ</label>
-                        <input type="text" class="form-input" id="field3">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ตำบล</label>
-                        <input type="text" class="form-input" id="field4">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">อำเภอ</label>
-                        <input type="text" class="form-input" id="field5">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">จังหวัด</label>
-                        <input type="text" class="form-input" id="field6">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">รหัสไปรษณีย์</label>
-                        <input type="number" class="form-input" id="field7">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">หัวหนังสือราชการ</label>
-                        <input type="text" class="form-input" id="field8">
-                    </div>
+                    <div class="form-group"><label class="form-label">ชื่อสถานีแบบเต็ม</label><input type="text" class="form-input" id="field0"></div>
+                    <div class="form-group"><label class="form-label">ชื่อสถานีแบบย่อ</label><input type="text" class="form-input" id="field1"></div>
+                    <div class="form-group"><label class="form-label">ตำแหน่งหัวหน้าสถานีแบบเต็ม</label><input type="text" class="form-input" id="field2"></div>
+                    <div class="form-group"><label class="form-label">ตำแหน่งหัวหน้าสถานีแบบย่อ</label><input type="text" class="form-input" id="field3"></div>
+                    <div class="form-group"><label class="form-label">ตำบล</label><input type="text" class="form-input" id="field4"></div>
+                    <div class="form-group"><label class="form-label">อำเภอ</label><input type="text" class="form-input" id="field5"></div>
+                    <div class="form-group"><label class="form-label">จังหวัด</label><input type="text" class="form-input" id="field6"></div>
+                    <div class="form-group"><label class="form-label">รหัสไปรษณีย์</label><input type="number" class="form-input" id="field7"></div>
+                    <div class="form-group full-width"><label class="form-label">หัวหนังสือราชการ</label><input type="text" class="form-input" id="field8"></div>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-cancel" onclick="resetForm()">ยกเลิก</button>
@@ -230,16 +92,12 @@
         }
         function checkChanges() {
             let hasChange = false;
-            inputs.forEach((input, index) => {
-                if (input.value !== String(originalData[index] || '')) hasChange = true;
-            });
+            inputs.forEach((input, index) => { if (input.value !== String(originalData[index] || '')) hasChange = true; });
             btnSave.disabled = !hasChange;
         }
         inputs.forEach(input => { input.addEventListener('input', checkChanges); });
-        function resetForm() {
-            inputs.forEach((input, index) => { input.value = originalData[index] || ''; });
-            checkChanges();
-        }
+        function resetForm() { inputs.forEach((input, index) => { input.value = originalData[index] || ''; }); checkChanges(); }
+        
         async function saveData() {
             btnSave.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
             btnSave.disabled = true;
@@ -247,8 +105,7 @@
             try {
                 await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // แก้ CORS
                     body: JSON.stringify({ action: 'saveStation', data: newData })
                 });
                 originalData = [...newData];

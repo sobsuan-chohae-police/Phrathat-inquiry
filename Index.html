@@ -4,271 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="ระบบงานสอบสวน สภ.พระธาตุช่อแฮ อำนวยความสะดวกประชาชน">
-    <meta name="theme-color" content="#f4f7f6">
-    
     <title>งานสอบสวน สภ.พระธาตุช่อแฮ</title>
-    
-    <!-- Google Fonts: Kanit (เพิ่มน้ำหนัก 500) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <style>
-        /* --- CSS Variables --- */
         :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            
-            /* ปรับสีให้เข้มขึ้นเพื่อความคมชัด (High Contrast) */
-            --text-main: #1a1a1a; 
-            --text-light: #555555;
-            
-            /* Gradient สี: เลือดหมู -> ม่วง -> น้ำเงินลึก */
+            --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #1a1a1a; --text-light: #555555;
             --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
-            
-            /* เงาแบบ Soft Depth */
-            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
-            --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
-            
-            --radius-xl: 24px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08); --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
+            --radius-xl: 24px; --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html { height: 100%; }
-
-        body {
-            font-family: 'Kanit', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            
-            /* --- สูตรลับความคมชัด (Native App Feel) --- */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-            -webkit-text-size-adjust: 100%;
-            letter-spacing: 0.3px;
-            font-weight: 400;
-        }
-
+        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; -webkit-font-smoothing: antialiased; }
         a { text-decoration: none; color: inherit; }
-
-        /* --- Main Wrapper --- */
-        main {
-            flex: 1; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-bottom: 40px;
-        }
-
-        /* --- Hero Section --- */
-        header {
-            text-align: center;
-            padding: 60px 20px 40px;
-            max-width: 1000px;
-            margin: 0 auto;
-            animation: fadeUp 0.8s ease-out;
-            
-            /* Performance Tuning: บอก Browser ว่าส่วนนี้จะมีการขยับ */
-            will-change: transform, opacity;
-        }
-
-        .title-group h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            line-height: 1.1;
-            margin: 0;
-            letter-spacing: -0.5px;
-            
-            background: var(--header-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            
-            filter: drop-shadow(0 2px 10px rgba(142, 68, 173, 0.2));
-        }
-
-        .title-group h1:first-child {
-            margin-bottom: 5px;
-            font-size: 2.8rem;
-            opacity: 0.9;
-        }
-
-        p.subtitle {
-            font-size: 1.15rem;
-            color: var(--text-light);
-            margin-top: 25px;
-            margin-bottom: 20px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            font-weight: 300;
-        }
-
-        /* --- Cards Container --- */
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            justify-content: center;
-            animation: fadeUp 1s ease-out 0.2s backwards;
-            
-            /* Performance Tuning */
-            will-change: transform, opacity;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius-xl);
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: var(--shadow-soft);
-            transition: var(--transition);
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.8);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            
-            /* Performance Tuning: เตรียม GPU สำหรับการ Hover */
-            will-change: transform;
-            transform: translateZ(0); /* Force GPU Layer */
-        }
-
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0.8), rgba(255,255,255,0));
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: var(--shadow-hover);
-        }
-        
-        .card:hover::after { opacity: 0.3; }
-
-        .icon-box {
-            width: 80px;
-            height: 80px;
-            background: #f0f2f5;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            font-size: 2rem;
-            color: #2c3e50;
-            transition: var(--transition);
-        }
-
-        .card:hover .icon-box {
-            background: linear-gradient(135deg, #c0392b, #8e44ad);
-            color: white;
-            transform: rotate(5deg);
-        }
-
-        .card h3 {
-            margin-bottom: 12px;
-            color: var(--text-main);
-            font-size: 1.35rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .card p {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            font-weight: 400;
-        }
-
-        /* --- Footer --- */
-        footer {
-            text-align: center;
-            padding: 25px 20px;
-            color: var(--text-light);
-            font-size: 0.85rem;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            background: #fff;
-            width: 100%;
-            flex-shrink: 0;
-        }
-        
-        footer p { margin: 5px 0; }
-
-        /* --- Animations (Fade Up) --- */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Responsive Design --- */
-        @media (max-width: 768px) {
-            header { padding: 40px 20px 20px; }
-
-            .title-group h1 { font-size: 2.2rem; }
-            .title-group h1:first-child { font-size: 1.8rem; }
-
-            p.subtitle { font-size: 1rem; margin-bottom: 30px; }
-
-            .container {
-                grid-template-columns: 1fr;
-                max-width: 500px;
-                gap: 20px;
-            }
-
-            .card { padding: 30px 25px; }
-            
-            .icon-box { width: 70px; height: 70px; font-size: 1.8rem; margin-bottom: 15px; }
-        }
-
-        /* SweetAlert Customization (Capsule Style) */
-        .swal2-popup {
-            font-family: 'Kanit', sans-serif !important;
-            border-radius: 24px !important;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2) !important;
-        }
-        .swal2-title { color: var(--text-main) !important; font-weight: 600 !important; }
-        .swal2-html-container { color: var(--text-light) !important; }
-        .swal2-confirm {
-            background: var(--header-gradient) !important;
-            border-radius: 50px !important; /* Capsule */
-            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3) !important;
-            padding: 10px 25px !important;
-        }
+        main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 40px; }
+        header { text-align: center; padding: 60px 20px 40px; max-width: 1000px; margin: 0 auto; animation: fadeUp 0.8s ease-out; }
+        .title-group h1 { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margin: 0; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .title-group h1:first-child { margin-bottom: 5px; font-size: 2.8rem; opacity: 0.9; }
+        p.subtitle { font-size: 1.15rem; color: var(--text-light); margin-top: 25px; margin-bottom: 20px; font-weight: 300; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; justify-content: center; animation: fadeUp 1s ease-out 0.2s backwards; }
+        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px 30px; text-align: center; box-shadow: var(--shadow-soft); transition: var(--transition); cursor: pointer; border: 1px solid rgba(255,255,255,0.8); display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; overflow: hidden; }
+        .card:focus { outline: 3px solid #8e44ad; outline-offset: 2px; } /* Accessibility */
+        .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: var(--shadow-hover); }
+        .icon-box { width: 80px; height: 80px; background: #f0f2f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; font-size: 2rem; color: #2c3e50; transition: var(--transition); }
+        .card:hover .icon-box { background: linear-gradient(135deg, #c0392b, #8e44ad); color: white; transform: rotate(5deg); }
+        .card h3 { margin-bottom: 12px; font-size: 1.35rem; font-weight: 600; }
+        .card p { color: var(--text-light); font-size: 0.95rem; }
+        footer { text-align: center; padding: 25px 20px; color: var(--text-light); font-size: 0.85rem; border-top: 1px solid rgba(0,0,0,0.05); background: #fff; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) { .title-group h1 { font-size: 2.2rem; } .title-group h1:first-child { font-size: 1.8rem; } .container { grid-template-columns: 1fr; max-width: 500px; } }
+        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 24px !important; }
+        .swal2-confirm { background: var(--header-gradient) !important; border-radius: 50px !important; }
     </style>
 </head>
 <body>
-
     <main>
-        <!-- Hero Header -->
         <header>
             <div class="title-group">
                 <h1>งานสอบสวน</h1>
@@ -277,62 +49,38 @@
             <p class="subtitle">ระบบบริหารจัดการงานสอบสวนและอำนวยความสะดวกประชาชน<br>ทันสมัย รวดเร็ว โปร่งใส ตรวจสอบได้</p>
         </header>
 
-        <!-- Content Cards -->
         <section class="container">
-            
-            <!-- Card 1 -->
-            <a href="staff.html" class="card">
-                <div class="icon-box">
-                    <i class="fa-solid fa-user-shield"></i>
-                </div>
+            <a href="staff.html" class="card" tabindex="0">
+                <div class="icon-box"><i class="fa-solid fa-user-shield"></i></div>
                 <div>
                     <h3>ระบบสำหรับเจ้าหน้าที่</h3>
                     <p>ระบบจัดการและอำนวยความสะดวก<br>สำหรับเจ้าหน้าที่งานสอบสวน</p>
                 </div>
             </a>
-
-            <!-- Card 2 -->
-            <div class="card" onclick="showDevPopup('ตารางเวร')">
-                <div class="icon-box">
-                    <i class="fa-solid fa-calendar-days"></i>
-                </div>
+            <div class="card" onclick="showDevPopup('ตารางเวร')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('ตารางเวร')">
+                <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
                 <div>
                     <h3>ตารางเวร</h3>
                     <p>รายชื่อพนักงานสอบสวน<br>และเจ้าหน้าที่เวรสอบสวน</p>
                 </div>
             </div>
-
-            <!-- Card 3 -->
-            <div class="card" onclick="showDevPopup('รายงานผลการปฏิบัติ')">
-                <div class="icon-box">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                </div>
+            <div class="card" onclick="showDevPopup('รายงานผลการปฏิบัติ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('รายงานผลการปฏิบัติ')">
+                <div class="icon-box"><i class="fa-solid fa-clipboard-list"></i></div>
                 <div>
                     <h3>รายงานผลการปฏิบัติ</h3>
                     <p>สรุปผลการปฏิบัติงานรายวัน<br>และสถิติคดี</p>
                 </div>
             </div>
-
         </section>
     </main>
-
-    <!-- Footer -->
     <footer>
         <p>&copy; 2025 พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น</p>
         <p>เพื่ออำนวยความสะดวก และประสิทธิภาพการทำงานสูงสุด</p>
     </footer>
-
     <script>
         function showDevPopup(menuName) {
-            Swal.fire({
-                icon: 'info',
-                title: menuName,
-                text: 'ระบบส่วนนี้อยู่ระหว่างการพัฒนา',
-                confirmButtonText: 'ตกลง',
-                backdrop: `rgba(0,0,0,0.3)`
-            });
+            Swal.fire({ icon: 'info', title: menuName, text: 'ระบบส่วนนี้อยู่ระหว่างการพัฒนา', confirmButtonText: 'ตกลง' });
         }
     </script>
-
 </body>
 </html>

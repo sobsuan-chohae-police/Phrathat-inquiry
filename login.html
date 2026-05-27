@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - สภ.พระธาตุช่อแฮ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
+    
+    <!-- โหลดไลบรารี Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); width: 90%; max-width: 400px; text-align: center; }
+        .login-card h2 { color: #2c3e50; margin-bottom: 10px; font-weight: 600; }
+        .back-link { display: block; margin-top: 25px; color: #8e44ad; text-decoration: none; font-size: 0.95rem; transition: 0.3s; }
+        .back-link:hover { color: #c0392b; }
+        
+        /* จัดปุ่ม Google ให้อยู่ตรงกลาง */
+        .google-btn-wrapper { display: flex; justify-content: center; margin-top: 20px; min-height: 44px; }
+        #loadingText { color: #8e44ad; font-weight: 500; display: none; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>เข้าสู่ระบบ</h2>
+        <p style="color: #555; margin-bottom: 30px;">ระบบสำหรับเจ้าหน้าที่งานสอบสวน</p>
+        
+        <!-- ====================================================================
+             [ตั้งค่าระบบ] นำ Client ID จาก Google Cloud มาวางตรง data-client_id
+             ==================================================================== -->
+        <div id="g_id_onload"
+             data-client_id="298931412406-s91ak2nnd6hng8a225r1mkajq37m6hal.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <!-- ปุ่ม Google Sign-In -->
+        <div class="google-btn-wrapper">
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="pill"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+
+        <div id="loadingText"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังตรวจสอบสิทธิ์...</div>
+
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</a>
+    </div>
+
+    <script>
+        // ====================================================================
+        // นำ URL Web App ของ "script ตั้งค่าข้อมูล" มาวางที่นี่
+        // ====================================================================
+        const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
+
+        // ฟังก์ชันนี้จะถูกเรียกอัตโนมัติเมื่อผู้ใช้กดล็อกอิน Google สำเร็จ
+        async function handleCredentialResponse(response) {
+            const token = response.credential; // นี่คือรหัสลับที่ Google ส่งมาให้
+            
+            document.querySelector('.g_id_signin').style.display = 'none';
+            document.getElementById('loadingText').style.display = 'block';
+
+            try {
+                // ส่ง Token ไปให้ Google Script ตรวจสอบ
+                const res = await fetch(AUTH_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'verifyUser', token: token })
+                });
+                
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    // บันทึกข้อมูลลงเครื่อง
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', result.email);
+                    localStorage.setItem('userRole', result.role);
+                    
+                    Swal.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', timer: 1500, showConfirmButton: false })
+                    .then(() => { window.location.href = 'staff.html'; });
+                } else {
+                    Swal.fire('ปฏิเสธการเข้าถึง', result.message, 'error');
+                    document.querySelector('.g_id_signin').style.display = 'block';
+                    document.getElementById('loadingText').style.display = 'none';
+                }
+            } catch (error) {
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+                document.querySelector('.g_id_signin').style.display = 'block';
+                document.getElementById('loadingText').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
