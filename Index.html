@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="auth.js"></script> 
     <link rel="stylesheet" href="theme.css">
 
     <style>
@@ -18,11 +17,14 @@
         
         .title-group h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 700; line-height: 1.1; margin: 0; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .title-group h1:first-child { margin-bottom: 0px; font-size: clamp(1.8rem, 3vw, 2.5rem); opacity: 0.9; }
-        
-        /* ✨ ปรับขนาดฟอนต์ Subtitle ให้สมดุลกับข้อความใหม่ */
         p.subtitle { font-size: clamp(0.95rem, 2vw, 1.05rem); color: var(--text-light); margin-top: 0.5vh; margin-bottom: 2.5vh; font-weight: 300; line-height: 1.5; }
         
-        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; justify-content: center; max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 20px; }
+        /* ✨ ใส่ Animation กลับคืนมาให้การ์ดลอยขึ้นอย่างสมูท */
+        .grid-container { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; 
+            justify-content: center; max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 20px; 
+            animation: fadeUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) 0.2s backwards; 
+        }
         
         .card { padding: 3.5vh 25px; text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%; }
         .icon-box { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 2rem; transition: var(--transition); }
@@ -51,7 +53,6 @@
                 <h1>งานสอบสวน</h1>
                 <h1>สภ.พระธาตุช่อแฮ</h1>
             </div>
-            <!-- ✨ แก้ไขข้อความ Subtitle -->
             <p class="subtitle">ระบบบริหารจัดการงานสอบสวนแบบบูรณาการ<br>ยกระดับประสิทธิภาพการปฏิบัติงานและการให้บริการประชาชน</p>
         </header>
 
@@ -80,7 +81,7 @@
                 </div>
             </div>
             
-            <div class="card theme-purple" onclick="showDevPopup('รายงานผลการปฏิบัติ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('รายงานผลการปฏิบัติ')">
+            <div class="card theme-red" onclick="showDevPopup('รายงานผลการปฏิบัติ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('รายงานผลการปฏิบัติ')">
                 <div class="icon-box"><i class="fa-solid fa-clipboard-list"></i></div>
                 <div>
                     <h3>รายงานผลการปฏิบัติ</h3>
@@ -88,7 +89,7 @@
                 </div>
             </div>
 
-            <div class="card theme-red" onclick="showDevPopup('คำสั่ง ระเบียบ กฎหมาย')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('คำสั่ง ระเบียบ กฎหมาย')">
+            <div class="card theme-purple" onclick="showDevPopup('คำสั่ง ระเบียบ กฎหมาย')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('คำสั่ง ระเบียบ กฎหมาย')">
                 <div class="icon-box"><i class="fa-solid fa-scale-balanced"></i></div>
                 <div>
                     <h3>คำสั่ง ระเบียบ กฎหมาย</h3>
@@ -107,7 +108,6 @@
     </main>
 
     <footer>
-        <!-- ✨ แก้ไขข้อความ Footer -->
         <p>&copy; 2026 พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น</p>
         <p>ระบบสารสนเทศเพื่อสนับสนุนและเพิ่มประสิทธิภาพการปฏิบัติงาน</p>
     </footer>
