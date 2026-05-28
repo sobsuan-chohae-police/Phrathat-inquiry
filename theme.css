@@ -78,9 +78,7 @@ nav {
     background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
 }
 
-/* ==========================================================================
-   ✨ ระบบ Tooltip (ป้ายบอกชื่อตอนเอาเมาส์ชี้) แบบพรีเมียม
-   ========================================================================== */
+/* --- Tooltip --- */
 [data-tooltip] { position: relative; }
 [data-tooltip]::after {
     content: attr(data-tooltip);
@@ -95,23 +93,19 @@ nav {
     border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent var(--navy-dark) transparent;
     opacity: 0; visibility: hidden; transition: var(--transition); pointer-events: none; z-index: 1000;
 }
-/* แสดงผลเมื่อ Hover */
 [data-tooltip]:hover::after, [data-tooltip]:hover::before { opacity: 1; visibility: visible; }
 [data-tooltip]:hover::after { transform: translateX(-50%) translateY(0); }
 [data-tooltip]:hover::before { transform: translateX(-50%) translateY(0); }
 
-/* ✨ Tooltip ชิดซ้าย (กันตกขอบซ้าย) */
 [data-tooltip].tooltip-left::after { left: 0; transform: translateY(10px); }
 [data-tooltip].tooltip-left::before { left: 20px; transform: translateX(-50%) translateY(-4px); }
 [data-tooltip].tooltip-left:hover::after { transform: translateY(0); }
 [data-tooltip].tooltip-left:hover::before { transform: translateX(-50%) translateY(0); }
 
-/* ✨ Tooltip ชิดขวา (กันตกขอบขวา) */
 [data-tooltip].tooltip-right::after { left: auto; right: 0; transform: translateY(10px); }
 [data-tooltip].tooltip-right::before { left: auto; right: 20px; transform: translateX(50%) translateY(-4px); }
 [data-tooltip].tooltip-right:hover::after { transform: translateY(0); }
 [data-tooltip].tooltip-right:hover::before { transform: translateX(50%) translateY(0); }
-/* ========================================================================== */
 
 /* --- Layout Containers --- */
 .container { 
@@ -121,6 +115,7 @@ nav {
 .container-sm { max-width: 800px; }
 
 /* --- Cards --- */
+/* ✨ แก้ไข: เอา cursor: pointer ออกจากกลุ่มนี้ เพื่อไม่ให้ฟอร์มเป็นรูปมือ */
 .card, .menu-card, .form-card, .table-card {
     background: var(--card-bg);
     border-radius: var(--radius-xl);
@@ -128,12 +123,14 @@ nav {
     border: 1px solid rgba(255,255,255,0.8);
     transition: var(--transition);
     position: relative; overflow: hidden;
-    cursor: pointer; 
 }
+
+/* ✨ ให้รูปมือและ Hover Effect มีเฉพาะการ์ดเมนูเท่านั้น */
+.card, .menu-card { cursor: pointer; }
 .card:focus, .menu-card:focus { outline: 3px solid rgba(212, 175, 55, 0.5); outline-offset: 2px; }
 .card:hover, .menu-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
 
-/* --- ระบบสีไอคอน (Color Coding) --- */
+/* --- Color Coding --- */
 .theme-blue .icon-box, .theme-blue .menu-icon { color: #1d4ed8; background-color: #eff6ff; }
 .theme-green .icon-box, .theme-green .menu-icon { color: #15803d; background-color: #f0fdf4; }
 .theme-purple .icon-box, .theme-purple .menu-icon { color: #7e22ce; background-color: #faf5ff; }
@@ -142,7 +139,6 @@ nav {
 .theme-cyan .icon-box, .theme-cyan .menu-icon { color: #0369a1; background-color: #ecfeff; }
 .theme-dark .icon-box, .theme-dark .menu-icon { color: #334155; background-color: #f1f5f9; } 
 
-/* เมื่อ Hover ให้ทุกไอคอนกลับมาเป็นธีม กรมท่า-ทอง */
 .card[class*="theme-"]:hover .icon-box, 
 .menu-card[class*="theme-"]:hover .menu-icon { 
     background: var(--navy-gradient); 
