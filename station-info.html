@@ -3,31 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <!-- URL Web App ของคุณ -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
     </script>
-    
     <title>แก้ไขข้อมูลสถานี - สภ.พระธาตุช่อแฮ</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- ดึงระบบความปลอดภัยและธีมมาใช้ -->
     <script src="auth.js"></script>
     <link rel="stylesheet" href="theme.css">
-
     <style>
-        /* CSS เฉพาะการจัด Layout ของหน้านี้ */
+        /* ✨ เพิ่ม Padding ให้การ์ดกลับมาสวยงามเหมือนเดิม */
+        .form-card { padding: 40px; }
+        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px; }
         .full-width { grid-column: span 2; }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } .form-card { padding: 25px; } }
+        
+        @media (max-width: 768px) { 
+            .form-grid { grid-template-columns: 1fr; } 
+            .full-width { grid-column: span 1; } 
+            .form-card { padding: 25px; } 
+        }
         
         .form-group { display: flex; flex-direction: column; }
         .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        
+        /* ✨ ปรับปุ่มด้านล่างให้สมดุล */
         .btn-group { display: flex; gap: 15px; margin-top: 30px; }
-        .btn-group button { flex: 1; }
+        .btn-group button { flex: 1; padding: 14px; font-size: 1.05rem; }
     </style>
 </head>
 <body>
@@ -37,7 +40,6 @@
             <div class="page-title">ข้อมูลสถานีตำรวจ</div>
         </div>
     </nav>
-
     <div class="container container-sm">
         <div class="form-card">
             <div id="loading" class="loading-overlay">
@@ -63,13 +65,11 @@
             </form>
         </div>
     </div>
-
     <script>
         let originalData = [];
         const inputs = document.querySelectorAll('.form-input');
         const btnSave = document.getElementById('btnSave');
         const loading = document.getElementById('loading');
-
         async function loadData() {
             try {
                 const response = await fetch(API_URL + '?action=getStation');
@@ -79,28 +79,21 @@
                 loading.style.display = 'none';
             } catch (error) {
                 Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้', 'error');
-                loading.innerHTML = '<p style="color:var(--danger); font-weight:500;">โหลดข้อมูลไม่สำเร็จ</p>';
+                loading.innerHTML = '<p style="color:red">โหลดข้อมูลไม่สำเร็จ</p>';
             }
         }
-
         function checkChanges() {
             let hasChange = false;
             inputs.forEach((input, index) => { if (input.value !== String(originalData[index] || '')) hasChange = true; });
             btnSave.disabled = !hasChange;
         }
-
         inputs.forEach(input => { input.addEventListener('input', checkChanges); });
-
-        function resetForm() { 
-            inputs.forEach((input, index) => { input.value = originalData[index] || ''; }); 
-            checkChanges(); 
-        }
+        function resetForm() { inputs.forEach((input, index) => { input.value = originalData[index] || ''; }); checkChanges(); }
         
         async function saveData() {
             btnSave.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
             btnSave.disabled = true;
             const newData = Array.from(inputs).map(input => input.value);
-            
             try {
                 await fetch(API_URL, {
                     method: 'POST',
@@ -117,7 +110,6 @@
                 btnSave.disabled = false;
             }
         }
-
         loadData();
     </script>
 </body>
