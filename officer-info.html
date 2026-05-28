@@ -3,75 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- URL Web App ของคุณ -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
     </script>
+    
     <title>ข้อมูลเจ้าหน้าที่ - สภ.พระธาตุช่อแฮ</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    
+    <!-- ดึงระบบความปลอดภัยและธีมมาใช้ -->
     <script src="auth.js"></script>
+    <link rel="stylesheet" href="theme.css">
+
     <style>
-        /* (CSS เหมือนเดิมของคุณทั้งหมด) */
-        :root { --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #1a1a1a; --text-light: #555555; --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%); --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08); --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15); --radius-xl: 24px; --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); --primary: #2c3e50; --accent: #c0392b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Kanit', sans-serif; background: var(--bg-color); color: var(--text-main); padding-bottom: 100px; -webkit-font-smoothing: antialiased; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 0px rgba(0,0,0,0.05); }
-        .back-btn { font-size: 1.2rem; color: var(--text-main); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition); text-decoration: none; margin-right: 15px; }
-        .back-btn:hover { background: #f0f2f5; transform: translateX(-3px); }
-        .page-title { font-weight: 600; font-size: 1.25rem; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; animation: fadeUp 0.6s forwards; }
+        /* CSS เฉพาะการจัด Layout ของหน้านี้ */
         .role-section { background: var(--card-bg); padding: 30px; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.05); }
         .role-row { margin-bottom: 20px; }
         .role-label { font-size: 0.95rem; color: var(--text-main); font-weight: 500; margin-bottom: 8px; display: block; }
         .role-select { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; color: var(--text-main); background: #fff; transition: var(--transition); -webkit-appearance: none; }
-        .role-select:focus { border-color: #8e44ad; outline: none; box-shadow: 0 0 0 4px rgba(142, 68, 173, 0.1); }
-        .btn-save-roles { background: var(--header-gradient); color: white; border: none; padding: 12px 30px; border-radius: 50px; cursor: pointer; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; margin-top: 10px; transition: var(--transition); box-shadow: 0 5px 15px rgba(142, 68, 173, 0.3); }
-        .btn-save-roles:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        .role-select:focus { border-color: var(--gold-main); outline: none; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
+        
         .table-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .btn-sort { background: #fff; border: 1px solid #e0e0e0; padding: 8px 20px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.95rem; cursor: pointer; color: var(--text-main); transition: var(--transition); }
-        .btn-sort.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .table-responsive { overflow-x: auto; background: var(--card-bg); border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { background: #f8f9fa; color: var(--text-light); font-weight: 600; padding: 18px 15px; text-align: left; font-size: 0.95rem; border-bottom: 2px solid #eee; }
-        td { padding: 16px 15px; border-bottom: 1px solid #f0f2f5; font-size: 1rem; vertical-align: middle; color: var(--text-main); }
-        .action-btn { border: none; background: none; cursor: pointer; font-size: 1.15rem; padding: 6px; transition: 0.2s; margin-right: 5px; }
-        .btn-edit { color: #f39c12; } .btn-delete { color: #e74c3c; }
-        .drag-handle { cursor: grab; color: #95a5a6; font-size: 1.2rem; }
-        .fab { position: fixed; bottom: 30px; right: 30px; height: 56px; padding: 0 28px; background: var(--header-gradient); color: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.1rem; font-weight: 500; box-shadow: 0 8px 20px rgba(142, 68, 173, 0.35); cursor: pointer; transition: var(--transition); border: none; z-index: 99; font-family: 'Kanit'; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; }
-        .modal-card { background: white; width: 95%; max-width: 700px; border-radius: var(--radius-xl); padding: 35px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: popUp 0.3s; max-height: 90vh; overflow-y: auto; }
+        .btn-sort:hover { background: #f1f5f9; }
+        .btn-sort.active { background: var(--navy-main); color: white; border-color: var(--navy-main); }
+        .drag-handle { cursor: grab; color: #94a3b8; font-size: 1.2rem; }
+        .drag-handle:active { cursor: grabbing; }
+        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 5px; } .form-group.full { grid-column: span 2; }
-        .form-label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-main); font-weight: 500; }
-        .form-input { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; color: var(--text-main); transition: var(--transition); background: #fff; }
-        .btn-submit { width: 100%; padding: 12px; background: var(--header-gradient); color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: var(--transition); font-family: 'Kanit'; font-weight: 500; }
-        .btn-submit:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
-        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 24px !important; }
-        .swal2-confirm { background: var(--header-gradient) !important; border-radius: 50px !important; }
+        .form-group { margin-bottom: 5px; } 
+        .form-group.full { grid-column: span 2; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
     </style>
 </head>
 <body>
     <nav>
-        <a href="staff.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="page-title">ข้อมูลเจ้าหน้าที่</div>
+        <div class="nav-left">
+            <a href="staff.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="page-title">ข้อมูลเจ้าหน้าที่</div>
+        </div>
     </nav>
 
     <div class="container">
         <div class="role-section">
             <div class="role-row">
-                <label class="role-label"><i class="fa-solid fa-star" style="color:#f39c12; margin-right:5px;"></i> หัวหน้าสถานี</label>
+                <label class="role-label"><i class="fa-solid fa-star" style="color:var(--warning); margin-right:5px;"></i> หัวหน้าสถานี</label>
                 <select id="selectChiefStation" class="role-select"><option value="">-- เลือก --</option></select>
             </div>
             <div class="role-row">
-                <label class="role-label"><i class="fa-solid fa-magnifying-glass" style="color:#3498db; margin-right:5px;"></i> หัวหน้างานสอบสวน</label>
+                <label class="role-label"><i class="fa-solid fa-magnifying-glass" style="color:var(--primary); margin-right:5px;"></i> หัวหน้างานสอบสวน</label>
                 <select id="selectChiefInvest" class="role-select"><option value="">-- เลือก --</option></select>
             </div>
-            <button class="btn-save-roles" id="btnSaveRoles" onclick="confirmSaveRoles()" disabled><i class="fa-solid fa-save"></i> บันทึกการแก้ไขหัวหน้า</button>
+            <button class="btn-primary" id="btnSaveRoles" onclick="confirmSaveRoles()" disabled style="margin-top: 10px;"><i class="fa-solid fa-save"></i> บันทึกการแก้ไขหัวหน้า</button>
         </div>
 
         <div class="table-header-row">
@@ -83,7 +70,7 @@
             <table id="officerTable">
                 <thead>
                     <tr>
-                        <th style="width: 80px;">จัดการ</th>
+                        <th style="width: 80px; text-align: center;">จัดการ</th>
                         <th>ชื่อ-สกุล</th>
                         <th>ตำแหน่งย่อ</th>
                         <th>หน้าที่</th>
@@ -91,7 +78,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="5" style="text-align:center; padding: 20px;"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding: 20px;"><i class="fa-solid fa-circle-notch loading-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -100,7 +87,8 @@
     <button class="fab" onclick="openModal('add')"><i class="fa-solid fa-plus"></i> เพิ่มเจ้าหน้าที่</button>
 
     <div id="officerModal" class="modal-overlay">
-        <div class="modal-card">
+        <div class="modal-card" style="padding: 35px;">
+            <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
             <h3 id="modalTitle" style="margin-top:0; color:var(--text-main); margin-bottom: 25px; font-weight:600;">เพิ่มเจ้าหน้าที่</h3>
             <form id="officerForm">
                 <div class="form-grid">
@@ -120,10 +108,10 @@
                         </select>
                     </div>
                     <div class="form-group full"><label class="form-label">โทรศัพท์</label><input type="text" class="form-input required" id="inpK"></div>
-                    <div class="form-group"><label class="form-label">Email Police <small>(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpL"></div>
-                    <div class="form-group"><label class="form-label">Gmail <small>(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpM"></div>
+                    <div class="form-group"><label class="form-label">Email Police <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpL"></div>
+                    <div class="form-group"><label class="form-label">Gmail <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpM"></div>
                     
-                    <!-- เพิ่มช่องสิทธิ์ตรงนี้ -->
+                    <!-- ช่องเลือกระดับสิทธิ์ -->
                     <div class="form-group full">
                         <label class="form-label">สิทธิ์การใช้งานระบบ</label>
                         <select class="form-input required" id="inpRole">
@@ -133,8 +121,8 @@
                     </div>
                 </div>
                 <div style="display:flex; gap:15px; margin-top:25px;">
-                    <button type="button" class="btn-submit" style="background:#f1f5f9; color:var(--text-main); box-shadow:none;" onclick="closeModal()">ยกเลิก</button>
-                    <button type="button" class="btn-submit" id="btnSave" disabled onclick="saveData()">บันทึก</button>
+                    <button type="button" class="btn-secondary" style="flex:1;" onclick="closeModal()">ยกเลิก</button>
+                    <button type="button" class="btn-primary" style="flex:1;" id="btnSave" disabled onclick="saveData()">บันทึก</button>
                 </div>
             </form>
         </div>
@@ -162,7 +150,7 @@
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">ไม่พบข้อมูล</td></tr>'; return; }
+            if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-light);">ไม่พบข้อมูล</td></tr>'; return; }
             data.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.dataset.index = index; 
@@ -193,7 +181,7 @@
             try {
                 await fetch(API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // แก้ CORS
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'reorderOfficers', data: newOrderData })
                 });
                 allOfficers = newOrderData; isSortMode = false;
@@ -228,12 +216,12 @@
             const chiefStation = document.getElementById('selectChiefStation').value;
             const chiefInvest = document.getElementById('selectChiefInvest').value;
             if (chiefStation && chiefStation === chiefInvest) return Swal.fire('ข้อผิดพลาด', 'หัวหน้าสถานีและหัวหน้างานสอบสวน ต้องไม่ใช่คนเดียวกัน', 'warning');
-            Swal.fire({ title: 'ยืนยันการบันทึก?', showCancelButton: true, confirmButtonText: 'บันทึก' }).then(async (result) => {
+            Swal.fire({ title: 'ยืนยันการบันทึก?', showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
                         await fetch(API_URL, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // แก้ CORS
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ action: 'saveChiefs', chiefStation: chiefStation, chiefInvest: chiefInvest })
                         });
                         Swal.fire('สำเร็จ', 'บันทึกตำแหน่งเรียบร้อย', 'success'); setTimeout(loadData, 1000);
@@ -255,7 +243,7 @@
                 document.getElementById('inpG').value = d[6]; document.getElementById('inpH').value = d[7];
                 document.getElementById('inpI').value = d[8]; document.getElementById('inpK').value = d[10];
                 document.getElementById('inpL').value = d[11]; document.getElementById('inpM').value = d[12];
-                document.getElementById('inpRole').value = d[13] || 'เจ้าหน้าที่ทั่วไป'; // ดึงสิทธิ์
+                document.getElementById('inpRole').value = d[13] || 'เจ้าหน้าที่ทั่วไป'; 
                 originalValues = { A: d[0], B: d[1], C: d[2], D: d[3], G: d[6], H: d[7], I: d[8], K: d[10], L: d[11], M: d[12], N: d[13] || 'เจ้าหน้าที่ทั่วไป' };
             } else {
                 document.getElementById('modalTitle').innerText = 'เพิ่มเจ้าหน้าที่';
@@ -280,7 +268,7 @@
                     G: document.getElementById('inpG').value, H: document.getElementById('inpH').value,
                     I: document.getElementById('inpI').value, K: document.getElementById('inpK').value,
                     L: document.getElementById('inpL').value, M: document.getElementById('inpM').value,
-                    N: document.getElementById('inpRole').value // เช็คสิทธิ์
+                    N: document.getElementById('inpRole').value 
                 };
                 if (JSON.stringify(currentValues) !== JSON.stringify(originalValues)) isChanged = true;
             } else { isChanged = true; }
@@ -289,19 +277,19 @@
 
         async function saveData() {
             const btn = document.getElementById('btnSave');
-            btn.innerHTML = 'กำลังบันทึก...'; btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...'; btn.disabled = true;
             const dataToSend = [
                 document.getElementById('inpA').value, document.getElementById('inpB').value,
                 document.getElementById('inpC').value, document.getElementById('inpD').value,
                 document.getElementById('inpG').value, document.getElementById('inpH').value,
                 document.getElementById('inpI').value, document.getElementById('inpK').value,
                 document.getElementById('inpL').value, document.getElementById('inpM').value,
-                document.getElementById('inpRole').value // ส่งสิทธิ์ไปบันทึก
+                document.getElementById('inpRole').value 
             ];
             try {
                 await fetch(API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // แก้ CORS
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'saveOfficer', mode: currentMode, rowIndex: editIndex, data: dataToSend })
                 });
                 closeModal(); Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success'); loadData();
@@ -310,12 +298,12 @@
         }
 
         function deleteItem(index) {
-            Swal.fire({ title: 'ยืนยันการลบ?', showCancelButton: true, confirmButtonColor: '#e74c3c', confirmButtonText: 'ลบเลย' }).then(async (result) => {
+            Swal.fire({ title: 'ยืนยันการลบ?', showCancelButton: true, confirmButtonColor: '#e11d48', confirmButtonText: 'ลบเลย', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
                         await fetch(API_URL, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // แก้ CORS
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ action: 'deleteOfficer', rowIndex: index })
                         });
                         Swal.fire('ลบแล้ว!', 'ข้อมูลถูกลบเรียบร้อย', 'success'); loadData();
@@ -323,6 +311,7 @@
                 }
             });
         }
+        
         loadData();
     </script>
 </body>
