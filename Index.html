@@ -8,75 +8,110 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script> 
+    <link rel="stylesheet" href="theme.css">
+
     <style>
-        :root {
-            --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #1a1a1a; --text-light: #555555;
-            --header-gradient: linear-gradient(135deg, #c0392b 0%, #8e44ad 50%, #2c3e50 100%);
-            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08); --shadow-hover: 0 20px 50px -10px rgba(0,0,0,0.15);
-            --radius-xl: 24px; --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        body { height: 100vh; overflow-y: auto; margin: 0; padding: 0; }
+        main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 0; }
+        header { text-align: center; padding: 2vh 20px 1.5vh; max-width: 1000px; margin: 0 auto; animation: fadeUp 0.8s ease-out; }
+        
+        .title-group h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 700; line-height: 1.1; margin: 0; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .title-group h1:first-child { margin-bottom: 0px; font-size: clamp(1.8rem, 3vw, 2.5rem); opacity: 0.9; }
+        
+        /* ✨ ปรับขนาดฟอนต์ Subtitle ให้สมดุลกับข้อความใหม่ */
+        p.subtitle { font-size: clamp(0.95rem, 2vw, 1.05rem); color: var(--text-light); margin-top: 0.5vh; margin-bottom: 2.5vh; font-weight: 300; line-height: 1.5; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; justify-content: center; max-width: 1100px; margin: 0 auto; width: 100%; padding: 0 20px; }
+        
+        .card { padding: 3.5vh 25px; text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%; }
+        .icon-box { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 2rem; transition: var(--transition); }
+        .card h3 { margin-bottom: 8px; font-size: 1.4rem; font-weight: 600; } 
+        .card p { color: var(--text-light); font-size: 1.05rem; line-height: 1.4; margin: 0; } 
+        
+        footer { text-align: center; padding: 12px 20px; color: var(--text-light); font-size: 0.85rem; border-top: 1px solid #f1f5f9; background: #fff; }
+        footer p { margin: 2px 0; }
+        
+        @media (max-width: 768px) { 
+            body { height: auto; } 
+            header { padding: 5vh 20px 3vh; }
+            .title-group h1 { font-size: 2.2rem; } 
+            .title-group h1:first-child { font-size: 1.8rem; } 
+            .grid-container { grid-template-columns: 1fr; max-width: 400px; gap: 15px; } 
+            .card { padding: 25px 20px; }
+            footer { margin-top: 4vh; }
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { height: 100%; }
-        body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; -webkit-font-smoothing: antialiased; }
-        a { text-decoration: none; color: inherit; }
-        main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 40px; }
-        header { text-align: center; padding: 60px 20px 40px; max-width: 1000px; margin: 0 auto; animation: fadeUp 0.8s ease-out; }
-        .title-group h1 { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margin: 0; background: var(--header-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .title-group h1:first-child { margin-bottom: 5px; font-size: 2.8rem; opacity: 0.9; }
-        p.subtitle { font-size: 1.15rem; color: var(--text-light); margin-top: 25px; margin-bottom: 20px; font-weight: 300; }
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; justify-content: center; animation: fadeUp 1s ease-out 0.2s backwards; }
-        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 40px 30px; text-align: center; box-shadow: var(--shadow-soft); transition: var(--transition); cursor: pointer; border: 1px solid rgba(255,255,255,0.8); display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; overflow: hidden; }
-        .card:focus { outline: 3px solid #8e44ad; outline-offset: 2px; } /* Accessibility */
-        .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: var(--shadow-hover); }
-        .icon-box { width: 80px; height: 80px; background: #f0f2f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; font-size: 2rem; color: #2c3e50; transition: var(--transition); }
-        .card:hover .icon-box { background: linear-gradient(135deg, #c0392b, #8e44ad); color: white; transform: rotate(5deg); }
-        .card h3 { margin-bottom: 12px; font-size: 1.35rem; font-weight: 600; }
-        .card p { color: var(--text-light); font-size: 0.95rem; }
-        footer { text-align: center; padding: 25px 20px; color: var(--text-light); font-size: 0.85rem; border-top: 1px solid rgba(0,0,0,0.05); background: #fff; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) { .title-group h1 { font-size: 2.2rem; } .title-group h1:first-child { font-size: 1.8rem; } .container { grid-template-columns: 1fr; max-width: 500px; } }
-        .swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: 24px !important; }
-        .swal2-confirm { background: var(--header-gradient) !important; border-radius: 50px !important; }
     </style>
 </head>
 <body>
+
     <main>
         <header>
             <div class="title-group">
                 <h1>งานสอบสวน</h1>
                 <h1>สภ.พระธาตุช่อแฮ</h1>
             </div>
-            <p class="subtitle">ระบบบริหารจัดการงานสอบสวนและอำนวยความสะดวกประชาชน<br>ทันสมัย รวดเร็ว โปร่งใส ตรวจสอบได้</p>
+            <!-- ✨ แก้ไขข้อความ Subtitle -->
+            <p class="subtitle">ระบบบริหารจัดการงานสอบสวนแบบบูรณาการ<br>ยกระดับประสิทธิภาพการปฏิบัติงานและการให้บริการประชาชน</p>
         </header>
 
-        <section class="container">
-            <a href="staff.html" class="card" tabindex="0">
+        <section class="grid-container">
+            <a href="staff.html" class="card theme-blue" tabindex="0">
                 <div class="icon-box"><i class="fa-solid fa-user-shield"></i></div>
                 <div>
-                    <h3>ระบบสำหรับเจ้าหน้าที่</h3>
+                    <h3>สำหรับเจ้าหน้าที่งานสอบสวน</h3>
                     <p>ระบบจัดการและอำนวยความสะดวก<br>สำหรับเจ้าหน้าที่งานสอบสวน</p>
                 </div>
             </a>
-            <div class="card" onclick="showDevPopup('ตารางเวร')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('ตารางเวร')">
-                <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
+
+            <div class="card theme-orange" onclick="showDevPopup('สำหรับเจ้าหน้าที่งานอื่นๆ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('สำหรับเจ้าหน้าที่งานอื่นๆ')">
+                <div class="icon-box"><i class="fa-solid fa-users-gear"></i></div>
                 <div>
-                    <h3>ตารางเวร</h3>
-                    <p>รายชื่อพนักงานสอบสวน<br>และเจ้าหน้าที่เวรสอบสวน</p>
+                    <h3>สำหรับเจ้าหน้าที่งานอื่นๆ</h3>
+                    <p>ระบบอำนวยความสะดวก<br>สำหรับสายงานอื่นๆ ในสถานี</p>
                 </div>
             </div>
-            <div class="card" onclick="showDevPopup('รายงานผลการปฏิบัติ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('รายงานผลการปฏิบัติ')">
+            
+            <div class="card theme-green" onclick="showDevPopup('ตารางเวรงานสอบสวน')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('ตารางเวรงานสอบสวน')">
+                <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
+                <div>
+                    <h3>ตารางเวรงานสอบสวน</h3>
+                    <p>พนักงานสอบสวนและ<br>เจ้าหน้าที่เวรสอบสวน</p>
+                </div>
+            </div>
+            
+            <div class="card theme-purple" onclick="showDevPopup('รายงานผลการปฏิบัติ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('รายงานผลการปฏิบัติ')">
                 <div class="icon-box"><i class="fa-solid fa-clipboard-list"></i></div>
                 <div>
                     <h3>รายงานผลการปฏิบัติ</h3>
                     <p>สรุปผลการปฏิบัติงานรายวัน<br>และสถิติคดี</p>
                 </div>
             </div>
+
+            <div class="card theme-red" onclick="showDevPopup('คำสั่ง ระเบียบ กฎหมาย')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('คำสั่ง ระเบียบ กฎหมาย')">
+                <div class="icon-box"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div>
+                    <h3>คำสั่ง ระเบียบ กฎหมาย</h3>
+                    <p>รวบรวมข้อกฎหมายและ<br>ระเบียบปฏิบัติที่เกี่ยวข้อง</p>
+                </div>
+            </div>
+
+            <div class="card theme-dark" onclick="showDevPopup('อื่นๆ')" tabindex="0" onkeypress="if(event.key==='Enter') showDevPopup('อื่นๆ')">
+                <div class="icon-box"><i class="fa-solid fa-layer-group"></i></div>
+                <div>
+                    <h3>อื่นๆ</h3>
+                    <p>ระบบและเครื่องมือเพิ่มเติม<br>ที่อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </div>
         </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น</p>
-        <p>เพื่ออำนวยความสะดวก และประสิทธิภาพการทำงานสูงสุด</p>
+        <!-- ✨ แก้ไขข้อความ Footer -->
+        <p>&copy; 2026 พัฒนาโดย พ.ต.ท.อมร ขว้างแป้น</p>
+        <p>ระบบสารสนเทศเพื่อสนับสนุนและเพิ่มประสิทธิภาพการปฏิบัติงาน</p>
     </footer>
+
     <script>
         function showDevPopup(menuName) {
             Swal.fire({ icon: 'info', title: menuName, text: 'ระบบส่วนนี้อยู่ระหว่างการพัฒนา', confirmButtonText: 'ตกลง' });
