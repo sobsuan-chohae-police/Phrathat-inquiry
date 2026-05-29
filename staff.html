@@ -17,7 +17,7 @@
             cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
             transition: var(--transition); text-decoration: none;
-            flex-shrink: 0; /* ป้องกันปุ่มถูกบีบ */
+            flex-shrink: 0; 
         }
         .nav-btn i { transition: var(--transition); }
         
@@ -32,13 +32,11 @@
         .btn-back:hover { color: var(--navy-main); }
         .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
         
-        /* ✨ 1. ให้กลุ่มฝั่งซ้ายยืดหยุ่นได้ แต่ไม่เกินพื้นที่ของตัวเอง */
         .nav-left {
             flex: 1; 
-            min-width: 0; /* เวทมนตร์ของ Flexbox ที่ทำให้ข้อความข้างในตัดคำได้ */
+            min-width: 0; 
         }
         
-        /* ✨ 2. ชื่อหน้าชิดซ้าย ถ้าจอมือถือเล็กมากแล้วชื่อยาว จะมี ... อัตโนมัติ */
         .page-title {
             white-space: nowrap; 
             overflow: hidden;
@@ -46,7 +44,6 @@
             display: block; 
         }
         
-        /* ปรับลดขนาดฟอนต์บนมือถือนิดหน่อยให้ดูสวยงาม */
         @media (max-width: 768px) {
             .page-title { font-size: 1.15rem; }
         }
@@ -77,15 +74,15 @@
 <body>
     <nav>
         <div class="nav-left">
-            <a href="index.html" class="nav-btn btn-back tooltip-left" data-tooltip="กลับหน้าหลัก">
+            <a href="index.html" class="nav-btn btn-back">
                 <i class="fa-solid fa-chevron-left"></i>
             </a>
             <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
         </div>
         
         <div class="nav-right">
-            <button class="nav-btn btn-settings tooltip-right" id="settingsBtn" onclick="toggleModal(true)" style="display: none;" data-tooltip="ตั้งค่าระบบ"><i class="fa-solid fa-gear"></i></button>
-            <button class="nav-btn btn-logout tooltip-right" onclick="logout()" data-tooltip="ออกจากระบบ"><i class="fa-solid fa-power-off"></i></button>
+            <button class="nav-btn btn-settings" id="settingsBtn" onclick="toggleModal(true)" style="display: none;"><i class="fa-solid fa-gear"></i></button>
+            <button class="nav-btn btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i></button>
         </div>
     </nav>
 
