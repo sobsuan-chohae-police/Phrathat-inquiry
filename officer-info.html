@@ -3,28 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- URL Web App ของคุณ -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
     </script>
+    
     <title>ข้อมูลเจ้าหน้าที่ - สภ.พระธาตุช่อแฮ</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    
+    <!-- ดึงระบบความปลอดภัยและธีมมาใช้ -->
     <script src="auth.js"></script>
     <link rel="stylesheet" href="theme.css">
+
     <style>
+        /* CSS เฉพาะการจัด Layout ของหน้านี้ */
         .role-section { background: var(--card-bg); padding: 30px; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.05); }
         .role-row { margin-bottom: 20px; }
         .role-label { font-size: 0.95rem; color: var(--text-main); font-weight: 500; margin-bottom: 8px; display: block; }
         .role-select { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; color: var(--text-main); background: #fff; transition: var(--transition); -webkit-appearance: none; }
         .role-select:focus { border-color: var(--gold-main); outline: none; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
+        
         .table-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .btn-sort { background: #fff; border: 1px solid #e0e0e0; padding: 8px 20px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.95rem; cursor: pointer; color: var(--text-main); transition: var(--transition); }
+        .btn-sort:hover { background: #f1f5f9; }
         .btn-sort.active { background: var(--navy-main); color: white; border-color: var(--navy-main); }
-        .drag-handle { cursor: grab; color: #95a5a6; font-size: 1.2rem; }
+        .drag-handle { cursor: grab; color: #94a3b8; font-size: 1.2rem; }
+        .drag-handle:active { cursor: grabbing; }
+        
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 5px; } .form-group.full { grid-column: span 2; }
+        .form-group { margin-bottom: 5px; } 
+        .form-group.full { grid-column: span 2; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
     </style>
 </head>
@@ -66,7 +78,15 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="5" style="text-align:center; padding: 20px;"><i class="fa-solid fa-circle-notch loading-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
+                    <!-- ✨ เปลี่ยนมาใช้ Premium Loader -->
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 40px;">
+                            <div class="premium-loader-container">
+                                <div class="premium-loader"></div>
+                                <div class="premium-loader-text">กำลังโหลดข้อมูล...</div>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -75,7 +95,6 @@
     <button class="fab" onclick="openModal('add')"><i class="fa-solid fa-plus"></i> เพิ่มเจ้าหน้าที่</button>
 
     <div id="officerModal" class="modal-overlay">
-        <!-- ✨ แก้ไข: เปลี่ยน style="padding: 35px;" เป็นคลาส modal-padded -->
         <div class="modal-card modal-padded">
             <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
             <h3 id="modalTitle" style="margin-top:0; color:var(--text-main); margin-bottom: 25px; font-weight:600;">เพิ่มเจ้าหน้าที่</h3>
@@ -100,6 +119,7 @@
                     <div class="form-group"><label class="form-label">Email Police <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpL"></div>
                     <div class="form-group"><label class="form-label">Gmail <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpM"></div>
                     
+                    <!-- ช่องเลือกระดับสิทธิ์ -->
                     <div class="form-group full">
                         <label class="form-label">สิทธิ์การใช้งานระบบ</label>
                         <select class="form-input required" id="inpRole">
@@ -138,7 +158,10 @@
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-light);">ไม่พบข้อมูล</td></tr>'; return; }
+            if (data.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color:var(--text-light);">ไม่พบข้อมูล</td></tr>'; 
+                return; 
+            }
             data.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.dataset.index = index; 
@@ -153,7 +176,8 @@
             const btnSort = document.getElementById('btnSort');
             const tbody = document.getElementById('tableBody');
             if (isSortMode) {
-                btnSort.classList.add('active'); btnSort.innerHTML = '<i class="fa-solid fa-check"></i> บันทึกการจัดเรียง';
+                btnSort.classList.add('active'); 
+                btnSort.innerHTML = '<i class="fa-solid fa-check"></i> บันทึกการจัดเรียง';
                 renderTable(allOfficers); 
                 sortableInstance = new Sortable(tbody, { handle: '.drag-handle', animation: 150 });
             } else { saveReorder(); }
@@ -161,7 +185,8 @@
 
         async function saveReorder() {
             const btnSort = document.getElementById('btnSort');
-            btnSort.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
+            // ✨ เปลี่ยนไอคอนให้หมุน แต่ตัวหนังสือไม่หมุน
+            btnSort.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 8px;"></i>กำลังบันทึก...';
             const rows = document.querySelectorAll('#tableBody tr');
             const newOrderData = [];
             rows.forEach(row => { newOrderData.push(allOfficers[row.dataset.index]); });
@@ -173,11 +198,18 @@
                     body: JSON.stringify({ action: 'reorderOfficers', data: newOrderData })
                 });
                 allOfficers = newOrderData; isSortMode = false;
-                btnSort.classList.remove('active'); btnSort.innerHTML = '<i class="fa-solid fa-sort"></i> จัดเรียง';
+                btnSort.classList.remove('active'); 
+                btnSort.innerHTML = '<i class="fa-solid fa-sort"></i> จัดเรียง';
                 if (sortableInstance) sortableInstance.destroy();
                 renderTable(allOfficers);
                 Swal.fire({ icon: 'success', title: 'จัดเรียงเรียบร้อย', timer: 1500, showConfirmButton: false });
-            } catch (err) { Swal.fire('Error', 'จัดเรียงไม่สำเร็จ', 'error'); isSortMode = false; renderTable(allOfficers); }
+            } catch (err) { 
+                Swal.fire('Error', 'จัดเรียงไม่สำเร็จ', 'error'); 
+                isSortMode = false; 
+                btnSort.classList.remove('active'); 
+                btnSort.innerHTML = '<i class="fa-solid fa-sort"></i> จัดเรียง';
+                renderTable(allOfficers); 
+            }
         }
 
         function renderDropdowns(data, roles) {
@@ -265,7 +297,9 @@
 
         async function saveData() {
             const btn = document.getElementById('btnSave');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...'; btn.disabled = true;
+            // ✨ เปลี่ยนไอคอนให้หมุน แต่ตัวหนังสือไม่หมุน
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 8px;"></i>กำลังบันทึก...'; 
+            btn.disabled = true;
             const dataToSend = [
                 document.getElementById('inpA').value, document.getElementById('inpB').value,
                 document.getElementById('inpC').value, document.getElementById('inpD').value,
