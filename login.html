@@ -7,6 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="auth.js"></script>
+    
+    <script>
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.replace('staff.html');
+        }
+    </script>
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="theme.css">
 
@@ -18,11 +25,9 @@
             width: 90%; 
             max-width: 420px; 
             text-align: center; 
-            /* ✨ บังคับให้เมาส์กลับเป็นลูกศรปกติ ไม่ใช่รูปมือ */
             cursor: default !important; 
         }
         
-        /* ✨ ยกเลิกเอฟเฟกต์การลอยตัวและการเปลี่ยนเงาเมื่อเอาเมาส์วาง */
         .login-card:hover {
             transform: none !important;
             box-shadow: var(--shadow-soft) !important;
@@ -30,7 +35,6 @@
         
         .login-card h2 { color: var(--text-main); margin-bottom: 10px; font-weight: 600; font-size: 1.8rem; }
         
-        /* ลิงก์กลับหน้าหลัก (เมาส์จะเป็นรูปมือแค่ตรงนี้) */
         .back-link { display: inline-block; margin-top: 30px; color: var(--text-light); font-size: 0.95rem; transition: var(--transition); cursor: pointer; }
         .back-link:hover { color: var(--navy-main); transform: translateX(-5px); } 
         
@@ -68,7 +72,6 @@
         async function handleCredentialResponse(response) {
             const token = response.credential; 
             
-            // ซ่อนปุ่ม Google และโชว์ Premium Loader
             document.getElementById('googleBtnWrapper').style.display = 'none';
             document.getElementById('loadingText').style.display = 'flex';
 
@@ -85,7 +88,10 @@
                     localStorage.setItem('userRole', result.role);
                     
                     Swal.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', timer: 1500, showConfirmButton: false })
-                    .then(() => { window.location.href = 'staff.html'; });
+                    .then(() => { 
+                        // ✨ 2. Replace State: ใช้ .replace() เพื่อไม่ให้เบราว์เซอร์จำหน้า Login ไว้ในประวัติการย้อนกลับ
+                        window.location.replace('staff.html'); 
+                    });
                 } else {
                     Swal.fire('ปฏิเสธการเข้าถึง', result.message, 'error');
                     document.getElementById('googleBtnWrapper').style.display = 'flex';
