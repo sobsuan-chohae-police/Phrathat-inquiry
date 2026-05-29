@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- ✨ แก้ไข Title -->
     <title>สำหรับเจ้าหน้าที่งานสอบสวน</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -38,7 +37,6 @@
         .menu-card:hover .menu-arrow { color: var(--gold-dark); transform: translateX(5px); }
         
         /* Modal Settings */
-        .modal-content { padding: 30px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
         .modal-header h3 { font-size: 1.3rem; font-weight: 600; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .menu-link { display: flex; align-items: center; padding: 15px; background: #f8fafc; border-radius: 16px; margin-bottom: 12px; transition: var(--transition); border: 1px solid transparent; font-weight: 500;}
@@ -50,7 +48,6 @@
     <nav>
         <div class="nav-left">
             <a href="index.html" class="nav-btn btn-home tooltip-left" data-tooltip="กลับหน้าหลัก"><i class="fa-solid fa-house"></i></a>
-            <!-- ✨ แก้ไขชื่อหน้าเว็บตรงนี้ -->
             <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
         </div>
         <div class="nav-right">
@@ -72,9 +69,9 @@
         </a>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settingsModal" class="modal-overlay" onclick="closeOnOutside(event)">
-        <div class="modal-card modal-content" style="max-width: 400px; height: auto;">
+        <!-- ✨ แก้ไข: ใช้คลาส modal-padded แทนการเขียน style ตรงๆ -->
+        <div class="modal-card modal-padded" style="max-width: 400px; height: auto;">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-gear"></i> ตั้งค่าข้อมูล</h3>
                 <button class="close-modal-btn" onclick="toggleModal(false)"><i class="fa-solid fa-xmark"></i></button>
