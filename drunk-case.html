@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#f8fafc">
     <title>ฟ้องวาจาเมาขับ</title>
     
-    <!-- URL Web App ของระบบเมาขับ (คนละตัวกับระบบตั้งค่า) -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbx5HhnBSMXijd62iI_ji0zA1Dko9ZJGwTgDuOb3ItgPsrwtDUgV73Y08g1RjjXZtHBb/exec';
     </script>
@@ -18,7 +17,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
     
-    <!-- ดึงระบบความปลอดภัยและธีมมาใช้ -->
     <script src="auth.js"></script>
     <link rel="stylesheet" href="theme.css">
 
@@ -26,6 +24,40 @@
         /* ==========================================================================
            CSS เฉพาะของหน้าระบบเมาขับ (ส่วนที่เหลือดึงจาก theme.css หมดแล้ว)
            ========================================================================== */
+
+        /* --- ✨ 1. ชุดคำสั่ง Navbar ก๊อปปี้มาจากหน้า Staff เพื่อความเป๊ะ 100% --- */
+        .nav-btn { 
+            background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); 
+            cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: var(--transition); text-decoration: none;
+            flex-shrink: 0; 
+        }
+        .nav-btn i { transition: var(--transition); }
+        
+        .btn-back {
+            background: transparent !important; 
+            color: var(--text-main);
+            font-size: 1.3rem; 
+            width: auto; 
+            height: auto;
+            padding: 5px 15px 5px 0; 
+        }
+        .btn-back:hover { color: var(--navy-main); }
+        .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
+        
+        .nav-left { flex: 1; min-width: 0; }
+        
+        .page-title {
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            display: block; 
+        }
+        
+        @media (max-width: 768px) {
+            .page-title { font-size: 1.15rem; }
+        }
 
         /* --- ไอคอนเอกสารในตาราง --- */
         .doc-icon { font-size: 1.4rem; cursor: pointer; text-decoration: none; color: var(--text-main); display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; transition: var(--transition); opacity: 0.8; }
@@ -54,7 +86,6 @@
         .col-12 { grid-column: span 12; } .col-8 { grid-column: span 8; } .col-6 { grid-column: span 6; } .col-4 { grid-column: span 4; } .col-3 { grid-column: span 3; }
         .col-id { grid-column: span 6; } .col-age { grid-column: span 2; } .col-phone { grid-column: span 4; } .col-date-rec { grid-column: span 6; } .col-time-rec { grid-column: span 4; } .col-log-no { grid-column: span 2; } .col-vehicle { grid-column: span 8; } .col-alcohol { grid-column: span 4; }
         
-        /* ✨ ปรับลด Padding ของ Modal บนมือถือให้มีพื้นที่พิมพ์เยอะขึ้น */
         @media (max-width: 768px) { 
             .col-6, .col-4, .col-3, .col-8, .col-id, .col-age, .col-phone, .col-date-rec, .col-time-rec, .col-log-no, .col-vehicle, .col-alcohol { grid-column: span 12 !important; } 
             .modal-body { padding: 20px 15px; }
@@ -87,9 +118,12 @@
 
     <nav>
         <div class="nav-left">
-            <a href="staff.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            <a href="staff.html" class="nav-btn btn-back">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
             <span class="page-title">ฟ้องวาจาเมาขับ</span>
         </div>
+        <div class="nav-right" style="width: 42px; height: 42px; visibility: hidden;"></div>
     </nav>
 
     <div class="container">
@@ -111,7 +145,6 @@
                     <tbody id="tableBody">
                         <tr>
                             <td colspan="8" style="text-align:center; padding:40px;">
-                                <!-- ✨ เปลี่ยนมาใช้ Premium Loader -->
                                 <div class="premium-loader-container">
                                     <div class="premium-loader"></div>
                                     <div class="premium-loader-text">กำลังโหลดข้อมูล...</div>
@@ -135,7 +168,6 @@
         <i class="fa-solid fa-plus"></i> เพิ่มคดี
     </button>
 
-    <!-- Modal Form -->
     <div id="caseModal" class="modal-overlay">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -149,7 +181,6 @@
             <div class="modal-body" id="modalBody">
                 <form id="caseForm">
                     
-                    <!-- STEP 1: ข้อมูลผู้ต้องหา -->
                     <div id="step1" class="step-content active">
                         <div class="form-grid">
                             <div class="form-group col-12">
@@ -226,7 +257,6 @@
                         </div>
                     </div>
 
-                    <!-- STEP 2: ข้อมูลคดี -->
                     <div id="step2" class="step-content">
                         <div class="form-grid">
                             <div class="form-group col-12">
@@ -324,7 +354,6 @@
                         </div>
                     </div>
 
-                    <!-- STEP 3: ประกันตัว -->
                     <div id="step3" class="step-content">
                         <div class="form-grid">
                             <div class="form-group col-12">
