@@ -20,10 +20,11 @@
     <style>
         body { justify-content: center; align-items: center; }
         
+        /* ✨ 1. ปรับขนาดการ์ดให้ใหญ่และสมส่วนขึ้น */
         .login-card { 
-            padding: 50px 40px; 
+            padding: 60px 40px; /* เพิ่มพื้นที่ด้านบน/ล่างให้ดูโปร่งขึ้น */
             width: 90%; 
-            max-width: 420px; 
+            max-width: 480px; /* ขยายความกว้างสูงสุดเป็น 480px */
             text-align: center; 
             cursor: default !important; 
         }
@@ -33,12 +34,38 @@
             box-shadow: var(--shadow-soft) !important;
         }
         
-        .login-card h2 { color: var(--text-main); margin-bottom: 10px; font-weight: 600; font-size: 1.8rem; }
+        .login-card h2 { 
+            color: var(--text-main); 
+            margin-bottom: 15px; 
+            font-weight: 600; 
+            font-size: 2.2rem; /* ขยายตัวอักษรหัวข้อให้รับกับขนาดการ์ด */
+        }
         
-        .back-link { display: inline-block; margin-top: 30px; color: var(--text-light); font-size: 0.95rem; transition: var(--transition); cursor: pointer; }
+        .login-card p {
+            font-size: 1.05rem; /* ขยายตัวอักษรคำอธิบาย */
+        }
+        
+        .back-link { display: inline-block; margin-top: 35px; color: var(--text-light); font-size: 1rem; transition: var(--transition); cursor: pointer; }
         .back-link:hover { color: var(--navy-main); transform: translateX(-5px); } 
         
-        .google-btn-wrapper { display: flex; justify-content: center; margin-top: 30px; min-height: 44px; }
+        /* ✨ 2. ล็อกพื้นที่และซ่อนการกระพริบของปุ่ม Google */
+        .google-btn-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            margin-top: 35px; 
+            height: 44px; /* ล็อกความสูงให้พอดีกับปุ่ม Google เสมอ ป้องกันการกระตุกแนวตั้ง */
+            width: 100%;
+            /* ใช้ Animation หน่วงเวลาซ่อนปุ่มไว้เสี้ยววินาที ให้ Google สลับข้อความให้เสร็จก่อนโชว์ */
+            animation: smoothRender 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes smoothRender {
+            0% { opacity: 0; }
+            40% { opacity: 0; } /* ซ่อนไว้ช่วงที่ Google กำลังโหลดดึงข้อมูลบัญชี */
+            100% { opacity: 1; } /* เฟดอินขึ้นมาอย่างนุ่มนวล */
+        }
     </style>
 </head>
 <body>
@@ -55,7 +82,15 @@
         </div>
 
         <div class="google-btn-wrapper" id="googleBtnWrapper">
-            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+            <div class="g_id_signin" 
+                 data-type="standard" 
+                 data-shape="pill" 
+                 data-theme="outline" 
+                 data-text="signin_with" 
+                 data-size="large" 
+                 data-logo_alignment="left"
+                 data-width="300">
+            </div>
         </div>
 
         <div id="loadingText" class="premium-loader-container" style="display: none; margin-top: 20px;">
@@ -89,7 +124,6 @@
                     
                     Swal.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', timer: 1500, showConfirmButton: false })
                     .then(() => { 
-                        // ✨ 2. Replace State: ใช้ .replace() เพื่อไม่ให้เบราว์เซอร์จำหน้า Login ไว้ในประวัติการย้อนกลับ
                         window.location.replace('staff.html'); 
                     });
                 } else {
