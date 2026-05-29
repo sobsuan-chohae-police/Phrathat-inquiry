@@ -20,15 +20,36 @@
         }
         .nav-btn i { transition: var(--transition); }
         
-        .btn-home:hover { background: var(--gold-light); color: var(--gold-dark); }
-        .btn-home:hover i { transform: translateX(4px); }
+        /* ✨ 1. ปุ่ม Back สไตล์มินิมอล ไร้พื้นหลัง */
+        .btn-back {
+            background: transparent !important; /* ยกเลิกพื้นหลังวงกลม */
+            color: var(--text-main);
+            font-size: 1.3rem; /* ขนาดไอคอนพอดีสายตา */
+            width: auto; 
+            height: auto;
+            padding: 5px 15px 5px 0; /* เพิ่มพื้นที่สัมผัส (Hitbox) ให้กดง่ายแม้อยู่ในมือถือ */
+        }
+        .btn-back:hover {
+            color: var(--navy-main); /* เปลี่ยนสีเมื่อเมาส์ชี้ */
+        }
+        .btn-back:hover i {
+            transform: translateX(-5px) scaleX(1.1); /* ลูกเล่น: เลื่อนไปทางซ้ายและยืดตัวนิดๆ */
+        }
+        
+        /* ✨ 2. บังคับชื่อหน้าเว็บให้อยู่กึ่งกลางเป๊ะๆ */
+        .page-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap; /* ป้องกันข้อความตกบรรทัดในจอมือถือที่แคบมากๆ */
+        }
         
         .btn-settings:hover { background: var(--gold-light); color: var(--gold-dark); }
         .btn-settings:hover i { transform: rotate(90deg); }
         
         .btn-logout { color: var(--danger); background: #fff1f2; }
         .btn-logout:hover { background: var(--danger); color: white; }
-        .btn-logout:hover i { transform: scale(1.15); } /* ซูมเข้านิดหน่อยตามต้องการ */
+        .btn-logout:hover i { transform: scale(1.15); }
         
         .section-label { font-size: 1rem; color: var(--text-light); margin-bottom: 20px; font-weight: 500; }
         .menu-card { padding: 25px; display: flex; align-items: center; margin-bottom: 20px; }
@@ -49,12 +70,15 @@
 <body>
     <nav>
         <div class="nav-left">
-            <a href="index.html" class="nav-btn btn-home tooltip-left" data-tooltip="กลับหน้าหลัก"><i class="fa-solid fa-arrow-right"></i></a>
-            <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
+            <a href="index.html" class="nav-btn btn-back tooltip-left" data-tooltip="กลับหน้าหลัก">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
         </div>
+        
+        <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
+        
         <div class="nav-right">
             <button class="nav-btn btn-settings tooltip-right" id="settingsBtn" onclick="toggleModal(true)" style="display: none;" data-tooltip="ตั้งค่าระบบ"><i class="fa-solid fa-gear"></i></button>
-            
             <button class="nav-btn btn-logout tooltip-right" onclick="logout()" data-tooltip="ออกจากระบบ"><i class="fa-solid fa-power-off"></i></button>
         </div>
     </nav>
@@ -90,7 +114,6 @@
             modal.style.display = show ? 'flex' : 'none';
         }
         function closeOnOutside(event) { if (event.target.id === 'settingsModal') toggleModal(false); }
-        // ฟังก์ชัน customLogout() ถูกลบออกไป เพราะเราเรียกใช้งานจาก auth.js แทนแล้วครับ
     </script>
 </body>
 </html>
