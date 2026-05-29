@@ -24,11 +24,23 @@ function checkAuth() {
     });
 }
 
+// ✨ อัปเกรด: เพิ่มการถามยืนยันก่อนออกจากระบบ
 function logout() {
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userRole');
-    window.location.href = 'index.html'; // ออกจากระบบแล้วกลับไปหน้าแรก
+    Swal.fire({
+        title: 'ออกจากระบบ?',
+        text: "คุณต้องการออกจากระบบใช่หรือไม่?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ใช่, ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            window.location.href = 'index.html'; // ออกจากระบบแล้วกลับไปหน้าแรก
+        }
+    });
 }
 
 // รันเช็คทันทีที่โหลดไฟล์นี้
