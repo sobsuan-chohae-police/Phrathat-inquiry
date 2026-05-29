@@ -124,6 +124,7 @@ nav {
     border: 1px solid rgba(255,255,255,0.8);
     transition: var(--transition);
     position: relative; overflow: hidden;
+    color: var(--text-main); /* ✨ ล็อกสีข้อความไว้เป็นสีหลักเสมอ ป้องกันอุปกรณ์อื่นดึงสีไปเปลี่ยน */
 }
 .card, .menu-card { cursor: pointer; }
 .card:focus, .menu-card:focus { outline: 3px solid rgba(212, 175, 55, 0.5); outline-offset: 2px; }
@@ -264,26 +265,28 @@ div:where(.swal2-container) {
    ========================================================================== */
 .layout-main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
 
-/* 📉 ปรับพื้นที่ด้านบนและล่าง เพื่อดึงทุกอย่างให้พอดีจอ */
 .layout-content-wrapper { margin: auto; width: 100%; padding: 15px 0; }
 
-/* 📉 ลดช่องไฟ (margin-bottom) จาก 3.5rem เหลือ 25px เพื่อให้กระชับขึ้นตามรูปที่คุณแนบมา */
 .hero-header-section { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0 auto 25px auto; padding: 0 20px; max-width: 1000px; width: 100%; animation: fadeUp 0.8s ease-out; }
 .hero-title-group { display: flex; flex-direction: column; align-items: center; width: 100%; }
 .hero-title-group h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.1; margin: 0; background: var(--navy-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 .hero-title-group h1:first-child { margin-bottom: 2px; font-size: clamp(1.6rem, 3vw, 2.2rem); opacity: 0.9; }
 .hero-subtitle { font-size: clamp(0.9rem, 2vw, 1rem); color: var(--text-light); margin-top: 12px; margin-bottom: 0; font-weight: 300; line-height: 1.5; max-width: 600px; }
 
-/* 📉 ปรับขนาด Grid และลด Gap เพื่อประหยัดพื้นที่แนวตั้ง */
 .responsive-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1050px; margin: 0 auto; width: 100%; padding: 0 20px; }
 
-/* รีเซ็ตสไตล์เฉพาะปุ่มที่เป็นการ์ดในหน้า Index เพื่อไม่ให้กระทบหน้าอื่น */
-button.card { border: none; outline: none; font-family: inherit; }
+/* ✨ รีเซ็ตสไตล์และล้างค่า Apple WebKit ออกจากปุ่มใน iPad/iPhone */
+button.card { 
+    border: none; 
+    outline: none; 
+    font-family: inherit; 
+    color: var(--text-main); /* บังคับสีข้อความให้เป็นสีดำตามที่ตั้งค่าในตัวแปร */
+    -webkit-appearance: none; /* คำสั่งสำคัญที่ใช้ล้างการแทรกแซงของ iPad/iPhone */
+    background-color: var(--card-bg); 
+}
 
-/* 📉 ลด Padding ภายในการ์ดให้บางลงนิดหน่อย */
 .responsive-card-grid .card { padding: 25px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; animation: fadeUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) backwards; }
 
-/* 📉 ย่อขนาด Icon Box และระยะห่างลง */
 .responsive-card-grid .icon-box { 
     width: 60px; 
     height: 60px; 
@@ -296,7 +299,6 @@ button.card { border: none; outline: none; font-family: inherit; }
     transition: var(--transition);
 }
 
-/* 📉 ลดขนาดฟอนต์การ์ดลงเล็กน้อย */
 .responsive-card-grid .card h3 { margin-bottom: 8px; font-size: 1.15rem; font-weight: 600; } 
 .responsive-card-grid .card p { color: var(--text-light); font-size: 0.95rem; line-height: 1.3; margin: 0; } 
 
@@ -307,7 +309,6 @@ button.card { border: none; outline: none; font-family: inherit; }
 .responsive-card-grid .card:nth-child(5) { animation-delay: 0.5s; }
 .responsive-card-grid .card:nth-child(6) { animation-delay: 0.6s; }
 
-/* 📉 ลด Padding ของ Footer เพื่อดึงพื้นที่กลับมา */
 .main-footer { width: 100%; text-align: center; padding: 12px 20px; color: var(--text-light); font-size: 0.8rem; border-top: 1px solid #f1f5f9; background: #fff; flex-shrink: 0; }
 .main-footer p { margin: 2px 0; }
 
