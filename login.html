@@ -8,27 +8,23 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="auth.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
-    <!-- ดึงไฟล์ Theme CSS กลางมาใช้ -->
     <link rel="stylesheet" href="theme.css">
 
     <style>
-        /* CSS เฉพาะหน้า Login */
         body { justify-content: center; align-items: center; }
         .login-card { padding: 50px 40px; width: 90%; max-width: 420px; text-align: center; }
         .login-card h2 { color: var(--text-main); margin-bottom: 10px; font-weight: 600; font-size: 1.8rem; }
         .back-link { display: inline-block; margin-top: 30px; color: var(--text-light); font-size: 0.95rem; transition: var(--transition); }
         .back-link:hover { color: var(--primary); transform: translateX(-5px); }
         .google-btn-wrapper { display: flex; justify-content: center; margin-top: 30px; min-height: 44px; }
-        #loadingText { color: var(--primary); font-weight: 500; display: none; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="card login-card">
         <h2>เข้าสู่ระบบ</h2>
-        <p style="color: var(--text-light); margin-bottom: 10px;">ระบบสำหรับเจ้าหน้าที่งานสอบสวน</p>
+        <!-- ✨ แก้ไขข้อความให้ดูเป็นทางการและประกาศสิทธิ์ชัดเจน -->
+        <p style="color: var(--text-light); margin-bottom: 10px;">สงวนสิทธิ์เฉพาะเจ้าหน้าที่ที่ได้รับอนุญาต</p>
         
-        <!-- Client ID ของคุณ -->
         <div id="g_id_onload"
              data-client_id="298931412406-s91ak2nnd6hng8a225r1mkajq37m6hal.apps.googleusercontent.com"
              data-context="signin"
@@ -37,23 +33,28 @@
              data-auto_prompt="false">
         </div>
 
-        <div class="google-btn-wrapper">
+        <div class="google-btn-wrapper" id="googleBtnWrapper">
             <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
         </div>
 
-        <div id="loadingText"><i class="fa-solid fa-circle-notch loading-spinner"></i> กำลังตรวจสอบสิทธิ์...</div>
+        <!-- ✨ เปลี่ยนมาใช้ Premium Loader จาก theme.css -->
+        <div id="loadingText" class="premium-loader-container" style="display: none; margin-top: 20px;">
+            <div class="premium-loader"></div>
+            <div class="premium-loader-text">กำลังตรวจสอบสิทธิ์...</div>
+        </div>
 
         <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</a>
     </div>
 
     <script>
-        // URL Web App ของคุณ
         const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
 
         async function handleCredentialResponse(response) {
             const token = response.credential; 
-            document.querySelector('.g_id_signin').style.display = 'none';
-            document.getElementById('loadingText').style.display = 'block';
+            
+            // ซ่อนปุ่ม Google และโชว์ Premium Loader
+            document.getElementById('googleBtnWrapper').style.display = 'none';
+            document.getElementById('loadingText').style.display = 'flex';
 
             try {
                 const res = await fetch(AUTH_API_URL, {
@@ -71,12 +72,12 @@
                     .then(() => { window.location.href = 'staff.html'; });
                 } else {
                     Swal.fire('ปฏิเสธการเข้าถึง', result.message, 'error');
-                    document.querySelector('.g_id_signin').style.display = 'block';
+                    document.getElementById('googleBtnWrapper').style.display = 'flex';
                     document.getElementById('loadingText').style.display = 'none';
                 }
             } catch (error) {
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
-                document.querySelector('.g_id_signin').style.display = 'block';
+                document.getElementById('googleBtnWrapper').style.display = 'flex';
                 document.getElementById('loadingText').style.display = 'none';
             }
         }
