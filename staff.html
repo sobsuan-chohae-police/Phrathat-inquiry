@@ -20,28 +20,36 @@
         }
         .nav-btn i { transition: var(--transition); }
         
-        /* ✨ 1. ปุ่ม Back สไตล์มินิมอล ไร้พื้นหลัง */
         .btn-back {
-            background: transparent !important; /* ยกเลิกพื้นหลังวงกลม */
+            background: transparent !important; 
             color: var(--text-main);
-            font-size: 1.3rem; /* ขนาดไอคอนพอดีสายตา */
+            font-size: 1.3rem; 
             width: auto; 
             height: auto;
-            padding: 5px 15px 5px 0; /* เพิ่มพื้นที่สัมผัส (Hitbox) ให้กดง่ายแม้อยู่ในมือถือ */
+            padding: 5px 15px 5px 0; 
         }
-        .btn-back:hover {
-            color: var(--navy-main); /* เปลี่ยนสีเมื่อเมาส์ชี้ */
-        }
-        .btn-back:hover i {
-            transform: translateX(-5px) scaleX(1.1); /* ลูกเล่น: เลื่อนไปทางซ้ายและยืดตัวนิดๆ */
-        }
+        .btn-back:hover { color: var(--navy-main); }
+        .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
         
-        /* ✨ 2. บังคับชื่อหน้าเว็บให้อยู่กึ่งกลางเป๊ะๆ */
+        /* ✨ จัดกึ่งกลาง และจัดการปัญหายาวเกินจอมือถือ (Ellipsis) */
         .page-title {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            white-space: nowrap; /* ป้องกันข้อความตกบรรทัดในจอมือถือที่แคบมากๆ */
+            white-space: nowrap; 
+            
+            /* คุมความกว้างไม่ให้ทับปุ่มซ้าย-ขวา (180px คือระยะปลอดภัย) */
+            max-width: calc(100vw - 180px); 
+            overflow: hidden;
+            text-overflow: ellipsis; /* ใส่จุดไข่ปลา (...) อัตโนมัติเมื่อข้อความยาวล้นจอ */
+        }
+        
+        /* ✨ ปรับลดขนาดฟอนต์เฉพาะบนมือถือ เพื่อให้แสดงข้อความได้เยอะขึ้นอีกนิด */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.15rem; 
+                max-width: calc(100vw - 150px);
+            }
         }
         
         .btn-settings:hover { background: var(--gold-light); color: var(--gold-dark); }
