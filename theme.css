@@ -60,6 +60,7 @@ a { text-decoration: none; color: inherit; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } } /* แอนิเมชันกะพริบเบาๆ */
 
 /* --- Navbar --- */
 nav {
@@ -122,8 +123,8 @@ nav {
     border: 1px solid rgba(255,255,255,0.8);
     transition: var(--transition);
     position: relative; overflow: hidden;
-    cursor: pointer; 
 }
+.card, .menu-card { cursor: pointer; }
 .card:focus, .menu-card:focus { outline: 3px solid rgba(212, 175, 55, 0.5); outline-offset: 2px; }
 .card:hover, .menu-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
 
@@ -206,16 +207,10 @@ tr:hover td { background-color: #f8fafc; }
     background: white; width: 95%; max-width: 800px; border-radius: var(--radius-xl);
     box-shadow: var(--shadow-modal); display: flex; flex-direction: column;
     max-height: 90vh; position: relative; animation: popUp 0.4s var(--transition);
-    
-    /* ✨ แก้ไข: เพิ่มคำสั่งนี้เพื่อให้ Modal เลื่อนจอได้เมื่อเนื้อหายาวเกินไป */
     overflow-y: auto; 
 }
-
-/* ✨ เพิ่มคลาสจัดการ Padding ของ Modal ให้ตอบสนองกับมือถือ */
 .modal-padded { padding: 35px; }
-@media (max-width: 768px) {
-    .modal-padded { padding: 20px; } /* ลดขอบขาวบนมือถือ ให้มีพื้นที่พิมพ์เยอะขึ้น */
-}
+@media (max-width: 768px) { .modal-padded { padding: 20px; } }
 
 .close-modal-btn {
     position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none;
@@ -224,11 +219,55 @@ tr:hover td { background-color: #f8fafc; }
 }
 .close-modal-btn:hover { background: var(--danger); color: white; transform: rotate(90deg); }
 
-/* --- Loading & Empty States --- */
-.loading-spinner { font-size: 1.5rem; color: var(--gold-main); animation: spin 1s linear infinite; }
+/* ==========================================================================
+   ✨ Premium Loading State (แอนิเมชันโหลดข้อมูลแบบหรูหรา)
+   ========================================================================== */
+.premium-loader-container {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px;
+}
+.premium-loader {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(30, 58, 138, 0.1); /* วงแหวนสีจาง */
+    border-left-color: var(--gold-main); /* แถบวิ่งสีทอง */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.premium-loader-text {
+    color: var(--navy-main); font-weight: 500; font-size: 1.05rem;
+    animation: pulseText 1.5s ease-in-out infinite; /* ตัวหนังสือกะพริบเบาๆ */
+}
 
-/* --- SweetAlert Custom --- */
-.swal2-popup { font-family: 'Kanit', sans-serif !important; border-radius: var(--radius-xl) !important; }
-.swal2-title { font-weight: 600 !important; color: var(--text-main) !important; }
-.swal2-confirm { background: var(--navy-gradient) !important; border-radius: 50px !important; padding: 12px 30px !important; }
-.swal2-cancel { background: #f1f5f9 !important; color: var(--text-main) !important; border-radius: 50px !important; }
+/* ==========================================================================
+   ✨ SweetAlert2 Custom (ปรับให้เข้าธีม มีชีวิตชีวา แต่มินิมอล)
+   ========================================================================== */
+/* พื้นหลังเบลอ */
+div:where(.swal2-container) { 
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); 
+    background: rgba(15, 23, 42, 0.4) !important; 
+}
+/* กล่องป๊อปอัป */
+.swal2-popup { 
+    font-family: 'Kanit', sans-serif !important; 
+    border-radius: var(--radius-xl) !important; 
+    box-shadow: var(--shadow-modal) !important; 
+    padding: 2em !important; 
+}
+/* หัวข้อและเนื้อหา */
+.swal2-title { font-weight: 600 !important; color: var(--text-main) !important; font-size: 1.5rem !important; }
+.swal2-html-container { color: var(--text-light) !important; font-size: 1rem !important; }
+/* ไอคอนให้ดูมินิมอลขึ้น */
+.swal2-icon { border-width: 3px !important; } 
+/* ปุ่มกด */
+.swal2-actions { gap: 15px; margin-top: 1.5em !important; }
+.swal2-confirm { 
+    background: var(--navy-gradient) !important; border-radius: 50px !important; 
+    padding: 12px 30px !important; font-weight: 500 !important; 
+    box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2) !important; transition: var(--transition) !important; 
+}
+.swal2-confirm:hover { transform: translateY(-2px); box-shadow: var(--shadow-gold) !important; }
+.swal2-cancel { 
+    background: #f1f5f9 !important; color: var(--text-main) !important; 
+    border-radius: 50px !important; padding: 12px 30px !important; 
+    font-weight: 500 !important; transition: var(--transition) !important; 
+}
+.swal2-cancel:hover { background: #e2e8f0 !important; }
