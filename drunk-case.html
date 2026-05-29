@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#f8fafc">
     <title>ฟ้องวาจาเมาขับ</title>
     
+    <!-- URL Web App ของระบบเมาขับ (คนละตัวกับระบบตั้งค่า) -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbx5HhnBSMXijd62iI_ji0zA1Dko9ZJGwTgDuOb3ItgPsrwtDUgV73Y08g1RjjXZtHBb/exec';
     </script>
@@ -17,9 +18,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
     
+    <!-- ดึงระบบความปลอดภัยและธีมมาใช้ -->
     <script src="auth.js"></script>
-    
-    <!-- ✨ ดึงไฟล์ Theme CSS กลางมาใช้ -->
     <link rel="stylesheet" href="theme.css">
 
     <style>
@@ -53,7 +53,13 @@
         .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
         .col-12 { grid-column: span 12; } .col-8 { grid-column: span 8; } .col-6 { grid-column: span 6; } .col-4 { grid-column: span 4; } .col-3 { grid-column: span 3; }
         .col-id { grid-column: span 6; } .col-age { grid-column: span 2; } .col-phone { grid-column: span 4; } .col-date-rec { grid-column: span 6; } .col-time-rec { grid-column: span 4; } .col-log-no { grid-column: span 2; } .col-vehicle { grid-column: span 8; } .col-alcohol { grid-column: span 4; }
-        @media (max-width: 768px) { .col-6, .col-4, .col-3, .col-8, .col-id, .col-age, .col-phone, .col-date-rec, .col-time-rec, .col-log-no, .col-vehicle, .col-alcohol { grid-column: span 12 !important; } }
+        
+        /* ✨ ปรับลด Padding ของ Modal บนมือถือให้มีพื้นที่พิมพ์เยอะขึ้น */
+        @media (max-width: 768px) { 
+            .col-6, .col-4, .col-3, .col-8, .col-id, .col-age, .col-phone, .col-date-rec, .col-time-rec, .col-log-no, .col-vehicle, .col-alcohol { grid-column: span 12 !important; } 
+            .modal-body { padding: 20px 15px; }
+            .modal-footer { padding: 15px; }
+        }
 
         .form-group { margin-bottom: 5px; }
         .hint-gray { color: #94a3b8; font-weight: 400; margin-left: 8px; font-size: 0.9rem; }
@@ -104,9 +110,12 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td colspan="8" style="text-align:center; padding:20px;">
-                                <i class="fa-solid fa-circle-notch loading-spinner"></i>
-                                <span style="color:var(--text-light); margin-left:10px;">กำลังโหลดข้อมูล...</span>
+                            <td colspan="8" style="text-align:center; padding:40px;">
+                                <!-- ✨ เปลี่ยนมาใช้ Premium Loader -->
+                                <div class="premium-loader-container">
+                                    <div class="premium-loader"></div>
+                                    <div class="premium-loader-text">กำลังโหลดข้อมูล...</div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -465,7 +474,7 @@
 
         async function loadTable(page) {
             const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;"><i class="fa-solid fa-circle-notch loading-spinner"></i><span style="color:var(--text-light); margin-left:10px;">กำลังโหลดข้อมูล...</span></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;"><div class="premium-loader-container"><div class="premium-loader"></div><div class="premium-loader-text">กำลังโหลดข้อมูล...</div></div></td></tr>';
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -475,7 +484,7 @@
                 allData = json.data;
                 renderTable(allData);
                 updatePagination(page, json.total);
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#e11d48;">โหลดข้อมูลไม่สำเร็จ</td></tr>'; }
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--danger);">โหลดข้อมูลไม่สำเร็จ</td></tr>'; }
         }
 
         function renderTable(data) {
@@ -489,7 +498,7 @@
                 if (row.display.linkCase) caseIcon = `<a href="${row.display.linkCase}" target="_blank" class="doc-icon doc-case"><i class="fa-solid fa-file-contract"></i></a>`;
                 let bailIcon = `<span class="no-doc"><i class="fa-solid fa-file-circle-xmark"></i></span>`;
                 if (row.display.linkBail) bailIcon = `<a href="${row.display.linkBail}" target="_blank" class="doc-icon doc-bail"><i class="fa-solid fa-file-circle-check"></i></a>`;
-                else if (row.display.bailStatus === 'ไม่ประกันตัว') bailIcon = `<span style="font-size:0.8rem; color:#94a3b8;">ไม่ประกันตัว</span>`;
+                else if (row.display.bailStatus === 'ไม่ประกันตัว') bailIcon = `<span style="font-size:0.8rem; color:var(--text-light);">ไม่ประกันตัว</span>`;
 
                 tr.innerHTML = `
                     <td>
