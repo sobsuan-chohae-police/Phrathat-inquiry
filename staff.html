@@ -6,6 +6,10 @@
     <title>สำหรับเจ้าหน้าที่งานสอบสวน</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ✨ เพิ่มบรรทัดนี้: ดึงไลบรารี SweetAlert2 มาใช้สำหรับป๊อปอัปยืนยันการออกจากระบบ -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script src="auth.js"></script>
     <link rel="stylesheet" href="theme.css">
 
@@ -36,7 +40,7 @@
         .menu-arrow { margin-left: auto; color: #cbd5e1; transition: var(--transition); font-size: 1.2rem; }
         .menu-card:hover .menu-arrow { color: var(--gold-dark); transform: translateX(5px); }
         
-        /* Modal Settings */
+        .modal-content { padding: 30px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
         .modal-header h3 { font-size: 1.3rem; font-weight: 600; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .menu-link { display: flex; align-items: center; padding: 15px; background: #f8fafc; border-radius: 16px; margin-bottom: 12px; transition: var(--transition); border: 1px solid transparent; font-weight: 500;}
@@ -70,7 +74,6 @@
     </div>
 
     <div id="settingsModal" class="modal-overlay" onclick="closeOnOutside(event)">
-        <!-- ✨ แก้ไข: ใช้คลาส modal-padded แทนการเขียน style ตรงๆ -->
         <div class="modal-card modal-padded" style="max-width: 400px; height: auto;">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-gear"></i> ตั้งค่าข้อมูล</h3>
