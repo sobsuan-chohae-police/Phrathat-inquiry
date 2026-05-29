@@ -5,13 +5,15 @@ function checkAuth() {
 
     // ถ้าอยู่หน้า login แล้วล็อกอินแล้ว ให้ข้ามไปหน้า staff
     if (currentPage.includes('login.html')) {
-        if (isLoggedIn) window.location.href = 'staff.html';
+        // ✨ ใช้ replace แทน href เพื่อไม่ให้พอกพูนประวัติการเข้าชม (History)
+        if (isLoggedIn) window.location.replace('staff.html');
         return;
     }
 
     // ถ้ายังไม่ได้ล็อกอิน ให้เด้งไปหน้า login
     if (!isLoggedIn) {
-        window.location.href = 'login.html';
+        // ✨ ใช้ replace ป้องกันผู้ใช้กดปุ่มย้อนกลับ (Back) กลับมาหน้าเดิม
+        window.location.replace('login.html');
         return;
     }
 
@@ -24,21 +26,22 @@ function checkAuth() {
     });
 }
 
-// ✨ อัปเกรด: เพิ่มการถามยืนยันก่อนออกจากระบบ
+// ✨ อัปเกรด: รวม UI การออกจากระบบแบบมินิมอลมาไว้ที่นี่ที่เดียว (เรียกใช้ได้ทุกหน้าเว็บ)
 function logout() {
     Swal.fire({
-        title: 'ออกจากระบบ?',
-        text: "คุณต้องการออกจากระบบใช่หรือไม่?",
+        title: 'ยืนยันการออกจากระบบ',
+        text: 'คุณต้องการออกจากระบบใช่หรือไม่',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'ใช่, ออกจากระบบ',
-        cancelButtonText: 'ยกเลิก'
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก',
+        reverseButtons: true // สลับปุ่มให้ถูกหลัก UX (ยกเลิกอยู่ซ้าย)
     }).then((result) => {
         if (result.isConfirmed) {
             localStorage.removeItem('userEmail');
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
-            window.location.href = 'index.html'; // ออกจากระบบแล้วกลับไปหน้าแรก
+            window.location.replace('index.html'); // ใช้ replace เตะกลับหน้าหลักสภ.
         }
     });
 }
