@@ -17,6 +17,7 @@
             cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
             transition: var(--transition); text-decoration: none;
+            flex-shrink: 0; /* ป้องกันปุ่มถูกบีบ */
         }
         .nav-btn i { transition: var(--transition); }
         
@@ -31,25 +32,23 @@
         .btn-back:hover { color: var(--navy-main); }
         .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
         
-        /* ✨ จัดกึ่งกลาง และจัดการปัญหายาวเกินจอมือถือ (Ellipsis) */
-        .page-title {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap; 
-            
-            /* คุมความกว้างไม่ให้ทับปุ่มซ้าย-ขวา (180px คือระยะปลอดภัย) */
-            max-width: calc(100vw - 180px); 
-            overflow: hidden;
-            text-overflow: ellipsis; /* ใส่จุดไข่ปลา (...) อัตโนมัติเมื่อข้อความยาวล้นจอ */
+        /* ✨ 1. ให้กลุ่มฝั่งซ้ายยืดหยุ่นได้ แต่ไม่เกินพื้นที่ของตัวเอง */
+        .nav-left {
+            flex: 1; 
+            min-width: 0; /* เวทมนตร์ของ Flexbox ที่ทำให้ข้อความข้างในตัดคำได้ */
         }
         
-        /* ✨ ปรับลดขนาดฟอนต์เฉพาะบนมือถือ เพื่อให้แสดงข้อความได้เยอะขึ้นอีกนิด */
+        /* ✨ 2. ชื่อหน้าชิดซ้าย ถ้าจอมือถือเล็กมากแล้วชื่อยาว จะมี ... อัตโนมัติ */
+        .page-title {
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            display: block; 
+        }
+        
+        /* ปรับลดขนาดฟอนต์บนมือถือนิดหน่อยให้ดูสวยงาม */
         @media (max-width: 768px) {
-            .page-title {
-                font-size: 1.15rem; 
-                max-width: calc(100vw - 150px);
-            }
+            .page-title { font-size: 1.15rem; }
         }
         
         .btn-settings:hover { background: var(--gold-light); color: var(--gold-dark); }
@@ -81,9 +80,8 @@
             <a href="index.html" class="nav-btn btn-back tooltip-left" data-tooltip="กลับหน้าหลัก">
                 <i class="fa-solid fa-chevron-left"></i>
             </a>
+            <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
         </div>
-        
-        <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
         
         <div class="nav-right">
             <button class="nav-btn btn-settings tooltip-right" id="settingsBtn" onclick="toggleModal(true)" style="display: none;" data-tooltip="ตั้งค่าระบบ"><i class="fa-solid fa-gear"></i></button>
