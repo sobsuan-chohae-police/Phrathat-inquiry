@@ -12,17 +12,34 @@
 
     <style>
         body { justify-content: center; align-items: center; }
-        .login-card { padding: 50px 40px; width: 90%; max-width: 420px; text-align: center; }
+        
+        .login-card { 
+            padding: 50px 40px; 
+            width: 90%; 
+            max-width: 420px; 
+            text-align: center; 
+            /* ✨ บังคับให้เมาส์กลับเป็นลูกศรปกติ ไม่ใช่รูปมือ */
+            cursor: default !important; 
+        }
+        
+        /* ✨ ยกเลิกเอฟเฟกต์การลอยตัวและการเปลี่ยนเงาเมื่อเอาเมาส์วาง */
+        .login-card:hover {
+            transform: none !important;
+            box-shadow: var(--shadow-soft) !important;
+        }
+        
         .login-card h2 { color: var(--text-main); margin-bottom: 10px; font-weight: 600; font-size: 1.8rem; }
-        .back-link { display: inline-block; margin-top: 30px; color: var(--text-light); font-size: 0.95rem; transition: var(--transition); }
-        .back-link:hover { color: var(--primary); transform: translateX(-5px); }
+        
+        /* ลิงก์กลับหน้าหลัก (เมาส์จะเป็นรูปมือแค่ตรงนี้) */
+        .back-link { display: inline-block; margin-top: 30px; color: var(--text-light); font-size: 0.95rem; transition: var(--transition); cursor: pointer; }
+        .back-link:hover { color: var(--navy-main); transform: translateX(-5px); } 
+        
         .google-btn-wrapper { display: flex; justify-content: center; margin-top: 30px; min-height: 44px; }
     </style>
 </head>
 <body>
     <div class="card login-card">
         <h2>เข้าสู่ระบบ</h2>
-        <!-- ✨ แก้ไขข้อความให้ดูเป็นทางการและประกาศสิทธิ์ชัดเจน -->
         <p style="color: var(--text-light); margin-bottom: 10px;">สงวนสิทธิ์เฉพาะเจ้าหน้าที่ที่ได้รับอนุญาต</p>
         
         <div id="g_id_onload"
@@ -37,7 +54,6 @@
             <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
         </div>
 
-        <!-- ✨ เปลี่ยนมาใช้ Premium Loader จาก theme.css -->
         <div id="loadingText" class="premium-loader-container" style="display: none; margin-top: 20px;">
             <div class="premium-loader"></div>
             <div class="premium-loader-text">กำลังตรวจสอบสิทธิ์...</div>
