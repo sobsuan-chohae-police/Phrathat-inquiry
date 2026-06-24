@@ -506,21 +506,11 @@
                 fp.redraw();
             }
 
-            // ใช้ setTimeout หน่วงเวลา 10ms เพื่อรอให้ Flatpickr วาดปฏิทินเสร็จก่อน แล้วเราค่อยไปแทรกแซง
-            setTimeout(() => {
-                if (fp.currentYearElement) {
-                    // 1. บังคับแสดงผลเป็น พ.ศ.
-                    fp.currentYearElement.value = fp.currentYear + 543;
-                    
-                    // 2. ล็อคไม่ให้พิมพ์
-                    fp.currentYearElement.readOnly = true;
-                    fp.currentYearElement.setAttribute('readonly', 'readonly');
-                    
-                    // 3. ทริคแก้ข้อ 6: ปิดการคลิกที่ช่องตัวเลขไปเลย (ป้องกันการเอาเมาส์ไปจิ้มแล้วพิมพ์มั่ว)
-                    // *ลูกศรขึ้น-ลง จะยังกดได้ปกติ เพราะมันเป็นคนละ Element กัน*
-                    fp.currentYearElement.style.pointerEvents = 'none';
-                }
-            }, 10);
+            // อัปเดต DOM ทันที (Synchronous) ก่อนที่เบราว์เซอร์จะวาดหน้าจอ เพื่อป้องกันการกะพริบ
+            fp.currentYearElement.value = fp.currentYear + 543;
+            fp.currentYearElement.readOnly = true;
+            fp.currentYearElement.setAttribute('readonly', 'readonly');
+            fp.currentYearElement.style.pointerEvents = 'none';
         }
 
         function addTodayButton(fp) {
