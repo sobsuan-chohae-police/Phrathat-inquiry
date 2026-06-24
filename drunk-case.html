@@ -473,7 +473,27 @@
                 locale: "th",
                 dateFormat: "j F Y",
                 disableMobile: "true",
-                onReady: (d,s,fp) => { addTodayButton(fp); },
+                onReady: function(selectedDates, dateStr, fp) {
+                    addTodayButton(fp);
+                    // แปลงปีในส่วนหัวปฏิทินให้เป็น พ.ศ.
+                    if (fp.currentYearElement) {
+                        fp.currentYearElement.value = fp.currentYear + 543;
+                        // ป้องกันการพิมพ์ตัวเลขลงไปตรงๆ เพื่อไม่ให้ปฏิทินรวน (แต่ยังกดลูกศรขึ้น-ลงได้ปกติ)
+                        fp.currentYearElement.setAttribute('readonly', 'readonly');
+                    }
+                },
+                onYearChange: function(selectedDates, dateStr, fp) {
+                    // อัปเดตปีเป็น พ.ศ. เมื่อมีการกดเปลี่ยนปี
+                    if (fp.currentYearElement) {
+                        fp.currentYearElement.value = fp.currentYear + 543;
+                    }
+                },
+                onMonthChange: function(selectedDates, dateStr, fp) {
+                    // อัปเดตปีเป็น พ.ศ. เมื่อมีการกดเปลี่ยนเดือน
+                    if (fp.currentYearElement) {
+                        fp.currentYearElement.value = fp.currentYear + 543;
+                    }
+                },
                 formatDate: (date, format, locale) => {
                     const thaiYear = date.getFullYear() + 543;
                     return flatpickr.formatDate(date, format, locale).replace(date.getFullYear(), thaiYear);
