@@ -476,7 +476,7 @@
                 onReady: function(selectedDates, dateStr, fp) {
                     addTodayButton(fp);
                     
-                    // ✨ วิธีแก้ระดับ Pro (Ultimate Fix): ดักจับการเปลี่ยนค่าที่ระดับ DOM
+                    // เทคนิคระดับ Pro: ดักจับการเขียนค่าลง DOM โดยตรง
                     if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
                         fp.currentYearElement.setAttribute('data-patched', 'true');
                         
@@ -500,10 +500,15 @@
                         // บังคับอัปเดตค่าเริ่มต้น
                         fp.currentYearElement.value = fp.currentYear;
                         
-                        // ล็อคการพิมพ์และปิดการคลิกที่ช่องตัวเลข
-                        fp.currentYearElement.readOnly = true;
-                        fp.currentYearElement.setAttribute('readonly', 'readonly');
-                        fp.currentYearElement.style.pointerEvents = 'none';
+                        // ✨ เอาคำสั่งล็อคการพิมพ์ออกทั้งหมด เพื่อให้เจ้าหน้าที่คลิกและพิมพ์ปี พ.ศ. ได้อย่างอิสระ
+                    }
+                },
+                onYearChange: function(selectedDates, dateStr, fp) {
+                    // ✨ ดักจับกรณีเจ้าหน้าที่ "พิมพ์" ปี พ.ศ. เข้ามาตรงๆ
+                    // ถ้า Flatpickr อ่านค่าที่พิมพ์แล้วคิดว่าเป็นปี พ.ศ. (เกิน 2400)
+                    // เราจะสั่งให้มันถอยกลับไปเป็น ค.ศ. ทันที (ส่วนหน้าจอจะถูก Override ให้แสดง พ.ศ. อยู่ดี)
+                    if (fp.currentYear > 2400) {
+                        fp.changeYear(fp.currentYear - 543);
                     }
                 },
                 formatDate: (date, format, locale) => {
