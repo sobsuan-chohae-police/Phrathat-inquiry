@@ -475,30 +475,52 @@
                 disableMobile: "true",
                 onReady: function(selectedDates, dateStr, fp) {
                     addTodayButton(fp);
-                    // แปลงปีในส่วนหัวปฏิทินให้เป็น พ.ศ.
-                    if (fp.currentYearElement) {
-                        fp.currentYearElement.value = fp.currentYear + 543;
-                        // ป้องกันการพิมพ์ตัวเลขลงไปตรงๆ เพื่อไม่ให้ปฏิทินรวน (แต่ยังกดลูกศรขึ้น-ลงได้ปกติ)
-                        fp.currentYearElement.setAttribute('readonly', 'readonly');
-                    }
+                    updateYearDisplay(fp);
                 },
-                onYearChange: function(selectedDates, dateStr, fp) {
-                    // อัปเดตปีเป็น พ.ศ. เมื่อมีการกดเปลี่ยนปี
-                    if (fp.currentYearElement) {
-                        fp.currentYearElement.value = fp.currentYear + 543;
-                    }
+                onOpen: function(selectedDates, dateStr, fp) {
+                    updateYearDisplay(fp);
                 },
                 onMonthChange: function(selectedDates, dateStr, fp) {
-                    // อัปเดตปีเป็น พ.ศ. เมื่อมีการกดเปลี่ยนเดือน
-                    if (fp.currentYearElement) {
-                        fp.currentYearElement.value = fp.currentYear + 543;
-                    }
+                    updateYearDisplay(fp);
+                },
+                onYearChange: function(selectedDates, dateStr, fp) {
+                    updateYearDisplay(fp);
+                },
+                onValueUpdate: function(selectedDates, dateStr, fp) {
+                    updateYearDisplay(fp);
                 },
                 formatDate: (date, format, locale) => {
                     const thaiYear = date.getFullYear() + 543;
                     return flatpickr.formatDate(date, format, locale).replace(date.getFullYear(), thaiYear);
                 }
             });
+        }
+
+        // ฟังก์ชันพิเศษสำหรับจัดการปี พ.ศ. และล็อคการพิมพ์
+        function updateYearDisplay(fp) {
+            if (!fp.currentYearElement) return;
+
+            // ดักจับกรณี Flatpickr เผลอเอาปี พ.ศ. ไปคำนวณ (ถ้าปีเกิน 2400 ให้ตบกลับเป็น ค.ศ.)
+            if (fp.currentYear > 2400) {
+                fp.currentYear -= 543;
+                fp.redraw();
+            }
+
+            // ใช้ setTimeout หน่วงเวลา 10ms เพื่อรอให้ Flatpickr วาดปฏิทินเสร็จก่อน แล้วเราค่อยไปแทรกแซง
+            setTimeout(() => {
+                if (fp.currentYearElement) {
+                    // 1. บังคับแสดงผลเป็น พ.ศ.
+                    fp.currentYearElement.value = fp.currentYear + 543;
+                    
+                    // 2. ล็อคไม่ให้พิมพ์
+                    fp.currentYearElement.readOnly = true;
+                    fp.currentYearElement.setAttribute('readonly', 'readonly');
+                    
+                    // 3. ทริคแก้ข้อ 6: ปิดการคลิกที่ช่องตัวเลขไปเลย (ป้องกันการเอาเมาส์ไปจิ้มแล้วพิมพ์มั่ว)
+                    // *ลูกศรขึ้น-ลง จะยังกดได้ปกติ เพราะมันเป็นคนละ Element กัน*
+                    fp.currentYearElement.style.pointerEvents = 'none';
+                }
+            }, 10);
         }
 
         function addTodayButton(fp) {
