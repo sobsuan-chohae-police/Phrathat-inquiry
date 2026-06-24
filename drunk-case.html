@@ -475,42 +475,42 @@
                 disableMobile: "true",
                 onReady: function(selectedDates, dateStr, fp) {
                     addTodayButton(fp);
-                    updateYearDisplay(fp);
-                },
-                onOpen: function(selectedDates, dateStr, fp) {
-                    updateYearDisplay(fp);
-                },
-                onMonthChange: function(selectedDates, dateStr, fp) {
-                    updateYearDisplay(fp);
-                },
-                onYearChange: function(selectedDates, dateStr, fp) {
-                    updateYearDisplay(fp);
-                },
-                onValueUpdate: function(selectedDates, dateStr, fp) {
-                    updateYearDisplay(fp);
+                    
+                    // ✨ วิธีแก้ระดับ Pro (Ultimate Fix): ดักจับการเปลี่ยนค่าที่ระดับ DOM
+                    if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
+                        fp.currentYearElement.setAttribute('data-patched', 'true');
+                        
+                        const originalSet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+                        const originalGet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').get;
+                        
+                        Object.defineProperty(fp.currentYearElement, 'value', {
+                            set: function(val) {
+                                let year = parseInt(val, 10);
+                                // ถ้า Flatpickr สั่งอัปเดตเป็น ค.ศ. ให้แปลงเป็น พ.ศ. ทันที
+                                if (!isNaN(year) && year < 2400) {
+                                    year += 543;
+                                }
+                                originalSet.call(this, year);
+                            },
+                            get: function() {
+                                return originalGet.call(this);
+                            }
+                        });
+
+                        // บังคับอัปเดตค่าเริ่มต้น
+                        fp.currentYearElement.value = fp.currentYear;
+                        
+                        // ล็อคการพิมพ์และปิดการคลิกที่ช่องตัวเลข
+                        fp.currentYearElement.readOnly = true;
+                        fp.currentYearElement.setAttribute('readonly', 'readonly');
+                        fp.currentYearElement.style.pointerEvents = 'none';
+                    }
                 },
                 formatDate: (date, format, locale) => {
                     const thaiYear = date.getFullYear() + 543;
                     return flatpickr.formatDate(date, format, locale).replace(date.getFullYear(), thaiYear);
                 }
             });
-        }
-
-        // ฟังก์ชันพิเศษสำหรับจัดการปี พ.ศ. และล็อคการพิมพ์
-        function updateYearDisplay(fp) {
-            if (!fp.currentYearElement) return;
-
-            // ดักจับกรณี Flatpickr เผลอเอาปี พ.ศ. ไปคำนวณ (ถ้าปีเกิน 2400 ให้ตบกลับเป็น ค.ศ.)
-            if (fp.currentYear > 2400) {
-                fp.currentYear -= 543;
-                fp.redraw();
-            }
-
-            // อัปเดต DOM ทันที (Synchronous) ก่อนที่เบราว์เซอร์จะวาดหน้าจอ เพื่อป้องกันการกะพริบ
-            fp.currentYearElement.value = fp.currentYear + 543;
-            fp.currentYearElement.readOnly = true;
-            fp.currentYearElement.setAttribute('readonly', 'readonly');
-            fp.currentYearElement.style.pointerEvents = 'none';
         }
 
         function addTodayButton(fp) {
