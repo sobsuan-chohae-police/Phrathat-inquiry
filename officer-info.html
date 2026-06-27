@@ -49,6 +49,18 @@
         .flatpickr-day.selected { background: var(--navy-main) !important; border-color: var(--navy-main) !important; }
         .flatpickr-today-btn { text-align: center; padding: 12px; background: #f8fafc; cursor: pointer; font-family: 'Kanit'; font-size: 0.95rem; color: var(--navy-main); border-top: 1px solid #e2e8f0; font-weight: 500; border-radius: 0 0 16px 16px; }
         .flatpickr-today-btn:hover { background: #f1f5f9; }
+
+        /* ✨ CSS เพิ่มเติม: ตกแต่งสีวันเสาร์-อาทิตย์ในปฏิทิน */
+        span.flatpickr-weekday:nth-child(6) { color: #8b5cf6 !important; font-weight: 600; } 
+        span.flatpickr-weekday:nth-child(7) { color: #ef4444 !important; font-weight: 600; } 
+
+        .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay):not(.selected):nth-child(7n+6) { color: #8b5cf6; font-weight: 500; }
+        .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay):not(.selected):nth-child(7n+7) { color: #ef4444; font-weight: 500; }
+
+        .flatpickr-day.prevMonthDay:nth-child(7n+6), .flatpickr-day.nextMonthDay:nth-child(7n+6) { color: rgba(139, 92, 246, 0.4); }
+        .flatpickr-day.prevMonthDay:nth-child(7n+7), .flatpickr-day.nextMonthDay:nth-child(7n+7) { color: rgba(239, 68, 68, 0.4); }
+        
+        .flatpickr-day.selected:nth-child(7n+6), .flatpickr-day.selected:nth-child(7n+7) { color: #ffffff !important; }
     </style>
 </head>
 <body>
