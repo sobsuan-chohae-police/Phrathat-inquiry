@@ -70,40 +70,56 @@
         .menu-link:hover { background: #fff; transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: #e2e8f0; color: var(--gold-dark); }
         .menu-link i { width: 35px; color: var(--gold-dark); font-size: 1.2rem; text-align: center; }
 
-        /* ✨ CSS สำหรับการ์ดอวยพรวันเกิด (HBD Card) */
+        /* ✨ CSS สำหรับการ์ดอวยพรวันเกิดแบบลอยตัว (Floating Widget) */
+        .hbd-floating-wrapper {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            z-index: 1000;
+            animation: slideUpFade 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: none; /* ซ่อนไว้ก่อนจนกว่าจะเช็คเจอคนเกิด */
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translate(-50%, 50px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
         .hbd-card {
             background: var(--navy-gradient);
             border-radius: var(--radius-xl);
-            padding: 25px 30px;
-            margin-bottom: 30px;
+            padding: 25px 35px 25px 25px;
             display: flex;
             align-items: center;
-            box-shadow: var(--shadow-gold);
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.4);
             color: white;
             position: relative;
             overflow: hidden;
-            animation: fadeUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
             border: 1px solid rgba(212, 175, 55, 0.3);
         }
-        /* เอฟเฟกต์แสงหมุนวนด้านหลังการ์ด */
         .hbd-card::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
             animation: spin 15s linear infinite; pointer-events: none;
         }
-        .hbd-icon {
-            font-size: 3rem; margin-right: 25px; z-index: 1;
-            animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        .hbd-close-btn {
+            position: absolute; top: 12px; right: 15px; background: transparent; border: none;
+            color: rgba(255,255,255,0.6); font-size: 1.2rem; cursor: pointer; z-index: 10; transition: 0.3s;
         }
+        .hbd-close-btn:hover { color: white; transform: scale(1.1) rotate(90deg); }
+        
+        .hbd-icon { font-size: 3rem; margin-right: 20px; z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         .hbd-content { z-index: 1; flex: 1; }
-        .hbd-content h3 { color: var(--gold-main); font-size: 1.35rem; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px; }
-        .hbd-content p { font-size: 1rem; color: #f8fafc; line-height: 1.5; margin: 0; font-weight: 300; }
+        .hbd-content h3 { color: var(--gold-main); font-size: 1.25rem; margin-bottom: 4px; font-weight: 600; }
+        .hbd-content p { font-size: 0.95rem; color: #f8fafc; line-height: 1.5; margin: 0; font-weight: 300; }
         .hbd-name { color: var(--gold-light); font-weight: 600; font-size: 1.05rem; }
         
         @media (max-width: 768px) {
-            .hbd-card { padding: 20px; flex-direction: column; text-align: center; }
-            .hbd-icon { margin-right: 0; margin-bottom: 15px; font-size: 2.5rem; }
+            .hbd-card { padding: 20px 20px 20px 15px; }
+            .hbd-icon { font-size: 2.5rem; margin-right: 15px; }
+            .hbd-content h3 { font-size: 1.15rem; }
+            .hbd-content p { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -123,10 +139,6 @@
     </nav>
 
     <div class="container container-sm">
-        
-        <!-- ✨ พื้นที่สำหรับแสดงการ์ดวันเกิด (จะถูกเติมด้วย JS ถ้ามีคนเกิดวันนี้) -->
-        <div id="hbdContainer"></div>
-
         <p class="section-label">เลือกรายการที่ต้องการปฏิบัติ</p>
         
         <a href="drunk-case.html" class="menu-card theme-red" tabindex="0">
@@ -138,6 +150,9 @@
             <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
         </a>
     </div>
+
+    <!-- ✨ พื้นที่สำหรับแสดงการ์ดวันเกิดแบบลอยตัว -->
+    <div id="hbdFloatingWrapper" class="hbd-floating-wrapper"></div>
 
     <div id="settingsModal" class="modal-overlay" onclick="closeOnOutside(event)">
         <div class="modal-card modal-padded" style="max-width: 400px; height: auto;">
@@ -152,71 +167,93 @@
     </div>
 
     <script>
-        // URL ของ API ข้อมูลเจ้าหน้าที่
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
 
         document.addEventListener('DOMContentLoaded', () => {
             checkBirthdays();
         });
 
-        // ✨ ฟังก์ชันตรวจสอบและแสดงการ์ดวันเกิด (อัปเดตให้รองรับ ISO Date จาก Google Sheets)
+        // ฟังก์ชันตรวจสอบและแสดงการ์ดวันเกิด
         async function checkBirthdays() {
             try {
                 const res = await fetch(API_URL + '?action=getOfficers');
                 const json = await res.json();
                 const officers = json.officers;
                 
-                // ดึงวันที่และเดือนปัจจุบัน
                 const today = new Date();
                 const currentDay = today.getDate();
                 const currentMonth = today.getMonth() + 1;
+                const currentYear = today.getFullYear();
 
-                // ค้นหาเจ้าหน้าที่ที่เกิดวันนี้
-                const birthdayOfficers = officers.filter(off => {
-                    if (!off[14]) return false; // ถ้าไม่มีข้อมูลวันเกิดให้ข้ามไป
+                // ชื่อเดือนภาษาไทย
+                const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                const dateText = `${currentDay} ${thaiMonths[currentMonth - 1]}`;
+
+                const birthdayOfficers = [];
+
+                officers.forEach(off => {
+                    if (!off[14]) return; 
                     
-                    let bDay, bMonth;
+                    let bDay, bMonth, bYear;
                     const dobStr = String(off[14]);
                     
-                    // เช็คว่าข้อมูลเป็นแบบมี / (เช่น 29/6/1987) หรือเป็น ISO Date
                     if (dobStr.includes('/')) {
                         const parts = dobStr.split('/');
                         if (parts.length === 3) {
                             bDay = parseInt(parts[0], 10);
                             bMonth = parseInt(parts[1], 10);
+                            bYear = parseInt(parts[2], 10);
                         }
                     } else {
-                        // กรณี Google Sheets ส่งมาเป็น ISO Date (เช่น 1987-06-28T17:00:00.000Z)
                         const dateObj = new Date(dobStr);
                         if (!isNaN(dateObj.getTime())) {
                             bDay = dateObj.getDate();
                             bMonth = dateObj.getMonth() + 1;
+                            bYear = dateObj.getFullYear();
                         }
                     }
                     
-                    return bDay === currentDay && bMonth === currentMonth;
+                    if (bDay === currentDay && bMonth === currentMonth) {
+                        // คำนวณอายุ
+                        const age = currentYear - bYear;
+                        birthdayOfficers.push({
+                            name: `${off[0]}${off[2]} ${off[3]}`,
+                            age: age
+                        });
+                    }
                 });
 
-                // ถ้ามีคนเกิดวันนี้ ให้สร้างการ์ดแสดงผล
                 if (birthdayOfficers.length > 0) {
-                    // นำ ยศ ชื่อ สกุล มารวมกัน (ถ้ามีหลายคนจะเชื่อมด้วยคำว่า ' และ ')
-                    const names = birthdayOfficers.map(off => `${off[0]}${off[2]} ${off[3]}`).join(' และ ');
+                    // สร้างข้อความ ยศ ชื่อ สกุล (อายุครบ XX ปี)
+                    const namesWithAge = birthdayOfficers.map(p => `<span class="hbd-name">${p.name} (อายุครบ ${p.age} ปี)</span>`).join(' และ ');
                     
                     const hbdHtml = `
                         <div class="hbd-card">
+                            <button class="hbd-close-btn" onclick="closeHbdCard()"><i class="fa-solid fa-xmark"></i></button>
                             <div class="hbd-icon">🎂</div>
                             <div class="hbd-content">
-                                <h3>สุขสันต์วันคล้ายวันเกิด</h3>
-                                <p>ขออวยพรให้ <span class="hbd-name">${names}</span> มีความสุข ความเจริญ และมีสุขภาพร่างกายที่แข็งแรง</p>
+                                <h3>สุขสันต์วันคล้ายวันเกิด (${dateText})</h3>
+                                <p>ขออวยพรให้ ${namesWithAge} มีความสุข ความเจริญ และมีสุขภาพร่างกายที่แข็งแรง</p>
                             </div>
                         </div>
                     `;
-                    document.getElementById('hbdContainer').innerHTML = hbdHtml;
+                    
+                    const wrapper = document.getElementById('hbdFloatingWrapper');
+                    wrapper.innerHTML = hbdHtml;
+                    wrapper.style.display = 'block'; // แสดงการ์ดขึ้นมา
                 }
             } catch (error) {
                 console.error('ไม่สามารถโหลดข้อมูลวันเกิดได้:', error);
-                // ถ้าโหลดพัง ก็แค่ไม่แสดงการ์ด (ไม่กระทบการทำงานหลัก)
             }
+        }
+
+        // ฟังก์ชันปิดการ์ดวันเกิด
+        function closeHbdCard() {
+            const wrapper = document.getElementById('hbdFloatingWrapper');
+            wrapper.style.animation = 'slideUpFade 0.4s reverse forwards'; // เล่นอนิเมชันถอยหลัง
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+            }, 400);
         }
 
         function toggleModal(show) { 
