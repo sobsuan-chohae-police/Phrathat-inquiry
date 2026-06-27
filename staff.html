@@ -1,256 +1,104 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>สำหรับเจ้าหน้าที่งานสอบสวน</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="auth.js"></script>
-    <link rel="stylesheet" href="theme.css">
-
-    <style>
-        .nav-btn { 
-            background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); 
-            cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: var(--transition); text-decoration: none;
-            flex-shrink: 0; 
-        }
-        .nav-btn i { transition: var(--transition); }
-        
-        .btn-back {
-            background: transparent !important; 
-            color: var(--text-main);
-            font-size: 1.3rem; 
-            width: auto; 
-            height: auto;
-            padding: 5px 15px 5px 0; 
-        }
-        .btn-back:hover { color: var(--navy-main); }
-        .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
-        
-        .nav-left {
-            flex: 1; 
-            min-width: 0; 
-        }
-        
-        .page-title {
-            white-space: nowrap; 
-            overflow: hidden;
-            text-overflow: ellipsis; 
-            display: block; 
-        }
-        
-        @media (max-width: 768px) {
-            .page-title { font-size: 1.15rem; }
-        }
-        
-        .btn-settings:hover { background: var(--gold-light); color: var(--gold-dark); }
-        .btn-settings:hover i { transform: rotate(90deg); }
-        
-        .btn-logout { color: var(--danger); background: #fff1f2; }
-        .btn-logout:hover { background: var(--danger); color: white; }
-        .btn-logout:hover i { transform: scale(1.15); }
-        
-        .section-label { font-size: 1rem; color: var(--text-light); margin-bottom: 20px; font-weight: 500; }
-        .menu-card { padding: 25px; display: flex; align-items: center; margin-bottom: 20px; }
-        .menu-icon { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-right: 20px; transition: var(--transition); }
-        .menu-info h3 { font-size: 1.2rem; margin-bottom: 5px; font-weight: 600; }
-        .menu-info p { font-size: 0.9rem; color: var(--text-light); }
-        .menu-arrow { margin-left: auto; color: #cbd5e1; transition: var(--transition); font-size: 1.2rem; }
-        .menu-card:hover .menu-arrow { color: var(--gold-dark); transform: translateX(5px); }
-        
-        .modal-content { padding: 30px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
-        .modal-header h3 { font-size: 1.3rem; font-weight: 600; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .menu-link { display: flex; align-items: center; padding: 15px; background: #f8fafc; border-radius: 16px; margin-bottom: 12px; transition: var(--transition); border: 1px solid transparent; font-weight: 500;}
-        .menu-link:hover { background: #fff; transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: #e2e8f0; color: var(--gold-dark); }
-        .menu-link i { width: 35px; color: var(--gold-dark); font-size: 1.2rem; text-align: center; }
-
-        /* ✨ CSS สำหรับการ์ดอวยพรวันเกิดแบบลอยตัว (Floating Widget) */
-        .hbd-floating-wrapper {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
-            z-index: 1000;
-            animation: slideUpFade 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            display: none; /* ซ่อนไว้ก่อนจนกว่าจะเช็คเจอคนเกิด */
-        }
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translate(-50%, 50px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        .hbd-card {
-            background: var(--navy-gradient);
-            border-radius: var(--radius-xl);
-            padding: 25px 35px 25px 25px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.4);
-            color: white;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        .hbd-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
-            animation: spin 15s linear infinite; pointer-events: none;
-        }
-        .hbd-close-btn {
-            position: absolute; top: 12px; right: 15px; background: transparent; border: none;
-            color: rgba(255,255,255,0.6); font-size: 1.2rem; cursor: pointer; z-index: 10; transition: 0.3s;
-        }
-        .hbd-close-btn:hover { color: white; transform: scale(1.1) rotate(90deg); }
-        
-        .hbd-icon { font-size: 3rem; margin-right: 20px; z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
-        .hbd-content { z-index: 1; flex: 1; }
-        .hbd-content h3 { color: var(--gold-main); font-size: 1.25rem; margin-bottom: 4px; font-weight: 600; }
-        .hbd-content p { font-size: 0.95rem; color: #f8fafc; line-height: 1.5; margin: 0; font-weight: 300; }
-        .hbd-name { color: var(--gold-light); font-weight: 600; font-size: 1.05rem; }
-        
-        @media (max-width: 768px) {
-            .hbd-card { padding: 20px 20px 20px 15px; }
-            .hbd-icon { font-size: 2.5rem; margin-right: 15px; }
-            .hbd-content h3 { font-size: 1.15rem; }
-            .hbd-content p { font-size: 0.9rem; }
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <div class="nav-left">
-            <a href="index.html" class="nav-btn btn-back">
-                <i class="fa-solid fa-chevron-left"></i>
-            </a>
-            <span class="page-title">สำหรับเจ้าหน้าที่งานสอบสวน</span>
-        </div>
-        
-        <div class="nav-right">
-            <button class="nav-btn btn-settings" id="settingsBtn" onclick="toggleModal(true)" style="display: none;"><i class="fa-solid fa-gear"></i></button>
-            <button class="nav-btn btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i></button>
-        </div>
-    </nav>
-
-    <div class="container container-sm">
-        <p class="section-label">เลือกรายการที่ต้องการปฏิบัติ</p>
-        
-        <a href="drunk-case.html" class="menu-card theme-red" tabindex="0">
-            <div class="menu-icon"><i class="fa-solid fa-wine-bottle"></i></div>
-            <div class="menu-info">
-                <h3>ฟ้องวาจาเมาขับ</h3>
-                <p>สร้างสำนวนฟ้องวาจาขับรถขณะเมาสุรา</p>
-            </div>
-            <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-        </a>
-    </div>
-
-    <!-- ✨ พื้นที่สำหรับแสดงการ์ดวันเกิดแบบลอยตัว -->
-    <div id="hbdFloatingWrapper" class="hbd-floating-wrapper"></div>
-
-    <div id="settingsModal" class="modal-overlay" onclick="closeOnOutside(event)">
-        <div class="modal-card modal-padded" style="max-width: 400px; height: auto;">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-gear"></i> ตั้งค่าข้อมูล</h3>
-                <button class="close-modal-btn" onclick="toggleModal(false)"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 20px;">เลือกข้อมูลที่ต้องการแก้ไข</p>
-            <a href="station-info.html" class="menu-link"><i class="fa-solid fa-building-shield"></i> <span>ข้อมูลสถานีตำรวจ</span></a>
-            <a href="officer-info.html" class="menu-link"><i class="fa-solid fa-user-shield"></i> <span>ข้อมูลเจ้าหน้าที่</span></a>
-        </div>
-    </div>
-
-    <script>
+<script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
 
         document.addEventListener('DOMContentLoaded', () => {
             checkBirthdays();
         });
 
-        // ฟังก์ชันตรวจสอบและแสดงการ์ดวันเกิด
+        // ฟังก์ชันตรวจสอบและแสดงการ์ดวันเกิด (ใช้ Cache ข้อมูลให้โหลดเร็ว แต่ไม่จำการกดปิด)
         async function checkBirthdays() {
-            try {
-                const res = await fetch(API_URL + '?action=getOfficers');
-                const json = await res.json();
-                const officers = json.officers;
-                
-                const today = new Date();
-                const currentDay = today.getDate();
-                const currentMonth = today.getMonth() + 1;
-                const currentYear = today.getFullYear();
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth() + 1;
+            const currentYear = today.getFullYear();
+            const todayStr = `${currentYear}-${currentMonth}-${currentDay}`; // รหัสของวันนี้
 
-                // ชื่อเดือนภาษาไทย
-                const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-                const dateText = `${currentDay} ${thaiMonths[currentMonth - 1]}`;
+            // ชื่อเดือนภาษาไทย
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const dateText = `${currentDay} ${thaiMonths[currentMonth - 1]}`;
 
-                const birthdayOfficers = [];
+            let birthdayOfficers = [];
 
-                officers.forEach(off => {
-                    if (!off[14]) return; 
+            // เช็คว่า "วันนี้เคยดึงข้อมูลมาเก็บไว้หรือยัง?" (Cache)
+            if (localStorage.getItem('hbd_cached_date') === todayStr) {
+                // ถ้ามีข้อมูลในเครื่องแล้ว ดึงมาแสดงทันที (เร็ว 0.1 วินาที)
+                birthdayOfficers = JSON.parse(localStorage.getItem('hbd_cached_data') || '[]');
+                renderHbdCard(birthdayOfficers, dateText);
+            } else {
+                // ถ้ายังไม่มีข้อมูล ให้วิ่งไปดึงจาก Google Sheets (ทำแค่ครั้งแรกของวัน)
+                try {
+                    const res = await fetch(API_URL + '?action=getOfficers');
+                    const json = await res.json();
                     
-                    let bDay, bMonth, bYear;
-                    const dobStr = String(off[14]);
-                    
-                    if (dobStr.includes('/')) {
-                        const parts = dobStr.split('/');
-                        if (parts.length === 3) {
-                            bDay = parseInt(parts[0], 10);
-                            bMonth = parseInt(parts[1], 10);
-                            bYear = parseInt(parts[2], 10);
+                    json.officers.forEach(off => {
+                        if (!off[14]) return; 
+                        
+                        let bDay, bMonth, bYear;
+                        const dobStr = String(off[14]);
+                        
+                        if (dobStr.includes('/')) {
+                            const parts = dobStr.split('/');
+                            if (parts.length === 3) {
+                                bDay = parseInt(parts[0], 10);
+                                bMonth = parseInt(parts[1], 10);
+                                bYear = parseInt(parts[2], 10);
+                            }
+                        } else {
+                            const dateObj = new Date(dobStr);
+                            if (!isNaN(dateObj.getTime())) {
+                                bDay = dateObj.getDate();
+                                bMonth = dateObj.getMonth() + 1;
+                                bYear = dateObj.getFullYear();
+                            }
                         }
-                    } else {
-                        const dateObj = new Date(dobStr);
-                        if (!isNaN(dateObj.getTime())) {
-                            bDay = dateObj.getDate();
-                            bMonth = dateObj.getMonth() + 1;
-                            bYear = dateObj.getFullYear();
+                        
+                        if (bDay === currentDay && bMonth === currentMonth) {
+                            birthdayOfficers.push({
+                                name: `${off[0]}${off[2]} ${off[3]}`,
+                                age: currentYear - bYear
+                            });
                         }
-                    }
-                    
-                    if (bDay === currentDay && bMonth === currentMonth) {
-                        // คำนวณอายุ
-                        const age = currentYear - bYear;
-                        birthdayOfficers.push({
-                            name: `${off[0]}${off[2]} ${off[3]}`,
-                            age: age
-                        });
-                    }
-                });
+                    });
 
-                if (birthdayOfficers.length > 0) {
-                    // สร้างข้อความ ยศ ชื่อ สกุล (อายุครบ XX ปี)
-                    const namesWithAge = birthdayOfficers.map(p => `<span class="hbd-name">${p.name} (อายุครบ ${p.age} ปี)</span>`).join(' และ ');
-                    
-                    const hbdHtml = `
-                        <div class="hbd-card">
-                            <button class="hbd-close-btn" onclick="closeHbdCard()"><i class="fa-solid fa-xmark"></i></button>
-                            <div class="hbd-icon">🎂</div>
-                            <div class="hbd-content">
-                                <h3>สุขสันต์วันคล้ายวันเกิด (${dateText})</h3>
-                                <p>ขออวยพรให้ ${namesWithAge} มีความสุข ความเจริญ และมีสุขภาพร่างกายที่แข็งแรง</p>
-                            </div>
-                        </div>
-                    `;
-                    
-                    const wrapper = document.getElementById('hbdFloatingWrapper');
-                    wrapper.innerHTML = hbdHtml;
-                    wrapper.style.display = 'block'; // แสดงการ์ดขึ้นมา
+                    // บันทึกข้อมูลลง Cache ในเครื่อง เพื่อใช้ในครั้งต่อไปของวัน
+                    localStorage.setItem('hbd_cached_date', todayStr);
+                    localStorage.setItem('hbd_cached_data', JSON.stringify(birthdayOfficers));
+
+                    // แสดงการ์ด
+                    renderHbdCard(birthdayOfficers, dateText);
+
+                } catch (error) {
+                    console.error('ไม่สามารถโหลดข้อมูลวันเกิดได้:', error);
                 }
-            } catch (error) {
-                console.error('ไม่สามารถโหลดข้อมูลวันเกิดได้:', error);
             }
         }
 
-        // ฟังก์ชันปิดการ์ดวันเกิด
+        // ฟังก์ชันสำหรับวาดการ์ดขึ้นหน้าจอ
+        function renderHbdCard(birthdayOfficers, dateText) {
+            if (birthdayOfficers.length === 0) return;
+
+            const namesWithAge = birthdayOfficers.map(p => `<span class="hbd-name">${p.name} (อายุครบ ${p.age} ปี)</span>`).join(' และ ');
+            
+            const hbdHtml = `
+                <div class="hbd-card">
+                    <button class="hbd-close-btn" onclick="closeHbdCard()"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="hbd-icon">🎂</div>
+                    <div class="hbd-content">
+                        <h3>สุขสันต์วันคล้ายวันเกิด (${dateText})</h3>
+                        <p>ขออวยพรให้ ${namesWithAge} มีความสุข ความเจริญ และมีสุขภาพร่างกายที่แข็งแรง</p>
+                    </div>
+                </div>
+            `;
+            
+            const wrapper = document.getElementById('hbdFloatingWrapper');
+            wrapper.innerHTML = hbdHtml;
+            wrapper.style.display = 'block';
+        }
+
+        // ฟังก์ชันปิดการ์ดวันเกิด (ปิดแล้วปิดเลยในรอบนั้น แต่ถ้ารีเฟรชหน้าเว็บใหม่ก็จะกลับมา)
         function closeHbdCard() {
             const wrapper = document.getElementById('hbdFloatingWrapper');
-            wrapper.style.animation = 'slideUpFade 0.4s reverse forwards'; // เล่นอนิเมชันถอยหลัง
+            wrapper.style.animation = 'slideUpFade 0.4s reverse forwards';
             setTimeout(() => {
                 wrapper.style.display = 'none';
             }, 400);
@@ -262,5 +110,3 @@
         }
         function closeOnOutside(event) { if (event.target.id === 'settingsModal') toggleModal(false); }
     </script>
-</body>
-</html>
