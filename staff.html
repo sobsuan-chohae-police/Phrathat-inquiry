@@ -111,7 +111,11 @@
         
         .hbd-icon { font-size: 3rem; margin-right: 20px; z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         .hbd-content { z-index: 1; flex: 1; }
-        .hbd-content h3 { color: var(--gold-main); font-size: 1.25rem; margin-bottom: 4px; font-weight: 600; }
+        
+        /* ✨ ปรับแต่งส่วนหัวข้อและวันที่ให้ขึ้นบรรทัดใหม่ */
+        .hbd-content h3 { color: var(--gold-main); font-size: 1.25rem; margin-bottom: 8px; font-weight: 600; line-height: 1.4; }
+        .hbd-date { display: block; font-size: 1.05rem; color: #e2e8f0; font-weight: 400; margin-top: 2px; }
+        
         .hbd-content p { font-size: 0.95rem; color: #f8fafc; line-height: 1.5; margin: 0; font-weight: 300; }
         .hbd-name { color: var(--gold-light); font-weight: 600; font-size: 1.05rem; }
         
@@ -119,6 +123,7 @@
             .hbd-card { padding: 20px 20px 20px 15px; }
             .hbd-icon { font-size: 2.5rem; margin-right: 15px; }
             .hbd-content h3 { font-size: 1.15rem; }
+            .hbd-date { font-size: 0.95rem; }
             .hbd-content p { font-size: 0.9rem; }
         }
     </style>
@@ -247,12 +252,13 @@
 
             const namesWithAge = birthdayOfficers.map(p => `<span class="hbd-name">${p.name} (อายุครบ ${p.age} ปี)</span>`).join(' และ ');
             
+            // ✨ ปรับ HTML ให้วันที่ขึ้นบรรทัดใหม่ด้วยคลาส .hbd-date
             const hbdHtml = `
                 <div class="hbd-card">
                     <button class="hbd-close-btn" onclick="closeHbdCard()"><i class="fa-solid fa-xmark"></i></button>
                     <div class="hbd-icon">🎂</div>
                     <div class="hbd-content">
-                        <h3>สุขสันต์วันคล้ายวันเกิด (${dateText})</h3>
+                        <h3>สุขสันต์วันคล้ายวันเกิด <span class="hbd-date">${dateText}</span></h3>
                         <p>ขออวยพรให้ ${namesWithAge} มีความสุข ความเจริญ และมีสุขภาพร่างกายที่แข็งแรง</p>
                     </div>
                 </div>
