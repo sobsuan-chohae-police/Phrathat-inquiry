@@ -15,6 +15,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     
+    <!-- ✨ เพิ่มไลบรารีปฏิทิน Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+    
     <!-- ดึงระบบความปลอดภัยและธีมมาใช้ -->
     <script src="auth.js"></script>
     <link rel="stylesheet" href="theme.css">
@@ -38,6 +43,12 @@
         .form-group { margin-bottom: 5px; } 
         .form-group.full { grid-column: span 2; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } }
+
+        /* ตกแต่งปฏิทิน Flatpickr */
+        .flatpickr-calendar { border-radius: 16px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; border: none !important; z-index: 99999 !important; }
+        .flatpickr-day.selected { background: var(--navy-main) !important; border-color: var(--navy-main) !important; }
+        .flatpickr-today-btn { text-align: center; padding: 12px; background: #f8fafc; cursor: pointer; font-family: 'Kanit'; font-size: 0.95rem; color: var(--navy-main); border-top: 1px solid #e2e8f0; font-weight: 500; border-radius: 0 0 16px 16px; }
+        .flatpickr-today-btn:hover { background: #f1f5f9; }
     </style>
 </head>
 <body>
@@ -78,7 +89,6 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <!-- ✨ เปลี่ยนมาใช้ Premium Loader -->
                     <tr>
                         <td colspan="5" style="text-align:center; padding: 40px;">
                             <div class="premium-loader-container">
@@ -119,6 +129,12 @@
                     <div class="form-group"><label class="form-label">Email Police <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpL"></div>
                     <div class="form-group"><label class="form-label">Gmail <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpM"></div>
                     
+                    <!-- ✨ เพิ่มช่อง วัน เดือน ปีเกิด ตรงนี้ -->
+                    <div class="form-group full">
+                        <label class="form-label">วัน เดือน ปีเกิด</label>
+                        <input type="text" class="form-input required datepicker" id="inpDOB" placeholder="เลือกวันเกิด">
+                    </div>
+
                     <!-- ช่องเลือกระดับสิทธิ์ -->
                     <div class="form-group full">
                         <label class="form-label">สิทธิ์การใช้งานระบบ</label>
@@ -144,6 +160,66 @@
         let originalRoles = { station: "", invest: "" };
         let isSortMode = false;
         let sortableInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDatepickers();
+            loadData();
+        });
+
+        // ✨ ฟังก์ชันปฏิทิน (ก๊อปปี้มาจากระบบเมาขับ)
+        function initDatepickers() {
+            flatpickr(".datepicker", {
+                locale: "th",
+                dateFormat: "j F Y",
+                disableMobile: "true",
+                onReady: function(selectedDates, dateStr, fp) {
+                    addTodayButton(fp);
+                    if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
+                        fp.currentYearElement.setAttribute('data-patched', 'true');
+                        const originalSet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+                        const originalGet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').get;
+                        Object.defineProperty(fp.currentYearElement, 'value', {
+                            set: function(val) {
+                                let year = parseInt(val, 10);
+                                if (!isNaN(year) && year < 2400) { year += 543; }
+                                originalSet.call(this, year);
+                            },
+                            get: function() { return originalGet.call(this); }
+                        });
+                        fp.currentYearElement.value = fp.currentYear;
+                    }
+                },
+                onYearChange: function(selectedDates, dateStr, fp) {
+                    if (fp.currentYear > 2400) { fp.changeYear(fp.currentYear - 543); }
+                },
+                formatDate: (date, format, locale) => {
+                    const thaiYear = date.getFullYear() + 543;
+                    return flatpickr.formatDate(date, format, locale).replace(date.getFullYear(), thaiYear);
+                }
+            });
+        }
+
+        function addTodayButton(fp) {
+            const btn = document.createElement('div');
+            btn.className = 'flatpickr-today-btn';
+            btn.innerHTML = 'วันนี้';
+            btn.addEventListener('click', () => { fp.setDate(new Date(), true); fp.close(); });
+            fp.calendarContainer.appendChild(btn);
+        }
+
+        // ✨ ฟังก์ชันแปลงวันที่ไทยเป็น ค.ศ. ก่อนส่งไปหลังบ้าน
+        function convertThaiDateToAD(thaiDateStr) {
+            if (!thaiDateStr) return "";
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            const parts = thaiDateStr.split(' ');
+            if (parts.length !== 3) return "";
+            const day = parts[0];
+            const monthIndex = thaiMonths.indexOf(parts[1]);
+            const thaiYear = parseInt(parts[2]);
+            if (monthIndex === -1 || isNaN(thaiYear)) return "";
+            const adYear = thaiYear - 543;
+            return `${day}/${monthIndex + 1}/${adYear}`;
+        }
 
         async function loadData() {
             try {
@@ -185,7 +261,6 @@
 
         async function saveReorder() {
             const btnSort = document.getElementById('btnSort');
-            // ✨ เปลี่ยนไอคอนให้หมุน แต่ตัวหนังสือไม่หมุน
             btnSort.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 8px;"></i>กำลังบันทึก...';
             const rows = document.querySelectorAll('#tableBody tr');
             const newOrderData = [];
@@ -253,6 +328,7 @@
         function openModal(mode, index) {
             currentMode = mode; editIndex = index;
             document.querySelectorAll('.form-input').forEach(inp => inp.value = '');
+            if (document.getElementById('inpDOB')._flatpickr) document.getElementById('inpDOB')._flatpickr.clear();
             document.getElementById('btnSave').disabled = true;
 
             if (mode === 'edit') {
@@ -264,7 +340,21 @@
                 document.getElementById('inpI').value = d[8]; document.getElementById('inpK').value = d[10];
                 document.getElementById('inpL').value = d[11]; document.getElementById('inpM').value = d[12];
                 document.getElementById('inpRole').value = d[13] || 'เจ้าหน้าที่ทั่วไป'; 
-                originalValues = { A: d[0], B: d[1], C: d[2], D: d[3], G: d[6], H: d[7], I: d[8], K: d[10], L: d[11], M: d[12], N: d[13] || 'เจ้าหน้าที่ทั่วไป' };
+                
+                // ✨ ดึงข้อมูลวันเกิดมาแสดงในปฏิทิน
+                if (d[14]) {
+                    const parts = String(d[14]).split('/');
+                    if (parts.length === 3) {
+                        const date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                        if (document.getElementById('inpDOB')._flatpickr) document.getElementById('inpDOB')._flatpickr.setDate(date);
+                    }
+                }
+
+                originalValues = { 
+                    A: d[0], B: d[1], C: d[2], D: d[3], G: d[6], H: d[7], I: d[8], K: d[10], L: d[11], M: d[12], 
+                    N: d[13] || 'เจ้าหน้าที่ทั่วไป', 
+                    O: d[14] || '' 
+                };
             } else {
                 document.getElementById('modalTitle').innerText = 'เพิ่มเจ้าหน้าที่';
                 document.getElementById('inpRole').value = 'เจ้าหน้าที่ทั่วไป';
@@ -288,7 +378,8 @@
                     G: document.getElementById('inpG').value, H: document.getElementById('inpH').value,
                     I: document.getElementById('inpI').value, K: document.getElementById('inpK').value,
                     L: document.getElementById('inpL').value, M: document.getElementById('inpM').value,
-                    N: document.getElementById('inpRole').value 
+                    N: document.getElementById('inpRole').value,
+                    O: convertThaiDateToAD(document.getElementById('inpDOB').value) // ✨ เช็คความเปลี่ยนแปลงของวันเกิด
                 };
                 if (JSON.stringify(currentValues) !== JSON.stringify(originalValues)) isChanged = true;
             } else { isChanged = true; }
@@ -297,17 +388,20 @@
 
         async function saveData() {
             const btn = document.getElementById('btnSave');
-            // ✨ เปลี่ยนไอคอนให้หมุน แต่ตัวหนังสือไม่หมุน
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 8px;"></i>กำลังบันทึก...'; 
             btn.disabled = true;
+            
+            // ✨ ส่งข้อมูลวันเกิด (แปลงเป็น ค.ศ. แล้ว) ไปด้วย
             const dataToSend = [
                 document.getElementById('inpA').value, document.getElementById('inpB').value,
                 document.getElementById('inpC').value, document.getElementById('inpD').value,
                 document.getElementById('inpG').value, document.getElementById('inpH').value,
                 document.getElementById('inpI').value, document.getElementById('inpK').value,
                 document.getElementById('inpL').value, document.getElementById('inpM').value,
-                document.getElementById('inpRole').value 
+                document.getElementById('inpRole').value,
+                convertThaiDateToAD(document.getElementById('inpDOB').value) 
             ];
+            
             try {
                 await fetch(API_URL, {
                     method: 'POST',
@@ -334,7 +428,6 @@
             });
         }
         
-        loadData();
     </script>
 </body>
 </html>
