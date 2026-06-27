@@ -129,7 +129,7 @@
                     <div class="form-group"><label class="form-label">Email Police <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpL"></div>
                     <div class="form-group"><label class="form-label">Gmail <small style="color:var(--text-light);">(ไม่บังคับ)</small></label><input type="text" class="form-input" id="inpM"></div>
                     
-                    <!-- ✨ เพิ่มช่อง วัน เดือน ปีเกิด ตรงนี้ -->
+                    <!-- ✨ ช่อง วัน เดือน ปีเกิด -->
                     <div class="form-group full">
                         <label class="form-label">วัน เดือน ปีเกิด</label>
                         <input type="text" class="form-input required datepicker" id="inpDOB" placeholder="เลือกวันเกิด">
@@ -341,19 +341,36 @@
                 document.getElementById('inpL').value = d[11]; document.getElementById('inpM').value = d[12];
                 document.getElementById('inpRole').value = d[13] || 'เจ้าหน้าที่ทั่วไป'; 
                 
-                // ✨ ดึงข้อมูลวันเกิดมาแสดงในปฏิทิน
+                // ✨ ดึงข้อมูลวันเกิดมาแสดงในปฏิทิน (รองรับทั้งแบบ String และ ISO Date จาก Google Sheets)
+                let formattedDOB = '';
                 if (d[14]) {
-                    const parts = String(d[14]).split('/');
-                    if (parts.length === 3) {
-                        const date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-                        if (document.getElementById('inpDOB')._flatpickr) document.getElementById('inpDOB')._flatpickr.setDate(date);
+                    let dateObj = null;
+                    const dobStr = String(d[14]);
+                    
+                    if (dobStr.includes('/')) {
+                        const parts = dobStr.split('/');
+                        if (parts.length === 3) {
+                            dateObj = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                        }
+                    } else {
+                        dateObj = new Date(dobStr);
+                    }
+
+                    if (dateObj && !isNaN(dateObj.getTime())) {
+                        if (document.getElementById('inpDOB')._flatpickr) {
+                            document.getElementById('inpDOB')._flatpickr.setDate(dateObj);
+                        }
+                        // แปลงกลับเป็น D/M/YYYY เพื่อเก็บไว้เทียบค่า (Dirty Check)
+                        formattedDOB = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+                    } else {
+                        formattedDOB = dobStr;
                     }
                 }
 
                 originalValues = { 
                     A: d[0], B: d[1], C: d[2], D: d[3], G: d[6], H: d[7], I: d[8], K: d[10], L: d[11], M: d[12], 
                     N: d[13] || 'เจ้าหน้าที่ทั่วไป', 
-                    O: d[14] || '' 
+                    O: formattedDOB 
                 };
             } else {
                 document.getElementById('modalTitle').innerText = 'เพิ่มเจ้าหน้าที่';
@@ -379,7 +396,7 @@
                     I: document.getElementById('inpI').value, K: document.getElementById('inpK').value,
                     L: document.getElementById('inpL').value, M: document.getElementById('inpM').value,
                     N: document.getElementById('inpRole').value,
-                    O: convertThaiDateToAD(document.getElementById('inpDOB').value) // ✨ เช็คความเปลี่ยนแปลงของวันเกิด
+                    O: convertThaiDateToAD(document.getElementById('inpDOB').value) // เช็คความเปลี่ยนแปลงของวันเกิด
                 };
                 if (JSON.stringify(currentValues) !== JSON.stringify(originalValues)) isChanged = true;
             } else { isChanged = true; }
@@ -391,7 +408,7 @@
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin" style="margin-right: 8px;"></i>กำลังบันทึก...'; 
             btn.disabled = true;
             
-            // ✨ ส่งข้อมูลวันเกิด (แปลงเป็น ค.ศ. แล้ว) ไปด้วย
+            // ส่งข้อมูลวันเกิด (แปลงเป็น ค.ศ. แล้ว) ไปด้วย
             const dataToSend = [
                 document.getElementById('inpA').value, document.getElementById('inpB').value,
                 document.getElementById('inpC').value, document.getElementById('inpD').value,
