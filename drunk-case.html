@@ -112,6 +112,22 @@
         .flatpickr-day.selected { background: var(--navy-main) !important; border-color: var(--navy-main) !important; }
         .flatpickr-today-btn { text-align: center; padding: 12px; background: #f8fafc; cursor: pointer; font-family: 'Kanit'; font-size: 0.95rem; color: var(--navy-main); border-top: 1px solid #e2e8f0; font-weight: 500; border-radius: 0 0 16px 16px; }
         .flatpickr-today-btn:hover { background: #f1f5f9; }
+
+        /* ✨ CSS เพิ่มเติม: ตกแต่งสีวันเสาร์-อาทิตย์ในปฏิทิน */
+        /* 1. สีหัวตาราง (ส, อา) */
+        span.flatpickr-weekday:nth-child(6) { color: #8b5cf6 !important; font-weight: 600; } /* วันเสาร์ - สีม่วง */
+        span.flatpickr-weekday:nth-child(7) { color: #ef4444 !important; font-weight: 600; } /* วันอาทิตย์ - สีแดง */
+
+        /* 2. สีตัวเลขวันที่ในเดือนปัจจุบัน */
+        .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay):not(.selected):nth-child(7n+6) { color: #8b5cf6; font-weight: 500; }
+        .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay):not(.selected):nth-child(7n+7) { color: #ef4444; font-weight: 500; }
+
+        /* 3. สีตัวเลขวันที่เดือนอื่น (ทำให้จางลง 40%) */
+        .flatpickr-day.prevMonthDay:nth-child(7n+6), .flatpickr-day.nextMonthDay:nth-child(7n+6) { color: rgba(139, 92, 246, 0.4); }
+        .flatpickr-day.prevMonthDay:nth-child(7n+7), .flatpickr-day.nextMonthDay:nth-child(7n+7) { color: rgba(239, 68, 68, 0.4); }
+        
+        /* 4. ป้องกันสีเพี้ยนตอนกดเลือก (Selected) ให้เป็นสีขาวเสมอ */
+        .flatpickr-day.selected:nth-child(7n+6), .flatpickr-day.selected:nth-child(7n+7) { color: #ffffff !important; }
     </style>
 </head>
 <body>
@@ -476,7 +492,6 @@
                 onReady: function(selectedDates, dateStr, fp) {
                     addTodayButton(fp);
                     
-                    // เทคนิคระดับ Pro: ดักจับการเขียนค่าลง DOM โดยตรง
                     if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
                         fp.currentYearElement.setAttribute('data-patched', 'true');
                         
@@ -486,7 +501,6 @@
                         Object.defineProperty(fp.currentYearElement, 'value', {
                             set: function(val) {
                                 let year = parseInt(val, 10);
-                                // ถ้า Flatpickr สั่งอัปเดตเป็น ค.ศ. ให้แปลงเป็น พ.ศ. ทันที
                                 if (!isNaN(year) && year < 2400) {
                                     year += 543;
                                 }
@@ -497,16 +511,10 @@
                             }
                         });
 
-                        // บังคับอัปเดตค่าเริ่มต้น
                         fp.currentYearElement.value = fp.currentYear;
-                        
-                        // ✨ เอาคำสั่งล็อคการพิมพ์ออกทั้งหมด เพื่อให้เจ้าหน้าที่คลิกและพิมพ์ปี พ.ศ. ได้อย่างอิสระ
                     }
                 },
                 onYearChange: function(selectedDates, dateStr, fp) {
-                    // ✨ ดักจับกรณีเจ้าหน้าที่ "พิมพ์" ปี พ.ศ. เข้ามาตรงๆ
-                    // ถ้า Flatpickr อ่านค่าที่พิมพ์แล้วคิดว่าเป็นปี พ.ศ. (เกิน 2400)
-                    // เราจะสั่งให้มันถอยกลับไปเป็น ค.ศ. ทันที (ส่วนหน้าจอจะถูก Override ให้แสดง พ.ศ. อยู่ดี)
                     if (fp.currentYear > 2400) {
                         fp.changeYear(fp.currentYear - 543);
                     }
