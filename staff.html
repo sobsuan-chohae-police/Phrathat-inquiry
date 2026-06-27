@@ -112,7 +112,6 @@
         .hbd-icon { font-size: 3rem; margin-right: 20px; z-index: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
         .hbd-content { z-index: 1; flex: 1; }
         
-        /* ✨ ปรับแต่งส่วนหัวข้อและวันที่ให้ขึ้นบรรทัดใหม่ */
         .hbd-content h3 { color: var(--gold-main); font-size: 1.25rem; margin-bottom: 8px; font-weight: 600; line-height: 1.4; }
         .hbd-date { display: block; font-size: 1.05rem; color: #e2e8f0; font-weight: 400; margin-top: 2px; }
         
@@ -146,6 +145,17 @@
     <div class="container container-sm">
         <p class="section-label">เลือกรายการที่ต้องการปฏิบัติ</p>
         
+        <!-- ✨ เมนูใหม่: ตารางเวรงานสอบสวน -->
+        <a href="duty.html" class="menu-card theme-green" tabindex="0">
+            <div class="menu-icon"><i class="fa-solid fa-calendar-days"></i></div>
+            <div class="menu-info">
+                <h3>ตารางเวรงานสอบสวน</h3>
+                <p>จัดการและดูตารางเวรปฏิบัติหน้าที่</p>
+            </div>
+            <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        </a>
+
+        <!-- เมนูเดิม: ฟ้องวาจาเมาขับ -->
         <a href="drunk-case.html" class="menu-card theme-red" tabindex="0">
             <div class="menu-icon"><i class="fa-solid fa-wine-bottle"></i></div>
             <div class="menu-info">
@@ -156,7 +166,7 @@
         </a>
     </div>
 
-    <!-- ✨ พื้นที่สำหรับแสดงการ์ดวันเกิดแบบลอยตัว -->
+    <!-- พื้นที่สำหรับแสดงการ์ดวันเกิดแบบลอยตัว -->
     <div id="hbdFloatingWrapper" class="hbd-floating-wrapper"></div>
 
     <div id="settingsModal" class="modal-overlay" onclick="closeOnOutside(event)">
@@ -252,7 +262,6 @@
 
             const namesWithAge = birthdayOfficers.map(p => `<span class="hbd-name">${p.name} (อายุครบ ${p.age} ปี)</span>`).join(' และ ');
             
-            // ✨ ปรับ HTML ให้วันที่ขึ้นบรรทัดใหม่ด้วยคลาส .hbd-date
             const hbdHtml = `
                 <div class="hbd-card">
                     <button class="hbd-close-btn" onclick="closeHbdCard()"><i class="fa-solid fa-xmark"></i></button>
@@ -269,7 +278,7 @@
             wrapper.style.display = 'block';
         }
 
-        // ฟังก์ชันปิดการ์ดวันเกิด (ปิดแล้วปิดเลยในรอบนั้น แต่ถ้ารีเฟรชหน้าเว็บใหม่ก็จะกลับมา)
+        // ฟังก์ชันปิดการ์ดวันเกิด
         function closeHbdCard() {
             const wrapper = document.getElementById('hbdFloatingWrapper');
             wrapper.style.animation = 'slideUpFade 0.4s reverse forwards';
