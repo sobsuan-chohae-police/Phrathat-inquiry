@@ -553,10 +553,10 @@
                 const rawAsst = isShowOriginal ? (duty.origAsst || duty.asst) : duty.asst;
                 const rawClerk = isShowOriginal ? (duty.origClerk || duty.clerk) : duty.clerk;
 
-                // ✨ VLOOKUP ดึงชื่อจริงมาแสดง (ถ้าหาไม่เจอให้แสดงชื่อเดิมที่ตัดคำ)
-                const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv.substring(0, 15) + '...') : '';
-                const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst.substring(0, 15) + '...') : '';
-                const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk.substring(0, 15) + '...') : '';
+                // ✨ VLOOKUP ดึงชื่อจริงมาแสดง (ถ้าหาไม่เจอให้แสดงชื่อเดิม)
+                const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
+                const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
+                const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk) : '';
 
                 let isDimmed = false;
                 if (currentFilter.type === 'inv' && !invName) isDimmed = true;
@@ -619,7 +619,6 @@
         function openDailyModal(dateKey) {
             selectedDateAD = dateKey;
             
-            // สร้างวันที่ภาษาไทยเผื่อไว้กรณีเป็นวันใหม่ที่ยังไม่เคยจัดเวร
             const parts = dateKey.split('/');
             const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
             const defaultDateTH = formatThaiDate(dateObj);
@@ -697,7 +696,6 @@
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    // หน่วงเวลาให้ GAS เขียนชีตเสร็จก่อนดึงใหม่
                     setTimeout(async () => {
                         const monthKey = `${currentYear}-${currentMonth}`;
                         fetchedMonths[monthKey] = false; 
@@ -801,15 +799,23 @@
             rows.forEach((row, index) => { row.querySelector('.pattern-num').innerText = index + 1; });
         }
 
+        // ✨ แก้ไขฟังก์ชันสร้างพรีวิว ให้ดึง Date Object จาก Flatpickr โดยตรง (แก้ปัญหาพรีวิว 0 วัน)
         function generatePreview() {
             const role = document.getElementById('loopRoleSelect').value;
-            const startStr = document.getElementById('loopStartDate').value;
-            const endStr = document.getElementById('loopEndDate').value;
+            const startFp = document.getElementById('loopStartDate')._flatpickr;
+            const endFp = document.getElementById('loopEndDate')._flatpickr;
             
-            if (!role || !startStr || !endStr) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกหน้าที่และวันที่ให้ครบ', 'warning');
+            if (!role || !startFp.selectedDates[0] || !endFp.selectedDates[0]) {
+                return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกหน้าที่และวันที่ให้ครบ', 'warning');
+            }
 
-            const startDate = parseDMY(startStr);
-            const endDate = parseDMY(endStr);
+            const startDate = new Date(startFp.selectedDates[0]);
+            const endDate = new Date(endFp.selectedDates[0]);
+            
+            // รีเซ็ตเวลาให้เป็นเที่ยงคืนตรง เพื่อป้องกันปัญหา Timezone ตอนวนลูป
+            startDate.setHours(0,0,0,0);
+            endDate.setHours(0,0,0,0);
+
             if (startDate > endDate) return Swal.fire('วันที่ไม่ถูกต้อง', 'วันเริ่มต้นต้องมาก่อนวันสิ้นสุด', 'error');
 
             const selects = document.querySelectorAll('.loop-officer-select');
@@ -825,7 +831,7 @@
             let loopIndex = 0;
 
             while (currentDate <= endDate) {
-                const dateAD = formatDMY(currentDate); // ✨ ใช้ d/m/yyyy
+                const dateAD = formatDMY(currentDate); // รูปแบบ d/m/yyyy
                 const dateTH = formatThaiDate(currentDate);
                 const officerName = pattern[loopIndex % pattern.length];
 
@@ -911,11 +917,6 @@
         // ==========================================
         // Utilities
         // ==========================================
-        function parseDMY(dmyStr) {
-            if (!dmyStr) return null;
-            const parts = dmyStr.split('/');
-            return new Date(parts[2], parts[1] - 1, parts[0]);
-        }
         function formatDMY(dateObj) {
             return `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
         }
@@ -927,7 +928,7 @@
         
         function initDatepickers() {
             flatpickr(".datepicker", {
-                locale: "th", dateFormat: "j/n/Y", disableMobile: "true", // ✨ บังคับให้ Flatpickr คืนค่าเป็น d/m/yyyy
+                locale: "th", dateFormat: "j/n/Y", disableMobile: "true",
                 onReady: function(selectedDates, dateStr, fp) {
                     if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
                         fp.currentYearElement.setAttribute('data-patched', 'true');
@@ -952,7 +953,7 @@
                     const d = date.getDate();
                     const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
                     const m = thaiMonths[date.getMonth()];
-                    return `${d} ${m} ${thaiYear}`; // แสดงผลให้คนดูเป็นภาษาไทยสวยๆ
+                    return `${d} ${m} ${thaiYear}`; 
                 }
             });
         }
