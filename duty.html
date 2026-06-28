@@ -378,8 +378,8 @@
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let allOfficers = [];
-        let officerMap = {}; // เก็บข้อมูลเจ้าหน้าที่ (Key = คอลัมน์ E)
-        let rosterData = {}; // เก็บข้อมูลเวร (Key = d/m/yyyy)
+        let officerMap = {}; 
+        let rosterData = {}; 
         let fetchedMonths = {}; 
         
         // View State
@@ -391,7 +391,7 @@
         let generatedData = [];
         
         // Daily Edit State
-        let selectedDateAD = ''; // รูปแบบ d/m/yyyy
+        let selectedDateAD = ''; 
         let selectedDateTH = '';
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -413,11 +413,11 @@
                 let customCheckboxes = '';
                 
                 allOfficers.forEach(off => {
-                    const fullName = off[4]; // ✨ ใช้คอลัมน์ E (ยศ ชื่อ สกุล) เป็น Key หลัก
+                    const fullName = off[4]; 
                     if (!fullName) return;
 
                     officerMap[fullName] = {
-                        firstName: off[2], // ✨ คอลัมน์ C (ชื่อจริง) สำหรับแสดงบนปฏิทิน
+                        firstName: off[2], 
                         phone: off[10] || '-'
                     };
                     customCheckboxes += `
@@ -446,7 +446,6 @@
 
             Swal.fire({ title: 'กำลังโหลดข้อมูลเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
-                // ส่งวันที่ไปเป็น d/m/yyyy
                 const startDate = `1/${month + 1}/${year}`;
                 const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
                 const endDate = `${lastDayOfMonth}/${month + 1}/${year}`;
@@ -458,7 +457,7 @@
                 const json = await res.json();
                 
                 if (json.data) {
-                    json.data.forEach(row => { rosterData[row.dateAD] = row; }); // row.dateAD คือ d/m/yyyy
+                    json.data.forEach(row => { rosterData[row.dateAD] = row; }); 
                 }
                 fetchedMonths[monthKey] = true; 
                 Swal.close();
@@ -537,14 +536,14 @@
             calendarBody.innerHTML = '';
 
             const today = new Date();
-            const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; // รูปแบบ d/m/yyyy
+            const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; 
 
             for (let i = 0; i < startOffset; i++) {
                 calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
-                const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; // ✨ ใช้ d/m/yyyy เป็น Key
+                const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; 
                 const isToday = (dateKey === todayStr) ? 'today' : '';
                 
                 const duty = rosterData[dateKey] || { inv: '', asst: '', clerk: '', origInv: '', origAsst: '', origClerk: '' };
@@ -553,7 +552,7 @@
                 const rawAsst = isShowOriginal ? (duty.origAsst || duty.asst) : duty.asst;
                 const rawClerk = isShowOriginal ? (duty.origClerk || duty.clerk) : duty.clerk;
 
-                // ✨ VLOOKUP ดึงชื่อจริงมาแสดง (ถ้าหาไม่เจอให้แสดงชื่อเดิม)
+                // ✨ VLOOKUP ดึงชื่อจริงมาแสดง
                 const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
                 const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
                 const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk) : '';
@@ -799,7 +798,7 @@
             rows.forEach((row, index) => { row.querySelector('.pattern-num').innerText = index + 1; });
         }
 
-        // ✨ แก้ไขฟังก์ชันสร้างพรีวิว ให้ดึง Date Object จาก Flatpickr โดยตรง (แก้ปัญหาพรีวิว 0 วัน)
+        // ✨ ฟังก์ชันสร้างพรีวิว (ดึง Date Object จาก Flatpickr โดยตรง แก้ปัญหา 0 วัน)
         function generatePreview() {
             const role = document.getElementById('loopRoleSelect').value;
             const startFp = document.getElementById('loopStartDate')._flatpickr;
@@ -812,7 +811,6 @@
             const startDate = new Date(startFp.selectedDates[0]);
             const endDate = new Date(endFp.selectedDates[0]);
             
-            // รีเซ็ตเวลาให้เป็นเที่ยงคืนตรง เพื่อป้องกันปัญหา Timezone ตอนวนลูป
             startDate.setHours(0,0,0,0);
             endDate.setHours(0,0,0,0);
 
@@ -831,7 +829,7 @@
             let loopIndex = 0;
 
             while (currentDate <= endDate) {
-                const dateAD = formatDMY(currentDate); // รูปแบบ d/m/yyyy
+                const dateAD = formatDMY(currentDate); 
                 const dateTH = formatThaiDate(currentDate);
                 const officerName = pattern[loopIndex % pattern.length];
 
