@@ -29,7 +29,6 @@
         .month-nav button { background: white; border: 1px solid #e2e8f0; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1.1rem; box-shadow: var(--shadow-soft); }
         .month-nav button:hover { background: var(--navy-main); color: white; }
         
-        /* ปุ่มเลือกเดือน/ปี */
         .current-month-label { font-size: 1.4rem; font-weight: 600; color: var(--navy-main); min-width: 180px; text-align: center; cursor: pointer; padding: 5px 15px; border-radius: 12px; transition: 0.2s; }
         .current-month-label:hover { background: #f1f5f9; }
         
@@ -40,26 +39,28 @@
 
         /* --- Calendar Grid (Fixed Size) --- */
         .calendar-card { background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); overflow: hidden; border: 1px solid #f1f5f9; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; }
         .calendar-header { background: #f8fafc; text-align: center; padding: 12px 5px; font-weight: 600; font-size: 0.95rem; color: var(--text-light); border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
         
-        /* สีวันเสาร์-อาทิตย์ */
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
-        /* ล็อคขนาดช่องปฏิทิน */
         .calendar-cell { height: 110px; max-height: 110px; padding: 6px; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; background: white; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; overflow: hidden; }
         .calendar-cell:hover { background: #f8fafc; }
         .calendar-cell.empty { background: #fcfcfc; cursor: default; }
         .calendar-cell.dimmed { opacity: 0.15; filter: grayscale(100%); } 
 
         /* ไฮไลต์วันนี้ */
-        .date-num { font-weight: 600; font-size: 1.05rem; color: var(--text-main); margin-bottom: 4px; align-self: flex-end; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+        .date-num { font-weight: 600; font-size: 1.05rem; color: var(--text-main); margin-bottom: 4px; align-self: flex-end; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
-        .date-num.today { background: var(--navy-main); color: white !important; border-radius: 50%; box-shadow: 0 2px 5px rgba(30, 58, 138, 0.3); }
+        
+        .calendar-cell .date-num.today { color: white !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .calendar-cell:nth-child(7n+1) .date-num.today, .calendar-cell:nth-child(7n+2) .date-num.today, .calendar-cell:nth-child(7n+3) .date-num.today, .calendar-cell:nth-child(7n+4) .date-num.today, .calendar-cell:nth-child(7n+5) .date-num.today { background: var(--navy-main); }
+        .calendar-cell:nth-child(7n+6) .date-num.today { background: #8b5cf6; }
+        .calendar-cell:nth-child(7n+7) .date-num.today { background: #ef4444; }
 
-        /* ชื่อคนเข้าเวร (ตัดคำถ้าล้น) */
+        /* ชื่อคนเข้าเวร */
         .duty-name { font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
         .duty-inv { background: #eff6ff; color: #1d4ed8; border-left: 3px solid #1d4ed8; }
         .duty-asst { background: #f0fdf4; color: #15803d; border-left: 3px solid #15803d; }
@@ -104,7 +105,7 @@
         .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .checkbox-row input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
-        /* --- Flatpickr Weekend Colors (Global) --- */
+        /* --- Flatpickr Weekend Colors --- */
         span.flatpickr-weekday:nth-child(6) { color: #8b5cf6 !important; font-weight: 600; } 
         span.flatpickr-weekday:nth-child(7) { color: #ef4444 !important; font-weight: 600; } 
         .flatpickr-day:not(.prevMonthDay):not(.nextMonthDay):not(.selected):nth-child(7n+6) { color: #8b5cf6; font-weight: 500; }
@@ -216,7 +217,6 @@
                     <select class="form-input" id="editClerkSelect"></select>
                 </div>
                 
-                <!-- ✨ Checkbox แลกเวร -->
                 <div style="margin-top: 20px; padding: 15px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px;">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; color: #b45309;">
                         <input type="checkbox" id="isSwapDuty" style="transform: scale(1.3);">
@@ -378,9 +378,9 @@
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let allOfficers = [];
-        let officerMap = {}; 
-        let rosterData = {}; // { 'YYYY-MM-DD': { ... } }
-        let fetchedMonths = {}; // จำว่าเดือนไหนโหลดมาแล้วบ้าง
+        let officerMap = {}; // เก็บข้อมูลเจ้าหน้าที่ (Key = คอลัมน์ E)
+        let rosterData = {}; // เก็บข้อมูลเวร (Key = d/m/yyyy)
+        let fetchedMonths = {}; 
         
         // View State
         let isShowOriginal = false;
@@ -391,7 +391,7 @@
         let generatedData = [];
         
         // Daily Edit State
-        let selectedDateAD = '';
+        let selectedDateAD = ''; // รูปแบบ d/m/yyyy
         let selectedDateTH = '';
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -400,7 +400,7 @@
         });
 
         // ==========================================
-        // 1. โหลดข้อมูลเริ่มต้น (Smart Fetch)
+        // 1. โหลดข้อมูลเริ่มต้น
         // ==========================================
         async function loadOfficersAndInit() {
             Swal.fire({ title: 'กำลังเตรียมระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -413,9 +413,12 @@
                 let customCheckboxes = '';
                 
                 allOfficers.forEach(off => {
-                    const fullName = `${off[0]}${off[2]} ${off[3]}`;
+                    const fullName = off[4]; // ✨ ใช้คอลัมน์ E (ยศ ชื่อ สกุล) เป็น Key หลัก
+                    if (!fullName) return;
+
                     officerMap[fullName] = {
-                        rank: off[0], firstName: off[2], lastName: off[3], role: off[8], phone: off[10] || '-'
+                        firstName: off[2], // ✨ คอลัมน์ C (ชื่อจริง) สำหรับแสดงบนปฏิทิน
+                        phone: off[10] || '-'
                     };
                     customCheckboxes += `
                         <label class="checkbox-row">
@@ -427,7 +430,6 @@
                 document.getElementById('customFilterBox').innerHTML = customCheckboxes;
                 populateEditDropdowns();
 
-                // โหลดข้อมูลเวรเฉพาะเดือนปัจจุบัน
                 await fetchMonthData(currentYear, currentMonth);
                 Swal.close();
 
@@ -436,18 +438,18 @@
             }
         }
 
-        // ดึงข้อมูลเฉพาะเดือนที่ต้องการ (บวกหัวท้ายนิดหน่อย)
         async function fetchMonthData(year, month) {
             const monthKey = `${year}-${month}`;
             if (fetchedMonths[monthKey]) {
-                renderCalendar(); return; // ถ้าเคยโหลดแล้ว วาดเลย
+                renderCalendar(); return; 
             }
 
             Swal.fire({ title: 'กำลังโหลดข้อมูลเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
-                // ดึงตั้งแต่วันที่ 1 ถึง 31 ของเดือนนั้น
-                const startDate = `${year}-${String(month+1).padStart(2,'0')}-01`;
-                const endDate = `${year}-${String(month+1).padStart(2,'0')}-31`;
+                // ส่งวันที่ไปเป็น d/m/yyyy
+                const startDate = `1/${month + 1}/${year}`;
+                const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+                const endDate = `${lastDayOfMonth}/${month + 1}/${year}`;
 
                 const res = await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -456,9 +458,9 @@
                 const json = await res.json();
                 
                 if (json.data) {
-                    json.data.forEach(row => { rosterData[row.dateAD] = row; });
+                    json.data.forEach(row => { rosterData[row.dateAD] = row; }); // row.dateAD คือ d/m/yyyy
                 }
-                fetchedMonths[monthKey] = true; // จำไว้ว่าโหลดแล้ว
+                fetchedMonths[monthKey] = true; 
                 Swal.close();
                 renderCalendar();
             } catch (e) {
@@ -476,7 +478,6 @@
             await fetchMonthData(currentYear, currentMonth);
         }
 
-        // ✨ Month/Year Picker (SweetAlert)
         function openMonthYearPicker() {
             const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             let monthOptions = '';
@@ -488,12 +489,15 @@
                 title: 'เลือกเดือนและปี',
                 html: `
                     <select id="swal-month" class="form-input" style="margin-bottom: 15px;">${monthOptions}</select>
-                    <input type="number" id="swal-year" class="form-input" value="${currentYear + 543}" placeholder="ปี พ.ศ.">
+                    <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('swal-year').value--"><i class="fa-solid fa-minus"></i></button>
+                        <input type="number" id="swal-year" class="form-input" value="${currentYear + 543}" style="width:120px; text-align:center; font-size:1.2rem; font-weight:bold;" readonly>
+                        <button type="button" class="btn-secondary" onclick="document.getElementById('swal-year').value++"><i class="fa-solid fa-plus"></i></button>
+                    </div>
                 `,
                 showCancelButton: true, confirmButtonText: 'ตกลง', cancelButtonText: 'ยกเลิก',
                 preConfirm: () => {
                     const y = parseInt(document.getElementById('swal-year').value);
-                    if (y < 2400 || y > 3000) return Swal.showValidationMessage('กรุณาระบุปี พ.ศ. ให้ถูกต้อง');
                     return { month: parseInt(document.getElementById('swal-month').value), year: y - 543 };
                 }
             }).then(async (result) => {
@@ -533,29 +537,27 @@
             calendarBody.innerHTML = '';
 
             const today = new Date();
-            const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+            const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; // รูปแบบ d/m/yyyy
 
             for (let i = 0; i < startOffset; i++) {
                 calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
-                const dateAD = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                const isToday = (dateAD === todayStr) ? 'today' : '';
+                const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; // ✨ ใช้ d/m/yyyy เป็น Key
+                const isToday = (dateKey === todayStr) ? 'today' : '';
                 
-                const duty = rosterData[dateAD] || { inv: '', asst: '', clerk: '', origInv: '', origAsst: '', origClerk: '' };
+                const duty = rosterData[dateKey] || { inv: '', asst: '', clerk: '', origInv: '', origAsst: '', origClerk: '' };
                 
-                // สลับดูข้อมูล Original หรือ ปัจจุบัน
                 const rawInv = isShowOriginal ? (duty.origInv || duty.inv) : duty.inv;
                 const rawAsst = isShowOriginal ? (duty.origAsst || duty.asst) : duty.asst;
                 const rawClerk = isShowOriginal ? (duty.origClerk || duty.clerk) : duty.clerk;
 
-                // ดึงเฉพาะ "ชื่อจริง"
-                const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
-                const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
-                const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk) : '';
+                // ✨ VLOOKUP ดึงชื่อจริงมาแสดง (ถ้าหาไม่เจอให้แสดงชื่อเดิมที่ตัดคำ)
+                const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv.substring(0, 15) + '...') : '';
+                const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst.substring(0, 15) + '...') : '';
+                const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk.substring(0, 15) + '...') : '';
 
-                // ระบบ Filter
                 let isDimmed = false;
                 if (currentFilter.type === 'inv' && !invName) isDimmed = true;
                 if (currentFilter.type === 'asst' && !asstName) isDimmed = true;
@@ -568,7 +570,7 @@
                     }
                 }
 
-                let html = `<div class="calendar-cell ${isDimmed ? 'dimmed' : ''}" onclick="openDailyModal('${dateAD}')">
+                let html = `<div class="calendar-cell ${isDimmed ? 'dimmed' : ''}" onclick="openDailyModal('${dateKey}')">
                                 <div class="date-num ${isToday}">${day}</div>`;
                 
                 if (invName) html += `<div class="duty-name duty-inv">${invName}</div>`;
@@ -604,7 +606,6 @@
             }
             currentFilter = { type: type, customNames: customNames };
             
-            // เปลี่ยนข้อความปุ่ม
             const labels = { 'all': 'เวรของทุกคน', 'inv': 'เฉพาะ พงส.', 'asst': 'เฉพาะ ผู้ช่วยฯ', 'clerk': 'เฉพาะ เสมียน', 'custom': 'เลือกรายบุคคล' };
             document.getElementById('btnFilterLabel').innerHTML = `<i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ${labels[type]}`;
             
@@ -615,9 +616,15 @@
         // ==========================================
         // 4. ระบบจัดการรายวัน (Daily Modal)
         // ==========================================
-        function openDailyModal(dateAD) {
-            selectedDateAD = dateAD;
-            const duty = rosterData[dateAD] || { dateTH: formatThaiDate(new Date(dateAD)), inv: '', asst: '', clerk: '' };
+        function openDailyModal(dateKey) {
+            selectedDateAD = dateKey;
+            
+            // สร้างวันที่ภาษาไทยเผื่อไว้กรณีเป็นวันใหม่ที่ยังไม่เคยจัดเวร
+            const parts = dateKey.split('/');
+            const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+            const defaultDateTH = formatThaiDate(dateObj);
+
+            const duty = rosterData[dateKey] || { dateTH: defaultDateTH, inv: '', asst: '', clerk: '' };
             selectedDateTH = duty.dateTH;
 
             document.getElementById('dailyModalTitle').innerText = `เวรวันที่ ${duty.dateTH}`;
@@ -629,7 +636,7 @@
             document.getElementById('editInvSelect').value = duty.inv;
             document.getElementById('editAsstSelect').value = duty.asst;
             document.getElementById('editClerkSelect').value = duty.clerk;
-            document.getElementById('isSwapDuty').checked = false; // รีเซ็ต Checkbox
+            document.getElementById('isSwapDuty').checked = false; 
 
             toggleEditDailyMode(false);
             document.getElementById('dailyModal').style.display = 'flex';
@@ -657,7 +664,8 @@
             let otherOptions = '<option value="">-- ว่าง --</option>';
 
             allOfficers.forEach(off => {
-                const fullName = `${off[0]}${off[2]} ${off[3]}`;
+                const fullName = off[4];
+                if (!fullName) return;
                 if (off[8] === 'พนักงานสอบสวน') invOptions += `<option value="${fullName}">${fullName}</option>`;
                 if (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน') otherOptions += `<option value="${fullName}">${fullName}</option>`;
             });
@@ -679,7 +687,7 @@
                 inv: document.getElementById('editInvSelect').value,
                 asst: document.getElementById('editAsstSelect').value,
                 clerk: document.getElementById('editClerkSelect').value,
-                isSwap: isSwap // ✨ ส่งสถานะแลกเวรไปให้ GAS
+                isSwap: isSwap 
             };
 
             try {
@@ -689,13 +697,14 @@
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    // ล้าง Cache เดือนนี้ทิ้ง เพื่อบังคับให้ดึงข้อมูลใหม่ที่สมบูรณ์ (รวม origName) จากชีต
-                    const monthKey = `${currentYear}-${currentMonth}`;
-                    fetchedMonths[monthKey] = false; 
-                    
-                    closeModal('dailyModal');
-                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
-                    await fetchMonthData(currentYear, currentMonth); // โหลดใหม่
+                    // หน่วงเวลาให้ GAS เขียนชีตเสร็จก่อนดึงใหม่
+                    setTimeout(async () => {
+                        const monthKey = `${currentYear}-${currentMonth}`;
+                        fetchedMonths[monthKey] = false; 
+                        closeModal('dailyModal');
+                        Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
+                        await fetchMonthData(currentYear, currentMonth); 
+                    }, 800);
                 }
             } catch (e) {
                 Swal.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
@@ -713,7 +722,8 @@
                 return `${fullName}\nโทร. ${phone}`;
             };
 
-            const dateObj = new Date(selectedDateAD);
+            const parts = selectedDateAD.split('/');
+            const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
             const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             const shortDateTH = `${dateObj.getDate()} ${thaiMonthsShort[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
 
@@ -738,14 +748,15 @@
             document.getElementById('patternContainer').innerHTML = '';
             patternCount = 0;
             document.getElementById('previewSection').style.display = 'none';
-            addPatternRow(); // สร้างช่องแรกมารอ
+            addPatternRow(); 
         }
 
         function getLoopOptionsHtml() {
             const role = document.getElementById('loopRoleSelect').value;
             let optionsHtml = '<option value="">-- เลือกเจ้าหน้าที่ --</option>';
             allOfficers.forEach(off => {
-                const fullName = `${off[0]}${off[2]} ${off[3]}`;
+                const fullName = off[4];
+                if (!fullName) return;
                 if (role === 'พนักงานสอบสวนเวร' && off[8] === 'พนักงานสอบสวน') optionsHtml += `<option value="${fullName}">${fullName}</option>`;
                 if ((role === 'ผู้ช่วยพนักงานสอบสวน' || role === 'เสมียนประจำวัน') && (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน')) {
                     optionsHtml += `<option value="${fullName}">${fullName}</option>`;
@@ -761,7 +772,6 @@
             row.className = 'pattern-row';
             row.id = `patternRow_${patternCount}`;
             
-            // ✨ Auto-append Logic: เมื่อเลือกชื่อ ให้สร้างช่องต่อไปรอเลย
             row.innerHTML = `
                 <div class="pattern-num">${patternCount}</div>
                 <select class="form-input loop-officer-select" id="officer_${patternCount}" onchange="handleSlotChange(this)">
@@ -776,7 +786,6 @@
         function handleSlotChange(selectEl) {
             const allSelects = document.querySelectorAll('.loop-officer-select');
             const lastSelect = allSelects[allSelects.length - 1];
-            // ถ้าช่องที่เพิ่งเลือก เป็นช่องสุดท้าย และมีค่า ให้สร้างช่องใหม่มารอ
             if (selectEl === lastSelect && selectEl.value !== '') {
                 addPatternRow();
             }
@@ -799,13 +808,13 @@
             
             if (!role || !startStr || !endStr) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกหน้าที่และวันที่ให้ครบ', 'warning');
 
-            const startDate = parseThaiDate(startStr);
-            const endDate = parseThaiDate(endStr);
+            const startDate = parseDMY(startStr);
+            const endDate = parseDMY(endStr);
             if (startDate > endDate) return Swal.fire('วันที่ไม่ถูกต้อง', 'วันเริ่มต้นต้องมาก่อนวันสิ้นสุด', 'error');
 
             const selects = document.querySelectorAll('.loop-officer-select');
             const pattern = [];
-            selects.forEach(sel => { if (sel.value) pattern.push(sel.value); }); // เอาเฉพาะช่องที่มีค่า
+            selects.forEach(sel => { if (sel.value) pattern.push(sel.value); }); 
             if (pattern.length === 0) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกคนในลูปอย่างน้อย 1 คน', 'warning');
 
             generatedData = [];
@@ -816,11 +825,11 @@
             let loopIndex = 0;
 
             while (currentDate <= endDate) {
-                const dateAD = formatADDate(currentDate);
+                const dateAD = formatDMY(currentDate); // ✨ ใช้ d/m/yyyy
                 const dateTH = formatThaiDate(currentDate);
                 const officerName = pattern[loopIndex % pattern.length];
 
-                let rowData = { dateAD: dateAD, dateTH: dateTH, inv: '', asst: '', clerk: '', isSwap: false };
+                let rowData = { dateAD: dateAD, dateTH: dateTH, isSwap: false };
                 if (role === 'พนักงานสอบสวนเวร') rowData.inv = officerName;
                 if (role === 'ผู้ช่วยพนักงานสอบสวน') rowData.asst = officerName;
                 if (role === 'เสมียนประจำวัน') rowData.clerk = officerName;
@@ -871,13 +880,13 @@
                         const json = await res.json();
 
                         if (json.status === 'success') {
-                            // ล้าง Cache เดือนนี้ทิ้ง เพื่อบังคับโหลดใหม่
-                            const monthKey = `${currentYear}-${currentMonth}`;
-                            fetchedMonths[monthKey] = false; 
-                            
-                            closeModal('loopModal');
-                            Swal.fire('สำเร็จ', 'บันทึกตารางเวรเรียบร้อยแล้ว', 'success');
-                            await fetchMonthData(currentYear, currentMonth);
+                            setTimeout(async () => {
+                                const monthKey = `${currentYear}-${currentMonth}`;
+                                fetchedMonths[monthKey] = false; 
+                                closeModal('loopModal');
+                                Swal.fire('สำเร็จ', 'บันทึกตารางเวรเรียบร้อยแล้ว', 'success');
+                                await fetchMonthData(currentYear, currentMonth);
+                            }, 800);
                         }
                     } catch (error) {
                         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
@@ -902,25 +911,23 @@
         // ==========================================
         // Utilities
         // ==========================================
-        function parseThaiDate(thaiDateStr) {
-            if (!thaiDateStr) return null;
-            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            const parts = thaiDateStr.split(' ');
-            if (parts.length !== 3) return null;
-            return new Date(parseInt(parts[2]) - 543, thaiMonths.indexOf(parts[1]), parseInt(parts[0]));
+        function parseDMY(dmyStr) {
+            if (!dmyStr) return null;
+            const parts = dmyStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        function formatDMY(dateObj) {
+            return `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
         }
         function formatThaiDate(dateObj) {
             const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             return `${dateObj.getDate()} ${thaiMonths[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
         }
-        function formatADDate(dateObj) {
-            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-        }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
         function initDatepickers() {
             flatpickr(".datepicker", {
-                locale: "th", dateFormat: "j F Y", disableMobile: "true",
+                locale: "th", dateFormat: "j/n/Y", disableMobile: "true", // ✨ บังคับให้ Flatpickr คืนค่าเป็น d/m/yyyy
                 onReady: function(selectedDates, dateStr, fp) {
                     if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
                         fp.currentYearElement.setAttribute('data-patched', 'true');
@@ -942,7 +949,10 @@
                 },
                 formatDate: (date, format, locale) => {
                     const thaiYear = date.getFullYear() + 543;
-                    return flatpickr.formatDate(date, format, locale).replace(date.getFullYear(), thaiYear);
+                    const d = date.getDate();
+                    const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                    const m = thaiMonths[date.getMonth()];
+                    return `${d} ${m} ${thaiYear}`; // แสดงผลให้คนดูเป็นภาษาไทยสวยๆ
                 }
             });
         }
