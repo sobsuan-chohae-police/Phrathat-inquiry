@@ -430,7 +430,7 @@
         
         // View State
         let isShowOriginal = false;
-        let currentFilter = { type: 'all', customName: '' }; // เก็บชื่อเดียวที่เลือก
+        let currentFilter = { type: 'all', customName: '' };
 
         // Loop Builder State
         let patternCount = 0;
@@ -446,13 +446,17 @@
         });
 
         // ==========================================
-        // 1. โหลดข้อมูลเริ่มต้น
+        // 1. โหลดข้อมูลเริ่มต้น (เพิ่มระบบ Debug)
         // ==========================================
         async function loadOfficersAndInit() {
-            Swal.fire({ title: 'กำลังเตรียมระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'กำลังเตรียมระบบ (1/2)...', text: 'กำลังเชื่อมต่อฐานข้อมูลหลัก', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
                 const resMain = await fetch(API_URL_MAIN + '?action=getOfficers');
+                if (!resMain.ok) throw new Error(`HTTP Error: ${resMain.status}`);
+                
                 const jsonMain = await resMain.json();
+                if (!jsonMain.officers) throw new Error('ไม่พบข้อมูล Officers จาก API ฐานข้อมูลหลัก');
+
                 allOfficers = jsonMain.officers;
                 
                 officerMap = {};
@@ -463,11 +467,13 @@
                 });
                 
                 populateEditDropdowns();
+                
+                // ไปโหลดข้อมูลเวรต่อ
                 await fetchMonthData(currentYear, currentMonth);
-                Swal.close();
 
             } catch (error) {
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                console.error("Main DB Error:", error);
+                Swal.fire('ข้อผิดพลาดฐานข้อมูลหลัก', `ไม่สามารถโหลดรายชื่อได้<br><small style="color:red;">${error.message}</small>`, 'error');
             }
         }
 
@@ -477,7 +483,7 @@
                 renderCalendar(); return; 
             }
 
-            Swal.fire({ title: 'กำลังโหลดข้อมูลเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'กำลังโหลดข้อมูลเวร (2/2)...', text: 'กำลังดึงตารางเวรของเดือนนี้', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
                 const startDate = `1/${month + 1}/${year}`;
                 const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
@@ -487,6 +493,8 @@
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'getRoster', startDate: startDate, endDate: endDate })
                 });
+                
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
                 const json = await res.json();
                 
                 if (json.data) {
@@ -496,7 +504,8 @@
                 Swal.close();
                 renderCalendar();
             } catch (e) {
-                Swal.fire('ข้อผิดพลาด', 'โหลดข้อมูลเวรไม่สำเร็จ', 'error');
+                console.error("Roster DB Error:", e);
+                Swal.fire('ข้อผิดพลาดตารางเวร', `โหลดข้อมูลเวรไม่สำเร็จ<br><small style="color:red;">${e.message}</small>`, 'error');
             }
         }
 
