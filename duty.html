@@ -448,7 +448,6 @@
         let allOfficers = [];
         let officerMap = {}; 
         let rosterData = {}; 
-        let fetchedYears = {}; // เปลี่ยนมาเก็บ Cache เป็นรายปี
         
         // View State
         let isShowOriginal = false;
@@ -481,44 +480,86 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initDatepickers();
-            loadDataFast(); // ใช้ระบบโหลดความเร็วสูง
+            startUltimateSpeedEngine(); // เริ่มระบบความเร็วสูงสุด
         });
 
         // ==========================================
-        // 1. ระบบโหลดข้อมูลความเร็วสูง (GET Request + Yearly Caching)
+        // 1. ระบบโหลดข้อมูลความเร็วสูงสุด (Ultimate Speed Engine)
         // ==========================================
-        async function loadDataFast() {
-            const cachedOfficers = sessionStorage.getItem('cached_officers');
-            
-            if (cachedOfficers) {
-                // ถ้ามี Cache ให้ดึงมาใช้ทันที (0 วินาที)
-                allOfficers = JSON.parse(cachedOfficers);
-                buildOfficerMap();
-                
-                // โหลดแค่ตารางเวร
-                await fetchMonthData(currentYear, currentMonth);
-                
-                // แอบไปดึงรายชื่อใหม่มาอัปเดต Cache ไว้เงียบๆ (Background)
-                fetch(API_URL_MAIN + '?action=getOfficers')
-                    .then(res => res.json())
-                    .then(json => {
-                        if(json.officers) sessionStorage.setItem('cached_officers', JSON.stringify(json.officers));
-                    }).catch(e => console.log('Background fetch failed'));
-            } else {
-                // ถ้าเข้าเว็บครั้งแรก (ไม่มี Cache) ต้องโหลดตามลำดับ
-                Swal.fire({ title: 'กำลังเตรียมระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        
+        // ฟังก์ชันช่วย: ยิง API แบบสู้ตาย (Retry 3 ครั้ง)
+        async function fetchWithRetry(url, options = {}, retries = 3) {
+            for (let i = 0; i < retries; i++) {
                 try {
-                    const resMain = await fetch(API_URL_MAIN + '?action=getOfficers');
-                    const jsonMain = await resMain.json();
-                    allOfficers = jsonMain.officers;
-                    
-                    sessionStorage.setItem('cached_officers', JSON.stringify(allOfficers));
+                    const res = await fetch(url, options);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return await res.json();
+                } catch (err) {
+                    if (i === retries - 1) throw err; // ถ้าครบ 3 รอบแล้วยังพัง ค่อยยอมแพ้
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // พัก 1 วิแล้วลองใหม่
+                }
+            }
+        }
+
+        async function startUltimateSpeedEngine() {
+            // 1. เช็คว่ามีข้อมูลในเครื่อง (LocalStorage) ไหม?
+            const cachedRoster = localStorage.getItem('roster_db');
+            const cachedOfficers = localStorage.getItem('officer_db');
+
+            if (cachedRoster && cachedOfficers) {
+                // ถ้ามี: เสกปฏิทินขึ้นมาทันที (0.1 วินาที)
+                allOfficers = JSON.parse(cachedOfficers);
+                rosterData = JSON.parse(cachedRoster);
+                buildOfficerMap();
+                renderCalendar();
+                
+                // จากนั้น แอบไปอัปเดตข้อมูลเบื้องหลังเงียบๆ
+                backgroundSync();
+            } else {
+                // ถ้าไม่มี (เข้าเว็บครั้งแรก): ต้องโหลดแบบมีหน้าต่างหมุนๆ
+                Swal.fire({ title: 'กำลังเตรียมระบบครั้งแรก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                await backgroundSync(true); // true = บังคับให้รอจนเสร็จ
+                Swal.close();
+            }
+        }
+
+        // ฟังก์ชันแอบอัปเดตเบื้องหลัง (จัดคิวไม่ให้ชนกัน)
+        async function backgroundSync(isFirstLoad = false) {
+            try {
+                // คิวที่ 1: โหลดตารางเวร (ดึงล่วงหน้า 3 ปี เพื่อให้ครอบคลุมการเปลี่ยนเดือน)
+                const startYear = currentYear - 1;
+                const endYear = currentYear + 1;
+                const rosterUrl = `${API_URL_ROSTER}?action=getRoster&startDate=1/1/${startYear}&endDate=31/12/${endYear}`;
+                
+                const rosterJson = await fetchWithRetry(rosterUrl);
+                if (rosterJson.data) {
+                    rosterData = {}; // ล้างของเก่า
+                    rosterJson.data.forEach(row => { rosterData[row.dateAD] = row; });
+                    localStorage.setItem('roster_db', JSON.stringify(rosterData)); // เซฟลงเครื่อง
+                }
+
+                // ถ้าไม่ใช่โหลดครั้งแรก ให้แอบวาดปฏิทินใหม่เผื่อมีข้อมูลเปลี่ยน
+                if (!isFirstLoad) renderCalendar();
+
+                // พักหายใจ 1 วินาที ให้ Google ไม่บล็อก
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // คิวที่ 2: โหลดรายชื่อเจ้าหน้าที่
+                const officerJson = await fetchWithRetry(API_URL_MAIN + '?action=getOfficers');
+                if (officerJson.officers) {
+                    allOfficers = officerJson.officers;
+                    localStorage.setItem('officer_db', JSON.stringify(allOfficers)); // เซฟลงเครื่อง
                     buildOfficerMap();
-                    
-                    await fetchMonthData(currentYear, currentMonth);
-                    Swal.close();
-                } catch (error) {
-                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลเจ้าหน้าที่ได้', 'error');
+                }
+
+                // วาดปฏิทินรอบสุดท้าย (เผื่อมีคนเปลี่ยนชื่อ)
+                if (!isFirstLoad) renderCalendar();
+
+            } catch (error) {
+                console.error("Background Sync Failed:", error);
+                // ถ้าแอบอัปเดตพัง ก็ปล่อยผ่านไป เพราะผู้ใช้ยังมีข้อมูลเก่าในเครื่องให้ดูอยู่
+                if (isFirstLoad) {
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
                 }
             }
         }
@@ -531,47 +572,19 @@
                 officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
             });
             populateEditDropdowns();
-            populateOrderCommanders(); // เติมชื่อผู้ออกคำสั่ง
-        }
-
-        // โหลดข้อมูลเวรแบบ "ดึงรวดเดียวทั้งปี" ด้วย GET Request
-        async function fetchMonthData(year, month) {
-            const yearKey = `Y${year}`;
-            if (fetchedYears[yearKey]) {
-                renderCalendar(); return; 
-            }
-
-            Swal.fire({ title: 'กำลังโหลดข้อมูลเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                // ดึงข้อมูลตั้งแต่วันที่ 1 ม.ค. ถึง 31 ธ.ค. ของปีนั้นๆ
-                const startDate = `1/1/${year}`;
-                const endDate = `31/12/${year}`;
-                
-                // ใช้ GET Request เพื่อความเร็วและทะลุ Redirect 100%
-                const url = `${API_URL_ROSTER}?action=getRoster&startDate=${startDate}&endDate=${endDate}`;
-
-                const res = await fetch(url);
-                const json = await res.json();
-                
-                if (json.data) {
-                    json.data.forEach(row => { rosterData[row.dateAD] = row; }); 
-                }
-                fetchedYears[yearKey] = true; // จำไว้ว่าปีนี้โหลดแล้ว
-                Swal.close();
-                renderCalendar();
-            } catch (e) {
-                Swal.fire('ข้อผิดพลาด', 'โหลดข้อมูลเวรไม่สำเร็จ', 'error');
-            }
+            populateOrderCommanders(); 
         }
 
         // ==========================================
         // 2. ระบบปฏิทิน (Calendar View)
         // ==========================================
-        async function changeMonth(delta) {
+        function changeMonth(delta) {
             currentMonth += delta;
             if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-            await fetchMonthData(currentYear, currentMonth);
+            
+            // เปลี่ยนเดือนปุ๊บ วาดปฏิทินปั๊บ (0 วินาที) เพราะข้อมูลอยู่ในเครื่องหมดแล้ว!
+            renderCalendar();
         }
 
         function openMonthYearPicker() {
@@ -596,11 +609,11 @@
                     const y = parseInt(document.getElementById('swal-year').value);
                     return { month: parseInt(document.getElementById('swal-month').value), year: y - 543 };
                 }
-            }).then(async (result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     currentMonth = result.value.month;
                     currentYear = result.value.year;
-                    await fetchMonthData(currentYear, currentMonth);
+                    renderCalendar(); // วาดทันที
                 }
             });
         }
@@ -864,10 +877,12 @@
             let newData = { dateAD: selectedDateAD, dateTH: selectedDateTH };
 
             if (isPermanent) {
+                // แก้ไขถาวร: เอาค่าใหม่ไปทับ Base เลย และล้าง Swap ทิ้ง
                 newData.baseInv = editInv; newData.swapInv = "";
                 newData.baseAsst = editAsst; newData.swapAsst = "";
                 newData.baseClerk = editClerk; newData.swapClerk = "";
             } else {
+                // แลกเวร/แทนเวร: Base คงเดิม, ถ้าค่าใหม่ไม่ตรงกับ Base ให้ใส่ใน Swap
                 newData.baseInv = oldDuty.baseInv;
                 newData.swapInv = (editInv !== oldDuty.baseInv) ? editInv : "";
                 
