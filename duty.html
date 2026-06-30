@@ -442,87 +442,42 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initDatepickers();
-            loadAllDataFast(); // เรียกใช้ฟังก์ชันโหลดแบบ Pro
+            loadOfficersAndInit();
         });
 
         // ==========================================
-        // 1. ระบบโหลดข้อมูลความเร็วสูง (Parallel & Caching)
+        // 1. โหลดข้อมูลเริ่มต้น (ใช้ Fetch แบบดั้งเดิม 100%)
         // ==========================================
-        async function loadAllDataFast() {
-            Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            
+        async function loadOfficersAndInit() {
+            Swal.fire({ title: 'กำลังเตรียมระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
-                // 1. จัดการข้อมูลเจ้าหน้าที่ (ใช้ Cache ถ้ามี)
-                let officersPromise;
-                const cachedOfficers = sessionStorage.getItem('cached_officers');
+                const resMain = await fetch(API_URL_MAIN + '?action=getOfficers');
+                const jsonMain = await resMain.json();
+                allOfficers = jsonMain.officers;
                 
-                if (cachedOfficers) {
-                    // ถ้ามี Cache ให้ใช้เลยทันที (0 วินาที)
-                    allOfficers = JSON.parse(cachedOfficers);
-                    buildOfficerMap();
-                    officersPromise = Promise.resolve(); 
-                } else {
-                    // ถ้าไม่มี ให้ไปดึงจากฐานข้อมูล
-                    officersPromise = fetch(API_URL_MAIN + '?action=getOfficers', { redirect: 'follow' })
-                        .then(res => { if(!res.ok) throw new Error('Main DB Error'); return res.json(); })
-                        .then(json => {
-                            allOfficers = json.officers;
-                            sessionStorage.setItem('cached_officers', JSON.stringify(allOfficers)); // บันทึก Cache
-                            buildOfficerMap();
-                        });
-                }
-
-                // 2. จัดการข้อมูลตารางเวร (ดึงใหม่เสมอ แต่ทำพร้อมกับข้อ 1)
-                const startDate = `1/${currentMonth + 1}/${currentYear}`;
-                const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-                const endDate = `${lastDayOfMonth}/${currentMonth + 1}/${currentYear}`;
-                const monthKey = `${currentYear}-${currentMonth}`;
-
-                let rosterPromise = fetch(API_URL_ROSTER, {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getRoster', startDate: startDate, endDate: endDate }),
-                    redirect: 'follow' // ✨ แก้ปัญหา Error Unexpected token 'R'
-                })
-                .then(res => { if(!res.ok) throw new Error('Roster DB Error'); return res.json(); })
-                .then(json => {
-                    if (json.data) {
-                        json.data.forEach(row => { rosterData[row.dateAD] = row; }); 
-                    }
-                    fetchedMonths[monthKey] = true;
+                officerMap = {};
+                allOfficers.forEach(off => {
+                    const fullName = off[4]; 
+                    if (!fullName) return;
+                    officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
                 });
-
-                // ⏳ รอให้ทั้ง 2 อย่างเสร็จพร้อมกัน (ประหยัดเวลาไปครึ่งนึง)
-                await Promise.all([officersPromise, rosterPromise]);
-
+                
+                populateEditDropdowns();
+                await fetchMonthData(currentYear, currentMonth);
                 Swal.close();
-                renderCalendar();
 
             } catch (error) {
-                console.error("Load Error:", error);
-                Swal.fire('ข้อผิดพลาด', `ไม่สามารถโหลดข้อมูลได้<br><small style="color:red;">${error.message}</small>`, 'error');
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้', 'error');
             }
         }
 
-        // ฟังก์ชันช่วยสร้าง Map รายชื่อ
-        function buildOfficerMap() {
-            officerMap = {};
-            allOfficers.forEach(off => {
-                const fullName = off[4]; 
-                if (!fullName) return;
-                officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
-            });
-            populateEditDropdowns();
-        }
-
-        // ฟังก์ชันโหลดข้อมูลเมื่อเปลี่ยนเดือน
         async function fetchMonthData(year, month) {
             const monthKey = `${year}-${month}`;
             if (fetchedMonths[monthKey]) {
                 renderCalendar(); return; 
             }
 
-            Swal.fire({ title: 'กำลังโหลดตารางเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'กำลังโหลดข้อมูลเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
                 const startDate = `1/${month + 1}/${year}`;
                 const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
@@ -530,11 +485,8 @@
 
                 const res = await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getRoster', startDate: startDate, endDate: endDate }),
-                    redirect: 'follow' // ✨ บังคับ Redirect
+                    body: JSON.stringify({ action: 'getRoster', startDate: startDate, endDate: endDate })
                 });
-                
-                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
                 const json = await res.json();
                 
                 if (json.data) {
@@ -544,8 +496,7 @@
                 Swal.close();
                 renderCalendar();
             } catch (e) {
-                console.error("Roster DB Error:", e);
-                Swal.fire('ข้อผิดพลาด', `โหลดข้อมูลเวรไม่สำเร็จ<br><small style="color:red;">${e.message}</small>`, 'error');
+                Swal.fire('ข้อผิดพลาด', 'โหลดข้อมูลเวรไม่สำเร็จ', 'error');
             }
         }
 
@@ -630,6 +581,7 @@
                 
                 const duty = rosterData[dateKey] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
                 
+                // Logic: ถ้าดูคำสั่งเดิม ให้โชว์ Base. ถ้าดูปกติ ให้โชว์ Swap ก่อน ถ้าไม่มี Swap ค่อยโชว์ Base
                 const rawInv = isShowOriginal ? duty.baseInv : (duty.swapInv || duty.baseInv);
                 const rawAsst = isShowOriginal ? duty.baseAsst : (duty.swapAsst || duty.baseAsst);
                 const rawClerk = isShowOriginal ? duty.baseClerk : (duty.swapClerk || duty.baseClerk);
@@ -641,6 +593,7 @@
                 let showInv = true, showAsst = true, showClerk = true;
                 let isDimmed = false;
 
+                // Filter Logic
                 if (currentFilter.type === 'inv') { showAsst = false; showClerk = false; if(!invName) isDimmed = true; }
                 if (currentFilter.type === 'asst') { showInv = false; showClerk = false; if(!asstName) isDimmed = true; }
                 if (currentFilter.type === 'clerk') { showInv = false; showAsst = false; if(!clerkName) isDimmed = true; }
@@ -652,7 +605,7 @@
                     showClerk = (rawClerk === target);
                     
                     if (!showInv && !showAsst && !showClerk) {
-                        isDimmed = true; 
+                        isDimmed = true; // วันนี้ไม่มีคนนี้เข้าเวร
                     } else {
                         foundCustomNameInMonth = true;
                     }
@@ -661,6 +614,7 @@
                 let html = `<div class="calendar-cell ${isDimmed ? 'dimmed' : ''}" onclick="openDailyModal('${dateKey}')">
                                 <div class="date-num ${isToday}">${day}</div>`;
                 
+                // แสดงเฉพาะหน้าที่ที่ผ่านการกรอง (ถ้าไม่ผ่าน จะเว้นว่างไว้เพื่อรักษา Layout)
                 html += showInv && invName ? `<div class="duty-name duty-inv">${invName}</div>` : `<div></div>`;
                 html += showAsst && asstName ? `<div class="duty-name duty-asst">${asstName}</div>` : `<div></div>`;
                 html += showClerk && clerkName ? `<div class="duty-name duty-clerk">${clerkName}</div>` : `<div></div>`;
@@ -675,6 +629,7 @@
                 calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
             }
 
+            // แจ้งเตือนถ้ากรองชื่อคนแล้วไม่เจอในเดือนนี้
             if (currentFilter.type === 'person' && currentFilter.customName && !foundCustomNameInMonth) {
                 Swal.fire({
                     toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
@@ -684,13 +639,15 @@
         }
 
         // ==========================================
-        // 3. ระบบกรอง (Filter Modal)
+        // 3. ระบบกรอง (Filter Modal) ปรับปรุงใหม่
         // ==========================================
         function openFilterModal() {
+            // Reset Filter ทุกครั้งที่เปิด
             document.querySelector('input[name="filterRole"][value="all"]').checked = true;
             document.getElementById('filterSearch').value = '';
             switchFilterTab('role');
             
+            // สร้าง Chips เฉพาะคนที่มีเวรในเดือนนี้
             const namesInMonth = new Set();
             Object.keys(rosterData).forEach(date => {
                 const parts = date.split('/');
@@ -747,7 +704,7 @@
             if (currentFilter.type === 'inv') label = 'เฉพาะ พงส.';
             if (currentFilter.type === 'asst') label = 'เฉพาะ ผู้ช่วยฯ';
             if (currentFilter.type === 'clerk') label = 'เฉพาะ เสมียน';
-            if (currentFilter.type === 'person') label = currentFilter.customName.split(' ')[0]; 
+            if (currentFilter.type === 'person') label = currentFilter.customName.split(' ')[0]; // โชว์ชื่อสั้นๆ
 
             document.getElementById('btnFilterLabel').innerHTML = `<i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ${label}`;
             
@@ -768,6 +725,7 @@
 
             document.getElementById('dailyModalTitle').innerText = `เวรวันที่ ${selectedDateTH}`;
             
+            // โชว์ค่าปัจจุบัน (Swap ถ้ามี, ถ้าไม่มีโชว์ Base)
             const curInv = duty.swapInv || duty.baseInv;
             const curAsst = duty.swapAsst || duty.baseAsst;
             const curClerk = duty.swapClerk || duty.baseClerk;
@@ -833,10 +791,12 @@
             let newData = { dateAD: selectedDateAD, dateTH: selectedDateTH };
 
             if (isPermanent) {
+                // แก้ไขถาวร: เอาค่าใหม่ไปทับ Base เลย และล้าง Swap ทิ้ง
                 newData.baseInv = editInv; newData.swapInv = "";
                 newData.baseAsst = editAsst; newData.swapAsst = "";
                 newData.baseClerk = editClerk; newData.swapClerk = "";
             } else {
+                // แลกเวร/แทนเวร: Base คงเดิม, ถ้าค่าใหม่ไม่ตรงกับ Base ให้ใส่ใน Swap
                 newData.baseInv = oldDuty.baseInv;
                 newData.swapInv = (editInv !== oldDuty.baseInv) ? editInv : "";
                 
@@ -850,8 +810,7 @@
             try {
                 const res = await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'saveRoster', data: [newData] }),
-                    redirect: 'follow'
+                    body: JSON.stringify({ action: 'saveRoster', data: [newData] })
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
@@ -963,6 +922,7 @@
             rows.forEach((row, index) => { row.querySelector('.pattern-num').innerText = index + 1; });
         }
 
+        // โหลดข้อมูลอ้างอิง 7 วันก่อนหน้า
         async function loadReferenceData(startDateObj) {
             const role = document.getElementById('loopRoleSelect').value;
             if (!role || !startDateObj) return;
@@ -972,14 +932,14 @@
             refBox.style.display = 'block';
             refContainer.innerHTML = '<div style="padding: 10px; color: #15803d;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูลอ้างอิง...</div>';
 
+            // คำนวณ 7 วันก่อนหน้า
             const endRef = new Date(startDateObj); endRef.setDate(endRef.getDate() - 1);
             const startRef = new Date(startDateObj); startRef.setDate(startRef.getDate() - 7);
 
             try {
                 const res = await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getRoster', startDate: formatDMY(startRef), endDate: formatDMY(endRef) }),
-                    redirect: 'follow'
+                    body: JSON.stringify({ action: 'getRoster', startDate: formatDMY(startRef), endDate: formatDMY(endRef) })
                 });
                 const json = await res.json();
                 
@@ -1079,6 +1039,7 @@
                         const finalDataToSave = generatedData.map(newItem => {
                             const oldItem = rosterData[newItem.dateAD];
                             if (oldItem) {
+                                // จัดลูป = บันทึกเป็น Base เสมอ และล้าง Swap ของหน้าที่นั้นทิ้ง
                                 return {
                                     dateAD: newItem.dateAD, dateTH: newItem.dateTH,
                                     baseInv: role === 'พนักงานสอบสวนเวร' ? newItem.baseInv : oldItem.baseInv,
@@ -1096,8 +1057,7 @@
 
                         const res = await fetch(API_URL_ROSTER, {
                             method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({ action: 'saveRoster', data: finalDataToSave }),
-                            redirect: 'follow'
+                            body: JSON.stringify({ action: 'saveRoster', data: finalDataToSave })
                         });
                         const json = await res.json();
 
@@ -1146,6 +1106,7 @@
             flatpickr(".datepicker", {
                 locale: "th", dateFormat: "j/n/Y", disableMobile: "true",
                 onChange: function(selectedDates, dateStr, instance) {
+                    // ถ้าเป็นการเลือกวันเริ่มต้นในหน้าจัดลูป ให้โหลดข้อมูลอ้างอิง
                     if (instance.element.id === 'loopStartDate' && selectedDates[0]) {
                         loadReferenceData(selectedDates[0]);
                     }
