@@ -448,7 +448,7 @@
         let allOfficers = [];
         let officerMap = {}; 
         let rosterData = {}; 
-        let fetchedMonths = {}; 
+        let fetchedYears = {}; // เปลี่ยนมาเก็บ Cache เป็นรายปี
         
         // View State
         let isShowOriginal = false;
@@ -485,7 +485,7 @@
         });
 
         // ==========================================
-        // 1. ระบบโหลดข้อมูลความเร็วสูง (Stale-while-revalidate)
+        // 1. ระบบโหลดข้อมูลความเร็วสูง (GET Request + Yearly Caching)
         // ==========================================
         async function loadDataFast() {
             const cachedOfficers = sessionStorage.getItem('cached_officers');
@@ -534,28 +534,29 @@
             populateOrderCommanders(); // เติมชื่อผู้ออกคำสั่ง
         }
 
+        // โหลดข้อมูลเวรแบบ "ดึงรวดเดียวทั้งปี" ด้วย GET Request
         async function fetchMonthData(year, month) {
-            const monthKey = `${year}-${month}`;
-            if (fetchedMonths[monthKey]) {
+            const yearKey = `Y${year}`;
+            if (fetchedYears[yearKey]) {
                 renderCalendar(); return; 
             }
 
             Swal.fire({ title: 'กำลังโหลดข้อมูลเวร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
-                const startDate = `1/${month + 1}/${year}`;
-                const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
-                const endDate = `${lastDayOfMonth}/${month + 1}/${year}`;
+                // ดึงข้อมูลตั้งแต่วันที่ 1 ม.ค. ถึง 31 ธ.ค. ของปีนั้นๆ
+                const startDate = `1/1/${year}`;
+                const endDate = `31/12/${year}`;
+                
+                // ใช้ GET Request เพื่อความเร็วและทะลุ Redirect 100%
+                const url = `${API_URL_ROSTER}?action=getRoster&startDate=${startDate}&endDate=${endDate}`;
 
-                const res = await fetch(API_URL_ROSTER, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getRoster', startDate: startDate, endDate: endDate })
-                });
+                const res = await fetch(url);
                 const json = await res.json();
                 
                 if (json.data) {
                     json.data.forEach(row => { rosterData[row.dateAD] = row; }); 
                 }
-                fetchedMonths[monthKey] = true; 
+                fetchedYears[yearKey] = true; // จำไว้ว่าปีนี้โหลดแล้ว
                 Swal.close();
                 renderCalendar();
             } catch (e) {
@@ -885,8 +886,7 @@
                 const json = await res.json();
                 if (json.status === 'success') {
                     setTimeout(async () => {
-                        const monthKey = `${currentYear}-${currentMonth}`;
-                        fetchedMonths[monthKey] = false; 
+                        fetchedYears = {}; // ล้าง Cache เพื่อบังคับโหลดใหม่
                         closeModal('dailyModal');
                         Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
                         await fetchMonthData(currentYear, currentMonth); 
@@ -920,7 +920,6 @@
             const msg = `วันนี้ (${shortDateTH}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(curInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(curAsst)}\n\nเสมียนประจำวัน\n${getLineText(curClerk)}`;
 
             navigator.clipboard.writeText(msg).then(() => {
-                // แจ้งเตือนแบบสั้นๆ
                 Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
             }).catch(err => {
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
@@ -1006,11 +1005,9 @@
             const startRef = new Date(startDateObj); startRef.setDate(startRef.getDate() - 7);
 
             try {
-                // เอา redirect: 'follow' ออก เพื่อป้องกัน Error
-                const res = await fetch(API_URL_ROSTER, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getRoster', startDate: formatDMY(startRef), endDate: formatDMY(endRef) })
-                });
+                // ใช้ GET Request ดึงข้อมูลอ้างอิง
+                const url = `${API_URL_ROSTER}?action=getRoster&startDate=${formatDMY(startRef)}&endDate=${formatDMY(endRef)}`;
+                const res = await fetch(url);
                 const json = await res.json();
                 
                 let html = '';
@@ -1038,7 +1035,6 @@
                 refContainer.innerHTML = html;
 
             } catch (e) {
-                console.error(e);
                 refContainer.innerHTML = '<div style="color: red;">โหลดข้อมูลอ้างอิงไม่สำเร็จ</div>';
             }
         }
@@ -1133,8 +1129,7 @@
 
                         if (json.status === 'success') {
                             setTimeout(async () => {
-                                const monthKey = `${currentYear}-${currentMonth}`;
-                                fetchedMonths[monthKey] = false; 
+                                fetchedYears = {}; // ล้าง Cache เพื่อบังคับโหลดใหม่
                                 closeModal('loopModal');
                                 Swal.fire('สำเร็จ', 'บันทึกตารางเวรเรียบร้อยแล้ว', 'success');
                                 await fetchMonthData(currentYear, currentMonth);
