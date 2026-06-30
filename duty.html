@@ -24,46 +24,53 @@
         .page-title { font-weight: 600; font-size: 1.25rem; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         /* --- Calendar Toolbar --- */
-        .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .month-nav { display: flex; align-items: center; gap: 15px; }
-        .month-nav button { background: white; border: 1px solid #cbd5e1; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1.1rem; box-shadow: var(--shadow-soft); }
+        .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .month-nav { display: flex; align-items: center; gap: 10px; }
+        .month-nav button { background: white; border: 1px solid #cbd5e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: var(--shadow-soft); }
         .month-nav button:hover { background: var(--navy-main); color: white; }
         
-        .current-month-label { font-size: 1.4rem; font-weight: 600; color: var(--navy-main); min-width: 180px; text-align: center; cursor: pointer; padding: 5px 15px; border-radius: 12px; transition: 0.2s; }
+        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); min-width: 150px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; }
         .current-month-label:hover { background: #f1f5f9; }
         
-        .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .btn-toolbar { background: white; border: 1px solid #cbd5e1; padding: 8px 15px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.95rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-soft); font-weight: 500; }
+        .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .btn-toolbar { background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow-soft); font-weight: 500; }
         .btn-toolbar:hover { background: #f8fafc; border-color: var(--navy-main); color: var(--navy-main); }
-        .btn-toolbar.active { background: var(--navy-main); color: white; border-color: var(--navy-main); }
-
+        
         /* Toggle Switch สำหรับดูคำสั่งเดิม */
-        .toggle-container { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 50px; border: 1px solid #cbd5e1; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
-        .toggle-switch { position: relative; width: 36px; height: 20px; background: #cbd5e1; border-radius: 20px; transition: 0.3s; }
-        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; }
+        .toggle-container { display: flex; align-items: center; gap: 6px; background: white; padding: 4px 10px; border-radius: 50px; border: 1px solid #cbd5e1; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+        .toggle-switch { position: relative; width: 32px; height: 18px; background: #cbd5e1; border-radius: 20px; transition: 0.3s; }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: white; border-radius: 50%; transition: 0.3s; }
         .toggle-container.active .toggle-switch { background: var(--warning); }
-        .toggle-container.active .toggle-switch::after { transform: translateX(16px); }
+        .toggle-container.active .toggle-switch::after { transform: translateX(14px); }
 
-        /* --- Calendar Grid (ปรับปรุงใหม่) --- */
+        /* Dropdown Menu (ปุ่ม +) */
+        .dropdown { position: relative; display: inline-block; }
+        .btn-add { background: var(--success); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-add:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.4); }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: var(--shadow-modal); z-index: 100; border-radius: 12px; overflow: hidden; margin-top: 8px; border: 1px solid #e2e8f0; }
+        .dropdown-content.show { display: block; animation: fadeUp 0.2s ease; }
+        .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
+        .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
+
+        /* --- Calendar Grid (บีบอัดความสูง) --- */
         .calendar-card { background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); overflow: hidden; border: 2px solid #cbd5e1; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid #cbd5e1; border-left: 1px solid #cbd5e1; }
-        .calendar-header { background: #f8fafc; text-align: center; padding: 12px 5px; font-weight: 600; font-size: 0.95rem; color: var(--text-main); border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+        .calendar-header { background: #f8fafc; text-align: center; padding: 8px 2px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
         
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
-        /* ล็อคความสูงและจัด Layout ภายในช่องวัน */
         .calendar-cell { 
-            height: 115px; min-height: 115px; padding: 4px; 
+            height: 85px; min-height: 85px; padding: 2px 4px; 
             border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; 
             background: white; cursor: pointer; transition: 0.2s; 
-            display: grid; grid-template-rows: 24px 1fr 1fr 1fr; gap: 2px;
+            display: grid; grid-template-rows: 18px repeat(3, minmax(0, 1fr)); gap: 1px;
         }
         .calendar-cell:hover { background: #f8fafc; }
         .calendar-cell.empty { background: #fcfcfc; cursor: default; }
         .calendar-cell.dimmed { opacity: 0.15; filter: grayscale(100%); } 
 
-        .date-num { font-weight: 600; font-size: 1rem; color: var(--text-main); justify-self: end; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .date-num { font-weight: 600; font-size: 0.9rem; color: var(--text-main); justify-self: end; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
@@ -72,25 +79,34 @@
         .calendar-cell:nth-child(7n+6) .date-num.today { background: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num.today { background: #ef4444; }
 
-        /* ชื่อคนเข้าเวร (Minimalist) */
+        /* ชื่อคนเข้าเวร (Minimalist + Swap Indicator) */
         .duty-name { 
-            font-size: 0.75rem; padding: 0 2px; white-space: nowrap; overflow: hidden; 
-            text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 4px;
-            letter-spacing: -0.2px;
+            font-size: 0.7rem; padding: 0 2px; white-space: nowrap; overflow: hidden; 
+            text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 3px;
+            letter-spacing: -0.3px;
         }
-        .duty-name::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        
+        /* จุดวงกลม (เวรปกติ) */
+        .duty-name::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        
+        /* เครื่องหมายตกใจ (เวรแทน/แลก) */
+        .duty-name.is-swap::before { 
+            content: '\f06a'; /* FontAwesome Exclamation Circle */
+            font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            background: transparent !important; font-size: 0.7rem; width: auto; height: auto;
+        }
         
         .duty-inv { color: #1d4ed8; } .duty-inv::before { background: #1d4ed8; }
         .duty-asst { color: #15803d; } .duty-asst::before { background: #15803d; }
         .duty-clerk { color: #c2410c; } .duty-clerk::before { background: #c2410c; }
 
         @media (max-width: 768px) {
-            .calendar-cell { height: 90px; min-height: 90px; grid-template-rows: 20px 1fr 1fr 1fr; }
-            .date-num { font-size: 0.9rem; width: 20px; height: 20px; }
+            .calendar-cell { height: 78px; min-height: 78px; grid-template-rows: 16px repeat(3, minmax(0, 1fr)); padding: 2px; }
+            .date-num { font-size: 0.85rem; width: 18px; height: 18px; }
             .duty-name { font-size: 0.65rem; gap: 2px; }
             .duty-name::before { width: 4px; height: 4px; }
-            .calendar-header { font-size: 0.8rem; padding: 8px 2px; }
-            .current-month-label { font-size: 1.2rem; min-width: 140px; }
+            .duty-name.is-swap::before { font-size: 0.65rem; }
+            .current-month-label { font-size: 1.1rem; min-width: 120px; }
         }
 
         /* --- Modals --- */
@@ -108,7 +124,7 @@
         .btn-edit-daily { background: var(--warning); color: white; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
         .btn-edit-daily:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3); }
 
-        /* --- Filter Modal Styles (ปรับปรุงใหม่) --- */
+        /* --- Filter Modal Styles --- */
         .search-box { position: relative; margin-bottom: 15px; }
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
         .search-box input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; }
@@ -165,19 +181,26 @@
                 <div class="current-month-label" id="monthLabel" onclick="openMonthYearPicker()" title="คลิกเพื่อเลือกเดือน/ปี">มิถุนายน 2569</div>
                 <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
+            
             <div class="toolbar-actions">
-                <button class="btn-toolbar" onclick="openOrderModal()">
-                    <i class="fa-solid fa-file-signature"></i> ออกคำสั่ง
-                </button>
-                <button class="btn-toolbar" onclick="openLoopModal()">
-                    <i class="fa-solid fa-rotate"></i> จัดลูป
-                </button>
+                <!-- 1. ปุ่มกรอง -->
                 <button class="btn-toolbar" onclick="openFilterModal()" id="btnFilterLabel">
                     <i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> เวรทุกคน
                 </button>
+                
+                <!-- 2. ปุ่มดูคำสั่งเดิม -->
                 <div class="toggle-container" id="toggleOriginalBtn" onclick="toggleOriginalView()">
                     <div class="toggle-switch"></div>
                     <span>ดูคำสั่งเดิม</span>
+                </div>
+                
+                <!-- 3. ปุ่ม + (Dropdown) -->
+                <div class="dropdown">
+                    <button class="btn-add" onclick="toggleDropdown(event)"><i class="fa-solid fa-plus"></i></button>
+                    <div class="dropdown-content" id="addMenu">
+                        <div class="dropdown-item" onclick="openOrderModal()"><i class="fa-solid fa-file-signature"></i> ออกคำสั่งเวร</div>
+                        <div class="dropdown-item" onclick="openLoopModal()"><i class="fa-solid fa-rotate"></i> จัดเวรวนลูป</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -326,7 +349,7 @@
     </div>
 
     <!-- ==========================================
-         MODAL 3: ตัวกรอง (Filter) ปรับปรุงใหม่
+         MODAL 3: ตัวกรอง (Filter)
          ========================================== -->
     <div id="filterModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 400px;">
@@ -403,8 +426,7 @@
                     <div class="form-group" style="grid-column: span 2;">
                         <label class="form-label">ผู้ออกคำสั่ง</label>
                         <select class="form-input" id="orderCommander">
-                            <option value="หัวหน้าสถานี">หัวหน้าสถานี</option>
-                            <option value="หัวหน้างานสอบสวน">หัวหน้างานสอบสวน</option>
+                            <!-- จะถูกเติมด้วย JS เฉพาะคนที่เป็น พงส. -->
                         </select>
                     </div>
                 </div>
@@ -440,35 +462,76 @@
         let selectedDateAD = ''; 
         let selectedDateTH = '';
 
+        // จัดการ Dropdown เมนู +
+        function toggleDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('addMenu').classList.toggle('show');
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-add') && !event.target.closest('.btn-add')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initDatepickers();
-            loadOfficersAndInit();
+            loadDataFast(); // ใช้ระบบโหลดความเร็วสูง
         });
 
         // ==========================================
-        // 1. โหลดข้อมูลเริ่มต้น (ใช้ Fetch แบบดั้งเดิม 100%)
+        // 1. ระบบโหลดข้อมูลความเร็วสูง (Stale-while-revalidate)
         // ==========================================
-        async function loadOfficersAndInit() {
-            Swal.fire({ title: 'กำลังเตรียมระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                const resMain = await fetch(API_URL_MAIN + '?action=getOfficers');
-                const jsonMain = await resMain.json();
-                allOfficers = jsonMain.officers;
+        async function loadDataFast() {
+            const cachedOfficers = sessionStorage.getItem('cached_officers');
+            
+            if (cachedOfficers) {
+                // ถ้ามี Cache ให้ดึงมาใช้ทันที (0 วินาที)
+                allOfficers = JSON.parse(cachedOfficers);
+                buildOfficerMap();
                 
-                officerMap = {};
-                allOfficers.forEach(off => {
-                    const fullName = off[4]; 
-                    if (!fullName) return;
-                    officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
-                });
-                
-                populateEditDropdowns();
+                // โหลดแค่ตารางเวร
                 await fetchMonthData(currentYear, currentMonth);
-                Swal.close();
-
-            } catch (error) {
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้', 'error');
+                
+                // แอบไปดึงรายชื่อใหม่มาอัปเดต Cache ไว้เงียบๆ (Background)
+                fetch(API_URL_MAIN + '?action=getOfficers')
+                    .then(res => res.json())
+                    .then(json => {
+                        if(json.officers) sessionStorage.setItem('cached_officers', JSON.stringify(json.officers));
+                    }).catch(e => console.log('Background fetch failed'));
+            } else {
+                // ถ้าเข้าเว็บครั้งแรก (ไม่มี Cache) ต้องโหลดตามลำดับ
+                Swal.fire({ title: 'กำลังเตรียมระบบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                try {
+                    const resMain = await fetch(API_URL_MAIN + '?action=getOfficers');
+                    const jsonMain = await resMain.json();
+                    allOfficers = jsonMain.officers;
+                    
+                    sessionStorage.setItem('cached_officers', JSON.stringify(allOfficers));
+                    buildOfficerMap();
+                    
+                    await fetchMonthData(currentYear, currentMonth);
+                    Swal.close();
+                } catch (error) {
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลเจ้าหน้าที่ได้', 'error');
+                }
             }
+        }
+
+        function buildOfficerMap() {
+            officerMap = {};
+            allOfficers.forEach(off => {
+                const fullName = off[4]; 
+                if (!fullName) return;
+                officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
+            });
+            populateEditDropdowns();
+            populateOrderCommanders(); // เติมชื่อผู้ออกคำสั่ง
         }
 
         async function fetchMonthData(year, month) {
@@ -581,10 +644,14 @@
                 
                 const duty = rosterData[dateKey] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
                 
-                // Logic: ถ้าดูคำสั่งเดิม ให้โชว์ Base. ถ้าดูปกติ ให้โชว์ Swap ก่อน ถ้าไม่มี Swap ค่อยโชว์ Base
                 const rawInv = isShowOriginal ? duty.baseInv : (duty.swapInv || duty.baseInv);
                 const rawAsst = isShowOriginal ? duty.baseAsst : (duty.swapAsst || duty.baseAsst);
                 const rawClerk = isShowOriginal ? duty.baseClerk : (duty.swapClerk || duty.baseClerk);
+
+                // เช็คว่าเป็นเวรแทนหรือไม่ (ถ้าไม่ได้ดูคำสั่งเดิม และมีข้อมูลในช่อง Swap)
+                const isInvSwap = !isShowOriginal && duty.swapInv;
+                const isAsstSwap = !isShowOriginal && duty.swapAsst;
+                const isClerkSwap = !isShowOriginal && duty.swapClerk;
 
                 const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
                 const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
@@ -593,7 +660,6 @@
                 let showInv = true, showAsst = true, showClerk = true;
                 let isDimmed = false;
 
-                // Filter Logic
                 if (currentFilter.type === 'inv') { showAsst = false; showClerk = false; if(!invName) isDimmed = true; }
                 if (currentFilter.type === 'asst') { showInv = false; showClerk = false; if(!asstName) isDimmed = true; }
                 if (currentFilter.type === 'clerk') { showInv = false; showAsst = false; if(!clerkName) isDimmed = true; }
@@ -605,7 +671,7 @@
                     showClerk = (rawClerk === target);
                     
                     if (!showInv && !showAsst && !showClerk) {
-                        isDimmed = true; // วันนี้ไม่มีคนนี้เข้าเวร
+                        isDimmed = true; 
                     } else {
                         foundCustomNameInMonth = true;
                     }
@@ -614,10 +680,10 @@
                 let html = `<div class="calendar-cell ${isDimmed ? 'dimmed' : ''}" onclick="openDailyModal('${dateKey}')">
                                 <div class="date-num ${isToday}">${day}</div>`;
                 
-                // แสดงเฉพาะหน้าที่ที่ผ่านการกรอง (ถ้าไม่ผ่าน จะเว้นว่างไว้เพื่อรักษา Layout)
-                html += showInv && invName ? `<div class="duty-name duty-inv">${invName}</div>` : `<div></div>`;
-                html += showAsst && asstName ? `<div class="duty-name duty-asst">${asstName}</div>` : `<div></div>`;
-                html += showClerk && clerkName ? `<div class="duty-name duty-clerk">${clerkName}</div>` : `<div></div>`;
+                // ใส่คลาส is-swap ถ้าเป็นเวรแทน
+                html += showInv && invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''}">${invName}</div>` : `<div></div>`;
+                html += showAsst && asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''}">${asstName}</div>` : `<div></div>`;
+                html += showClerk && clerkName ? `<div class="duty-name duty-clerk ${isClerkSwap ? 'is-swap' : ''}">${clerkName}</div>` : `<div></div>`;
                 
                 html += `</div>`;
                 calendarBody.innerHTML += html;
@@ -629,7 +695,6 @@
                 calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
             }
 
-            // แจ้งเตือนถ้ากรองชื่อคนแล้วไม่เจอในเดือนนี้
             if (currentFilter.type === 'person' && currentFilter.customName && !foundCustomNameInMonth) {
                 Swal.fire({
                     toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
@@ -639,15 +704,13 @@
         }
 
         // ==========================================
-        // 3. ระบบกรอง (Filter Modal) ปรับปรุงใหม่
+        // 3. ระบบกรอง (Filter Modal)
         // ==========================================
         function openFilterModal() {
-            // Reset Filter ทุกครั้งที่เปิด
             document.querySelector('input[name="filterRole"][value="all"]').checked = true;
             document.getElementById('filterSearch').value = '';
             switchFilterTab('role');
             
-            // สร้าง Chips เฉพาะคนที่มีเวรในเดือนนี้
             const namesInMonth = new Set();
             Object.keys(rosterData).forEach(date => {
                 const parts = date.split('/');
@@ -704,7 +767,7 @@
             if (currentFilter.type === 'inv') label = 'เฉพาะ พงส.';
             if (currentFilter.type === 'asst') label = 'เฉพาะ ผู้ช่วยฯ';
             if (currentFilter.type === 'clerk') label = 'เฉพาะ เสมียน';
-            if (currentFilter.type === 'person') label = currentFilter.customName.split(' ')[0]; // โชว์ชื่อสั้นๆ
+            if (currentFilter.type === 'person') label = currentFilter.customName.split(' ')[0]; 
 
             document.getElementById('btnFilterLabel').innerHTML = `<i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ${label}`;
             
@@ -725,7 +788,6 @@
 
             document.getElementById('dailyModalTitle').innerText = `เวรวันที่ ${selectedDateTH}`;
             
-            // โชว์ค่าปัจจุบัน (Swap ถ้ามี, ถ้าไม่มีโชว์ Base)
             const curInv = duty.swapInv || duty.baseInv;
             const curAsst = duty.swapAsst || duty.baseAsst;
             const curClerk = duty.swapClerk || duty.baseClerk;
@@ -776,6 +838,16 @@
             document.getElementById('editClerkSelect').innerHTML = otherOptions;
         }
 
+        function populateOrderCommanders() {
+            let options = '';
+            allOfficers.forEach(off => {
+                if (off[8] === 'พนักงานสอบสวน') {
+                    options += `<option value="${off[4]}">${off[4]}</option>`;
+                }
+            });
+            document.getElementById('orderCommander').innerHTML = options;
+        }
+
         async function saveDailyEdit() {
             const btn = document.getElementById('btnSaveDaily');
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
@@ -791,12 +863,10 @@
             let newData = { dateAD: selectedDateAD, dateTH: selectedDateTH };
 
             if (isPermanent) {
-                // แก้ไขถาวร: เอาค่าใหม่ไปทับ Base เลย และล้าง Swap ทิ้ง
                 newData.baseInv = editInv; newData.swapInv = "";
                 newData.baseAsst = editAsst; newData.swapAsst = "";
                 newData.baseClerk = editClerk; newData.swapClerk = "";
             } else {
-                // แลกเวร/แทนเวร: Base คงเดิม, ถ้าค่าใหม่ไม่ตรงกับ Base ให้ใส่ใน Swap
                 newData.baseInv = oldDuty.baseInv;
                 newData.swapInv = (editInv !== oldDuty.baseInv) ? editInv : "";
                 
@@ -850,7 +920,8 @@
             const msg = `วันนี้ (${shortDateTH}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(curInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(curAsst)}\n\nเสมียนประจำวัน\n${getLineText(curClerk)}`;
 
             navigator.clipboard.writeText(msg).then(() => {
-                Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', text: 'สามารถนำไปวางใน LINE ได้เลย', timer: 2000, showConfirmButton: false });
+                // แจ้งเตือนแบบสั้นๆ
+                Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
             }).catch(err => {
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
             });
@@ -922,7 +993,6 @@
             rows.forEach((row, index) => { row.querySelector('.pattern-num').innerText = index + 1; });
         }
 
-        // โหลดข้อมูลอ้างอิง 7 วันก่อนหน้า
         async function loadReferenceData(startDateObj) {
             const role = document.getElementById('loopRoleSelect').value;
             if (!role || !startDateObj) return;
@@ -932,11 +1002,11 @@
             refBox.style.display = 'block';
             refContainer.innerHTML = '<div style="padding: 10px; color: #15803d;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูลอ้างอิง...</div>';
 
-            // คำนวณ 7 วันก่อนหน้า
             const endRef = new Date(startDateObj); endRef.setDate(endRef.getDate() - 1);
             const startRef = new Date(startDateObj); startRef.setDate(startRef.getDate() - 7);
 
             try {
+                // เอา redirect: 'follow' ออก เพื่อป้องกัน Error
                 const res = await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'getRoster', startDate: formatDMY(startRef), endDate: formatDMY(endRef) })
@@ -968,6 +1038,7 @@
                 refContainer.innerHTML = html;
 
             } catch (e) {
+                console.error(e);
                 refContainer.innerHTML = '<div style="color: red;">โหลดข้อมูลอ้างอิงไม่สำเร็จ</div>';
             }
         }
@@ -1039,7 +1110,6 @@
                         const finalDataToSave = generatedData.map(newItem => {
                             const oldItem = rosterData[newItem.dateAD];
                             if (oldItem) {
-                                // จัดลูป = บันทึกเป็น Base เสมอ และล้าง Swap ของหน้าที่นั้นทิ้ง
                                 return {
                                     dateAD: newItem.dateAD, dateTH: newItem.dateTH,
                                     baseInv: role === 'พนักงานสอบสวนเวร' ? newItem.baseInv : oldItem.baseInv,
@@ -1106,7 +1176,6 @@
             flatpickr(".datepicker", {
                 locale: "th", dateFormat: "j/n/Y", disableMobile: "true",
                 onChange: function(selectedDates, dateStr, instance) {
-                    // ถ้าเป็นการเลือกวันเริ่มต้นในหน้าจัดลูป ให้โหลดข้อมูลอ้างอิง
                     if (instance.element.id === 'loopStartDate' && selectedDates[0]) {
                         loadReferenceData(selectedDates[0]);
                     }
