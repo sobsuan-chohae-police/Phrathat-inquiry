@@ -29,7 +29,6 @@
         .month-nav button { background: white; border: 1px solid #cbd5e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: var(--shadow-soft); }
         .month-nav button:hover { background: var(--navy-main); color: white; }
         
-        /* ล็อคความกว้างของชื่อเดือน */
         .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); min-width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; }
         .current-month-label:hover { background: #f1f5f9; }
         
@@ -53,75 +52,85 @@
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
-        /* ไอคอนโหลดเบื้องหลัง */
-        .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
-
-        /* --- Calendar Grid (บีบอัดความสูง & ขยายบนจอคอม) --- */
-        .calendar-card { background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); overflow: hidden; border: 2px solid #cbd5e1; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid #cbd5e1; border-left: 1px solid #cbd5e1; }
-        .calendar-header { background: #f8fafc; text-align: center; padding: 8px 2px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; }
+        /* --- Calendar Grid (Soft Neumorphism & Fixed 42 Cells) --- */
+        .calendar-card { background: white; border-radius: var(--radius-xl); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); overflow: hidden; border: none; padding: 2px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background: #e2e8f0; gap: 1px; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); overflow: hidden; }
         
+        /* ย้ายตัวอักษรวันไปชิดขวา */
+        .calendar-header { background: #f8fafc; text-align: right; padding: 10px 12px 10px 5px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); }
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
         .calendar-cell { 
-            height: 85px; min-height: 85px; padding: 2px 4px; 
-            border-right: 1px solid #cbd5e1; border-bottom: 1px solid #cbd5e1; 
+            height: 85px; min-height: 85px; padding: 4px; 
             background: white; cursor: pointer; transition: 0.2s; 
-            display: grid; grid-template-rows: 18px repeat(3, minmax(0, 1fr)); gap: 1px;
+            display: grid; grid-template-rows: 20px repeat(3, minmax(0, 1fr)); gap: 1px;
+            position: relative;
         }
-        .calendar-cell:hover { background: #f8fafc; }
+        .calendar-cell:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.08); transform: translateY(-1px); z-index: 10; border-radius: 8px; }
         .calendar-cell.empty { background: #fcfcfc; cursor: default; }
+        .calendar-cell.empty:hover { box-shadow: none; transform: none; z-index: 1; border-radius: 0; }
 
-        .date-num { font-weight: 600; font-size: 0.9rem; color: var(--text-main); justify-self: end; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .date-num { font-weight: 600; font-size: 0.95rem; color: var(--text-main); justify-self: end; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
-        .calendar-cell .date-num.today { color: white !important; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .calendar-cell:nth-child(7n+1) .date-num.today, .calendar-cell:nth-child(7n+2) .date-num.today, .calendar-cell:nth-child(7n+3) .date-num.today, .calendar-cell:nth-child(7n+4) .date-num.today, .calendar-cell:nth-child(7n+5) .date-num.today { background: var(--navy-main); }
-        .calendar-cell:nth-child(7n+6) .date-num.today { background: #8b5cf6; }
-        .calendar-cell:nth-child(7n+7) .date-num.today { background: #ef4444; }
+        /* สี "วันนี้" ตามวันไทย */
+        .today-color-0 { background: #ef4444 !important; color: white !important; box-shadow: 0 2px 5px rgba(239,68,68,0.4); } /* อาทิตย์ */
+        .today-color-1 { background: #eab308 !important; color: white !important; box-shadow: 0 2px 5px rgba(234,179,8,0.4); } /* จันทร์ */
+        .today-color-2 { background: #ec4899 !important; color: white !important; box-shadow: 0 2px 5px rgba(236,72,153,0.4); } /* อังคาร */
+        .today-color-3 { background: #22c55e !important; color: white !important; box-shadow: 0 2px 5px rgba(34,197,94,0.4); } /* พุธ */
+        .today-color-4 { background: #f97316 !important; color: white !important; box-shadow: 0 2px 5px rgba(249,115,22,0.4); } /* พฤหัสฯ */
+        .today-color-5 { background: #3b82f6 !important; color: white !important; box-shadow: 0 2px 5px rgba(59,130,246,0.4); } /* ศุกร์ */
+        .today-color-6 { background: #a855f7 !important; color: white !important; box-shadow: 0 2px 5px rgba(168,85,247,0.4); } /* เสาร์ */
 
-        /* ชื่อคนเข้าเวร (Minimalist + Swap Indicator) */
+        /* ชื่อคนเข้าเวร (Alignment เป๊ะ 100%) */
         .duty-name { 
-            font-size: 0.7rem; padding: 0 2px; white-space: nowrap; overflow: hidden; 
+            font-size: 0.7rem; padding: 1px 4px; white-space: nowrap; overflow: hidden; 
             text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 4px;
-            letter-spacing: -0.3px; transition: 0.2s;
+            letter-spacing: -0.2px; transition: 0.2s; border-radius: 4px;
         }
         
         /* จุดวงกลม (เวรปกติ - ซ่อนไว้เพื่อรักษา Alignment) */
-        .duty-name::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; opacity: 0; }
+        .duty-name::before { 
+            content: '\f111'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            font-size: 0.35rem; opacity: 0; flex-shrink: 0; width: 10px; text-align: center;
+        }
         
         /* เครื่องหมายตกใจ (เวรแทน/แลก) */
         .duty-name.is-swap::before { 
-            content: '\f06a'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
-            background: transparent !important; font-size: 0.7rem; width: auto; height: auto; opacity: 1;
+            content: '\f06a'; font-size: 0.75rem; opacity: 1;
         }
         
         .duty-inv { color: #1d4ed8; } .duty-inv.is-swap::before { color: #1d4ed8; }
         .duty-asst { color: #15803d; } .duty-asst.is-swap::before { color: #15803d; }
         .duty-clerk { color: #c2410c; } .duty-clerk.is-swap::before { color: #c2410c; }
 
-        /* สีเทาสำหรับคนที่ถูกกรองออก (Dimmed Text) */
+        /* การแสดงผลเมื่อถูกกรอง (Highlight & Dimmed) */
         .duty-name.dimmed-text { color: #cbd5e1 !important; font-weight: 400; }
         .duty-name.dimmed-text.is-swap::before { color: #cbd5e1 !important; }
+        
+        .duty-inv.highlight { background-color: #eff6ff; }
+        .duty-asst.highlight { background-color: #f0fdf4; }
+        .duty-clerk.highlight { background-color: #fff7ed; }
 
         /* --- Responsive Desktop (ขยายปฏิทินให้ใหญ่ขึ้น) --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 130px; min-height: 130px; padding: 6px 8px; grid-template-rows: 24px repeat(3, minmax(0, 1fr)); gap: 2px; }
-            .date-num { font-size: 1.1rem; width: 26px; height: 26px; }
-            .duty-name { font-size: 0.9rem; gap: 6px; letter-spacing: 0; }
-            .duty-name::before { width: 6px; height: 6px; }
-            .duty-name.is-swap::before { font-size: 0.9rem; }
-            .calendar-header { font-size: 1rem; padding: 12px; }
+            /* ปรับความสูงลงนิดนึงตามที่ขอ */
+            .calendar-cell { height: 105px; min-height: 105px; padding: 6px 8px; grid-template-rows: 24px repeat(3, minmax(0, 1fr)); gap: 2px; }
+            .date-num { font-size: 1.05rem; width: 26px; height: 26px; }
+            .duty-name { font-size: 0.85rem; gap: 6px; letter-spacing: 0; padding: 2px 6px; }
+            .duty-name::before { font-size: 0.4rem; width: 12px; }
+            .duty-name.is-swap::before { font-size: 0.85rem; }
+            .calendar-header { font-size: 0.95rem; padding: 12px 15px 12px 5px; }
         }
 
         @media (max-width: 768px) {
-            .calendar-cell { height: 78px; min-height: 78px; grid-template-rows: 16px repeat(3, minmax(0, 1fr)); padding: 2px; }
+            .calendar-cell { height: 78px; min-height: 78px; grid-template-rows: 18px repeat(3, minmax(0, 1fr)); padding: 2px; }
             .date-num { font-size: 0.85rem; width: 18px; height: 18px; }
-            .duty-name { font-size: 0.65rem; gap: 2px; }
-            .duty-name::before { width: 4px; height: 4px; }
+            .duty-name { font-size: 0.65rem; gap: 2px; padding: 0 2px; }
+            .duty-name::before { font-size: 0.3rem; width: 8px; }
             .duty-name.is-swap::before { font-size: 0.65rem; }
             .current-month-label { font-size: 1.1rem; min-width: 140px; }
         }
@@ -148,15 +157,11 @@
         .swap-box input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
         /* --- Filter Modal Styles --- */
-        .search-box { position: relative; margin-bottom: 15px; }
-        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-        .search-box input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: 'Kanit'; font-size: 1rem; }
-        
         .filter-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .filter-tab { flex: 1; text-align: center; padding: 8px; background: #f1f5f9; border-radius: 8px; cursor: pointer; font-weight: 500; color: var(--text-light); transition: 0.2s; }
+        .filter-tab { flex: 1; text-align: center; padding: 8px; background: #f1f5f9; border-radius: 8px; cursor: pointer; font-weight: 500; color: var(--text-light); transition: 0.2s; font-size: 0.95rem; }
         .filter-tab.active { background: var(--navy-main); color: white; }
         
-        .filter-checkbox-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .filter-checkbox-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
         .filter-cb-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .filter-cb-row:hover { background: #f8fafc; border-color: var(--navy-main); }
         .filter-cb-row input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
@@ -197,9 +202,6 @@
             </div>
             
             <div class="toolbar-actions">
-                <!-- ไอคอนโหลดเบื้องหลัง -->
-                <i id="syncIndicator" class="fa-solid fa-arrows-rotate fa-spin sync-indicator" title="กำลังอัปเดตข้อมูล..."></i>
-
                 <!-- 1. ปุ่มกรอง -->
                 <button class="btn-toolbar" onclick="openFilterModal()" id="btnFilterLabel">
                     <i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ทุกคน
@@ -271,7 +273,7 @@
                 </div>
             </div>
 
-            <!-- โหมดแก้ไขรายวัน (ปรับปรุง Checkbox อิสระ) -->
+            <!-- โหมดแก้ไขรายวัน (Checkbox อิสระ) -->
             <div class="modal-body" id="dailyEditMode" style="display: none;">
                 
                 <div class="form-group" style="margin-bottom: 15px;">
@@ -402,11 +404,7 @@
 
                 <!-- Tab: Person (Checkbox List) -->
                 <div id="filterPersonContent" style="display: none;">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="filterSearch" placeholder="ค้นหาชื่อ..." onkeyup="searchFilterList()">
-                    </div>
-                    <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px;">เลือกรายชื่อที่ต้องการดู (เลือกได้หลายคน):</p>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px;">เลือกรายชื่อที่ต้องการดู (เลือกได้หลายคน):</p>
                     <div class="filter-checkbox-list" id="filterListContainer">
                         <!-- Checkboxes generated by JS -->
                     </div>
@@ -469,15 +467,16 @@
         let allOfficers = [];
         let officerMap = {}; 
         let rosterData = {}; 
+        let cachedRange = { start: null, end: null }; // เก็บช่วงวันที่โหลดมาแล้ว (6 เดือน)
         
         // View State
         let isShowOriginal = false;
-        let currentFilter = { type: 'all', customNames: [] }; // รองรับหลายชื่อ
+        let currentFilter = { type: 'all', customNames: [] };
 
         // Edit State
         let selectedDateAD = ''; 
         let selectedDateTH = '';
-        let currentEditDuty = {}; // เก็บค่าเดิมตอนเปิดหน้าต่างแก้ไข
+        let currentEditDuty = {}; 
 
         // Loop Builder State
         let patternCount = 0;
@@ -506,7 +505,7 @@
         });
 
         // ==========================================
-        // 1. ระบบโหลดข้อมูลความเร็วสูงสุด (Ultimate Speed Engine)
+        // 1. ระบบโหลดข้อมูล 6 เดือน (Silent Background Sync)
         // ==========================================
         async function fetchWithRetry(url, options = {}, retries = 3) {
             for (let i = 0; i < retries; i++) {
@@ -522,46 +521,40 @@
         }
 
         async function startUltimateSpeedEngine() {
-            const cachedRoster = localStorage.getItem('roster_db');
             const cachedOfficers = localStorage.getItem('officer_db');
-
-            if (cachedRoster && cachedOfficers) {
-                // มี Cache: โชว์ทันที
+            if (cachedOfficers) {
                 allOfficers = JSON.parse(cachedOfficers);
-                rosterData = JSON.parse(cachedRoster);
                 buildOfficerMap();
-                renderCalendar();
-                backgroundSync(); // แอบอัปเดต
-            } else {
-                // ไม่มี Cache: โหลดครั้งแรก
-                Swal.fire({ title: 'กำลังเตรียมระบบครั้งแรก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                await backgroundSync(true); 
-                Swal.close();
             }
+            
+            // วาดปฏิทินทันที (อาจจะว่างเปล่าถ้าไม่มี Cache)
+            renderCalendar();
+            
+            // แอบโหลดข้อมูล 6 เดือนเบื้องหลัง
+            await backgroundSync(true); 
         }
 
-        async function backgroundSync(isFirstLoad = false) {
-            const syncIcon = document.getElementById('syncIndicator');
-            if (!isFirstLoad) syncIcon.style.display = 'inline-block'; // โชว์ไอคอนหมุนๆ
-
+        async function backgroundSync(isInitial = false) {
             try {
-                // โหลดตารางเวร (ดึงล่วงหน้า 3 ปี)
-                const startYear = currentYear - 1;
-                const endYear = currentYear + 1;
-                const rosterUrl = `${API_URL_ROSTER}?action=getRoster&startDate=1/1/${startYear}&endDate=31/12/${endYear}`;
+                // คำนวณช่วง 6 เดือน (ย้อนหลัง 2 เดือน, ล่วงหน้า 4 เดือน)
+                const fetchStart = new Date(currentYear, currentMonth - 2, 1);
+                const fetchEnd = new Date(currentYear, currentMonth + 4, 0);
+                
+                const startStr = `${fetchStart.getDate()}/${fetchStart.getMonth()+1}/${fetchStart.getFullYear()}`;
+                const endStr = `${fetchEnd.getDate()}/${fetchEnd.getMonth()+1}/${fetchEnd.getFullYear()}`;
+                
+                const rosterUrl = `${API_URL_ROSTER}?action=getRoster&startDate=${startStr}&endDate=${endStr}`;
                 
                 const rosterJson = await fetchWithRetry(rosterUrl);
                 if (rosterJson.data) {
-                    rosterData = {}; 
                     rosterJson.data.forEach(row => { rosterData[row.dateAD] = row; });
-                    localStorage.setItem('roster_db', JSON.stringify(rosterData)); 
+                    cachedRange.start = fetchStart;
+                    cachedRange.end = fetchEnd;
                 }
 
-                if (!isFirstLoad) renderCalendar();
+                renderCalendar();
 
-                await new Promise(resolve => setTimeout(resolve, 1000)); // พัก 1 วิ
-
-                // โหลดรายชื่อเจ้าหน้าที่
+                // โหลดรายชื่อเจ้าหน้าที่เงียบๆ
                 const officerJson = await fetchWithRetry(API_URL_MAIN + '?action=getOfficers');
                 if (officerJson.officers) {
                     allOfficers = officerJson.officers;
@@ -569,13 +562,10 @@
                     buildOfficerMap();
                 }
 
-                if (!isFirstLoad) renderCalendar();
+                renderCalendar();
 
             } catch (error) {
                 console.error("Background Sync Failed:", error);
-                if (isFirstLoad) Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
-            } finally {
-                syncIcon.style.display = 'none'; // ซ่อนไอคอนหมุนๆ
             }
         }
 
@@ -593,11 +583,22 @@
         // ==========================================
         // 2. ระบบปฏิทิน (Calendar View)
         // ==========================================
-        function changeMonth(delta) {
+        async function changeMonth(delta) {
             currentMonth += delta;
             if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-            renderCalendar();
+            
+            const targetDate = new Date(currentYear, currentMonth, 1);
+            
+            // เช็คว่าเดือนที่กดไป อยู่ในกรอบ 6 เดือนที่โหลดมาแล้วหรือไม่
+            if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
+                renderCalendar(); // เปลี่ยนทันที 0 วินาที
+            } else {
+                // ถ้าหลุดกรอบ 6 เดือน ค่อยขึ้นหน้าต่างโหลด
+                Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                await backgroundSync();
+                Swal.close();
+            }
         }
 
         function openMonthYearPicker() {
@@ -622,11 +623,19 @@
                     const y = parseInt(document.getElementById('swal-year').value);
                     return { month: parseInt(document.getElementById('swal-month').value), year: y - 543 };
                 }
-            }).then((result) => {
+            }).then(async (result) => {
                 if (result.isConfirmed) {
                     currentMonth = result.value.month;
                     currentYear = result.value.year;
-                    renderCalendar(); 
+                    
+                    const targetDate = new Date(currentYear, currentMonth, 1);
+                    if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
+                        renderCalendar();
+                    } else {
+                        Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                        await backgroundSync();
+                        Swal.close();
+                    }
                 }
             });
         }
@@ -647,25 +656,33 @@
             document.getElementById('monthLabel').innerText = `${thaiMonths[currentMonth]} ${currentYear + 543}`;
 
             const firstDay = new Date(currentYear, currentMonth, 1);
-            const lastDay = new Date(currentYear, currentMonth + 1, 0);
-            
             let startOffset = firstDay.getDay() - 1;
             if (startOffset === -1) startOffset = 6; 
 
-            const totalDays = lastDay.getDate();
             const calendarBody = document.getElementById('calendarBody');
             calendarBody.innerHTML = '';
 
             const today = new Date();
             const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; 
 
-            for (let i = 0; i < startOffset; i++) {
-                calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
-            }
+            // วาด 42 ช่องเสมอ (6 สัปดาห์)
+            for (let i = 0; i < 42; i++) {
+                const cellDate = new Date(currentYear, currentMonth, 1 - startOffset + i);
+                const isCurrentMonth = cellDate.getMonth() === currentMonth;
+                
+                if (!isCurrentMonth) {
+                    calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
+                    continue;
+                }
 
-            for (let day = 1; day <= totalDays; day++) {
+                const day = cellDate.getDate();
                 const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; 
-                const isToday = (dateKey === todayStr) ? 'today' : '';
+                
+                let isTodayClass = '';
+                if (dateKey === todayStr) {
+                    const dayOfWeek = cellDate.getDay(); // 0=Sun, 1=Mon, ...
+                    isTodayClass = `today today-color-${dayOfWeek}`;
+                }
                 
                 const duty = rosterData[dateKey] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
                 
@@ -681,34 +698,31 @@
                 const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
                 const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk) : '';
 
+                let invHighlight = false, asstHighlight = false, clerkHighlight = false;
                 let invDimmed = false, asstDimmed = false, clerkDimmed = false;
 
-                // Filter Logic (Dimming)
-                if (currentFilter.type === 'inv') { asstDimmed = true; clerkDimmed = true; }
-                else if (currentFilter.type === 'asst') { invDimmed = true; clerkDimmed = true; }
-                else if (currentFilter.type === 'clerk') { invDimmed = true; asstDimmed = true; }
-                else if (currentFilter.type === 'person' && currentFilter.customNames.length > 0) {
-                    invDimmed = !currentFilter.customNames.includes(rawInv);
-                    asstDimmed = !currentFilter.customNames.includes(rawAsst);
-                    clerkDimmed = !currentFilter.customNames.includes(rawClerk);
+                // Filter Logic (Highlight & Dimmed)
+                if (currentFilter.type === 'inv') { 
+                    invHighlight = true; asstDimmed = true; clerkDimmed = true; 
+                } else if (currentFilter.type === 'asst') { 
+                    asstHighlight = true; invDimmed = true; clerkDimmed = true; 
+                } else if (currentFilter.type === 'clerk') { 
+                    clerkHighlight = true; invDimmed = true; asstDimmed = true; 
+                } else if (currentFilter.type === 'person' && currentFilter.customNames.length > 0) {
+                    if (currentFilter.customNames.includes(rawInv)) invHighlight = true; else invDimmed = true;
+                    if (currentFilter.customNames.includes(rawAsst)) asstHighlight = true; else asstDimmed = true;
+                    if (currentFilter.customNames.includes(rawClerk)) clerkHighlight = true; else clerkDimmed = true;
                 }
 
                 let html = `<div class="calendar-cell" onclick="openDailyModal('${dateKey}')">
-                                <div class="date-num ${isToday}">${day}</div>`;
+                                <div class="date-num ${isTodayClass}">${day}</div>`;
                 
-                // Render Names (Keep grid intact, just dim the text)
-                html += invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''} ${invDimmed ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
-                html += asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''} ${asstDimmed ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
-                html += clerkName ? `<div class="duty-name duty-clerk ${isClerkSwap ? 'is-swap' : ''} ${clerkDimmed ? 'dimmed-text' : ''}">${clerkName}</div>` : `<div class="duty-name"></div>`;
+                html += invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''} ${invHighlight ? 'highlight' : ''} ${invDimmed ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
+                html += asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''} ${asstHighlight ? 'highlight' : ''} ${asstDimmed ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
+                html += clerkName ? `<div class="duty-name duty-clerk ${isClerkSwap ? 'is-swap' : ''} ${clerkHighlight ? 'highlight' : ''} ${clerkDimmed ? 'dimmed-text' : ''}">${clerkName}</div>` : `<div class="duty-name"></div>`;
                 
                 html += `</div>`;
                 calendarBody.innerHTML += html;
-            }
-
-            const totalCells = startOffset + totalDays;
-            const remainingCells = (7 - (totalCells % 7)) % 7;
-            for (let i = 0; i < remainingCells; i++) {
-                calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
             }
         }
 
@@ -717,7 +731,6 @@
         // ==========================================
         function openFilterModal() {
             document.querySelector('input[name="filterRole"][value="all"]').checked = true;
-            document.getElementById('filterSearch').value = '';
             switchFilterTab('role');
             
             const namesInMonth = new Set();
@@ -740,7 +753,7 @@
                     </label>
                 `;
             });
-            if (listHtml === '') listHtml = '<p style="color:#94a3b8; font-size:0.9rem;">ไม่มีข้อมูลเวรในเดือนนี้</p>';
+            if (listHtml === '') listHtml = '<p style="color:#94a3b8; font-size:0.9rem; padding:10px;">ไม่มีข้อมูลเวรในเดือนนี้</p>';
             
             document.getElementById('filterListContainer').innerHTML = listHtml;
             document.getElementById('filterModal').style.display = 'flex';
@@ -751,13 +764,6 @@
             document.getElementById('tabPerson').classList.toggle('active', tab === 'person');
             document.getElementById('filterRoleContent').style.display = tab === 'role' ? 'block' : 'none';
             document.getElementById('filterPersonContent').style.display = tab === 'person' ? 'block' : 'none';
-        }
-
-        function searchFilterList() {
-            const text = document.getElementById('filterSearch').value.toLowerCase();
-            document.querySelectorAll('.filter-cb-row').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(text) ? 'flex' : 'none';
-            });
         }
 
         function applyFilter() {
@@ -876,14 +882,12 @@
 
             let isChanged = false;
 
-            // Helper function สำหรับจัดการแต่ละหน้าที่
             const handleRoleChange = (curVal, origVal, baseVal, boxId, cbId) => {
                 const box = document.getElementById(boxId);
                 const cb = document.getElementById(cbId);
                 
                 if (curVal !== origVal) {
                     isChanged = true;
-                    // ถ้าค่าใหม่ ไม่ใช่ Base เดิม แสดงว่าเป็นการเปลี่ยนคนใหม่จริงๆ -> โชว์ Checkbox
                     if (curVal !== baseVal) {
                         box.style.display = 'block';
                         if (cb.checked) {
@@ -894,7 +898,6 @@
                             box.querySelector('span').innerText = 'แก้ไขคำสั่งถาวร';
                         }
                     } else {
-                        // ถ้าค่าใหม่ กลับไปตรงกับ Base เดิม (Smart Revert) -> ซ่อน Checkbox
                         box.style.display = 'none';
                     }
                 } else {
@@ -924,25 +927,22 @@
 
             let newData = { dateAD: selectedDateAD, dateTH: selectedDateTH };
 
-            // Helper function สำหรับเตรียมข้อมูลบันทึก
             const processSaveRole = (curVal, origVal, baseVal, swapVal, cbId, keyBase, keySwap) => {
                 if (curVal !== origVal) {
                     if (curVal === baseVal) {
-                        // Smart Revert: กลับไปใช้ Base เดิม ล้าง Swap
                         newData[keyBase] = baseVal;
                         newData[keySwap] = "";
                     } else {
                         const isSwap = document.getElementById(cbId).checked;
                         if (isSwap) {
-                            newData[keyBase] = baseVal; // Base คงเดิม
-                            newData[keySwap] = curVal;  // ใส่ Swap
+                            newData[keyBase] = baseVal; 
+                            newData[keySwap] = curVal;  
                         } else {
-                            newData[keyBase] = curVal;  // ทับ Base
-                            newData[keySwap] = "";      // ล้าง Swap
+                            newData[keyBase] = curVal;  
+                            newData[keySwap] = "";      
                         }
                     }
                 } else {
-                    // ไม่มีการเปลี่ยนแปลง
                     newData[keyBase] = baseVal;
                     newData[keySwap] = swapVal;
                 }
@@ -961,12 +961,10 @@
                 Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
 
                 // ส่งไปบันทึกที่ Google เบื้องหลัง
-                document.getElementById('syncIndicator').style.display = 'inline-block';
                 await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'saveRoster', data: [newData] })
                 });
-                document.getElementById('syncIndicator').style.display = 'none';
 
             } catch (e) {
                 Swal.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
@@ -1203,12 +1201,10 @@
                         Swal.fire('สำเร็จ', 'บันทึกตารางเวรเรียบร้อยแล้ว', 'success');
 
                         // ส่งไปบันทึกที่ Google เบื้องหลัง
-                        document.getElementById('syncIndicator').style.display = 'inline-block';
                         await fetch(API_URL_ROSTER, {
                             method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ action: 'saveRoster', data: finalDataToSave })
                         });
-                        document.getElementById('syncIndicator').style.display = 'none';
 
                     } catch (error) {
                         Swal.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
