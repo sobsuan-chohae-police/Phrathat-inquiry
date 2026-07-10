@@ -32,8 +32,8 @@
         .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .month-nav button:hover { background: var(--navy-main); color: white; transform: scale(1.05); }
         
-        /* ล็อคความกว้างของชื่อเดือนให้คงที่ */
-        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; display: inline-block; }
+        /* ล็อคความกว้างของชื่อเดือนให้คงที่ และห้ามตกบรรทัด */
+        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; display: inline-block; white-space: nowrap; }
         .current-month-label:hover { background: #e2e8f0; }
         
         .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -57,6 +57,9 @@
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
+        /* ไอคอนโหลดเบื้องหลัง */
+        .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
+
         /* --- Calendar Grid (Samsung One UI Style) --- */
         .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
@@ -68,9 +71,9 @@
 
         /* --- การตั้งค่าช่องปฏิทิน (ตอกหมุด Absolute) --- */
         .calendar-cell { 
-            position: relative; /* สำคัญมาก สำหรับตอกหมุด */
+            position: relative; 
             height: 95px; min-height: 95px; 
-            padding: 26px 6px 6px 6px; /* เว้นที่ด้านบน 26px ให้วันหยุดและวันที่ */
+            padding: 26px 6px 6px 6px; 
             background: white; border-radius: 16px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
             cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -86,7 +89,7 @@
             position: absolute; top: 4px; left: 4px; 
             font-size: 0.7rem; color: #ef4444; background: #fef2f2; 
             padding: 2px 6px; border-radius: 6px; font-weight: 500;
-            max-width: calc(100% - 32px); /* ห้ามกว้างไปทับตัวเลขวันที่ */
+            max-width: calc(100% - 32px); 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
         
@@ -130,7 +133,8 @@
         .duty-clerk { color: #c2410c; } 
 
         /* การแสดงผลเมื่อถูกกรอง (Highlight & Dimmed) */
-        .duty-name.dimmed-text { color: #cbd5e1 !important; font-weight: 400; }
+        /* ปรับสีเทาให้เข้มขึ้นเพื่อให้อ่านออกง่ายขึ้น (Accessibility) */
+        .duty-name.dimmed-text { color: #94a3b8 !important; font-weight: 400; }
         
         .duty-inv.highlight { background-color: #eff6ff; }
         .duty-asst.highlight { background-color: #f0fdf4; }
@@ -149,7 +153,7 @@
 
         /* --- Responsive Mobile (Edge-to-Edge & ขยับดอกจันชิดซ้าย) --- */
         @media (max-width: 768px) {
-            .container { padding: 15px 4px; } /* ลดขอบซ้ายขวาเหลือ 4px */
+            .container { padding: 15px 4px; } 
             .calendar-grid { gap: 4px; }
             .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 10px; }
             
@@ -161,7 +165,7 @@
             .duty-name::before { font-size: 0.8rem; width: 6px; transform: translateY(1px); margin-left: 0; }
             
             .calendar-header { font-size: 0.8rem; padding: 2px 6px; }
-            .current-month-label { font-size: 1.1rem; width: 140px; }
+            .current-month-label { font-size: 1.1rem; width: 160px; } 
         }
 
         /* --- Modals --- */
@@ -232,6 +236,9 @@
             </div>
             
             <div class="toolbar-actions">
+                <!-- ไอคอนโหลดเบื้องหลัง (ซ่อนไว้) -->
+                <i id="syncIndicator" class="fa-solid fa-arrows-rotate fa-spin sync-indicator" title="กำลังอัปเดตข้อมูล..."></i>
+
                 <!-- 1. ปุ่มกรอง -->
                 <button class="btn-toolbar" onclick="openFilterModal()" id="btnFilterLabel">
                     <i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ทุกคน
@@ -283,9 +290,9 @@
             </div>
             <div class="modal-body" id="dailyViewMode">
                 
-                <!-- แบนเนอร์วันหยุด -->
+                <!-- แบนเนอร์วันหยุด (เอาคำว่า วันสำคัญ: ออก) -->
                 <div id="modalHolidayBanner" style="display: none; background: #fef2f2; color: #b91c1c; padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 0.9rem; font-weight: 500; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-star"></i> <span>วันสำคัญ: <span id="modalHolidayText"></span></span>
+                    <i class="fa-solid fa-star"></i> <span id="modalHolidayText"></span>
                 </div>
 
                 <div class="detail-row">
@@ -463,6 +470,7 @@
         let rosterData = {}; 
         let holidayData = {}; 
         let cachedRange = { start: null, end: null }; 
+        let isSyncing = false; // ตัวล็อคป้องกันการกดรัวๆ
         
         // View State
         let isShowOriginal = false;
@@ -538,6 +546,9 @@
         }
 
         async function backgroundSync(isInitial = false) {
+            if (isSyncing) return; // ป้องกันการโหลดซ้ำซ้อน
+            isSyncing = true;
+
             try {
                 // โหลดตารางเวร + วันหยุด (ย้อนหลัง 2 เดือน, ล่วงหน้า 4 เดือน)
                 const fetchStart = new Date(currentYear, currentMonth - 2, 1);
@@ -556,7 +567,8 @@
                     cachedRange.end = fetchEnd;
                     localStorage.setItem('roster_db', JSON.stringify(rosterData)); 
                     
-                    if (rosterJson.holidays) {
+                    // ป้องกันวันหยุดหาย ถ้าระบบ Google ล่ม
+                    if (rosterJson.holidays !== null) {
                         holidayData = rosterJson.holidays;
                         localStorage.setItem('holiday_db', JSON.stringify(holidayData));
                     }
@@ -579,6 +591,8 @@
             } catch (error) {
                 console.error("Background Sync Failed:", error);
                 if (isInitial) Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
+            } finally {
+                isSyncing = false; // ปลดล็อค
             }
         }
 
@@ -606,6 +620,7 @@
             if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
                 renderCalendar(); 
             } else {
+                if (isSyncing) return; // ถ้ากำลังโหลดอยู่ ห้ามกดรัว
                 Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 await backgroundSync();
                 Swal.close();
@@ -643,6 +658,7 @@
                     if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
                         renderCalendar();
                     } else {
+                        if (isSyncing) return;
                         Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                         await backgroundSync();
                         Swal.close();
@@ -679,17 +695,19 @@
             const today = new Date();
             const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; 
 
-            // วาด 42 ช่องเสมอ (6 สัปดาห์) เพื่อล็อคความสูง
-            for (let i = 0; i < 42; i++) {
-                const cellDate = new Date(currentYear, currentMonth, 1 - startOffset + i);
-                const isCurrentMonth = cellDate.getMonth() === currentMonth;
-                
-                if (!isCurrentMonth) {
+            // คำนวณจำนวนช่องทั้งหมดให้พอดีกับสัปดาห์ (ยืดหดตามจริง)
+            const totalCells = startOffset + totalDays;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            const totalGridCells = totalCells + remainingCells;
+
+            for (let i = 0; i < totalGridCells; i++) {
+                if (i < startOffset || i >= startOffset + totalDays) {
                     calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
                     continue;
                 }
 
-                const day = cellDate.getDate();
+                const day = i - startOffset + 1;
+                const cellDate = new Date(currentYear, currentMonth, day);
                 const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; 
                 
                 let isTodayClass = '';
@@ -728,12 +746,14 @@
                     if (currentFilter.customNames.includes(rawClerk)) clerkHighlight = true; else clerkDimmed = true;
                 }
 
-                // วันหยุด (ตอกหมุดซ้ายบน)
-                let holidayText = holidayData[dateKey] ? `<div class="holiday-label" title="${holidayData[dateKey]}">${holidayData[dateKey]}</div>` : ``;
+                // วันหยุด
+                let holidayText = holidayData[dateKey] ? `<div class="holiday-label" title="${holidayData[dateKey]}">${holidayData[dateKey]}</div>` : `<div></div>`;
 
                 let html = `<div class="calendar-cell" onclick="openDailyModal('${dateKey}')">
-                                ${holidayText}
-                                <div class="date-num ${isTodayClass}">${day}</div>`;
+                                <div class="cell-header">
+                                    ${holidayText}
+                                    <div class="date-num ${isTodayClass}">${day}</div>
+                                </div>`;
                 
                 html += invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''} ${invHighlight ? 'highlight' : ''} ${invDimmed ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
                 html += asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''} ${asstHighlight ? 'highlight' : ''} ${asstDimmed ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
