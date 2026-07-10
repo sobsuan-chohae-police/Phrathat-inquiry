@@ -57,9 +57,6 @@
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
-        /* ไอคอนโหลดเบื้องหลัง */
-        .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
-
         /* --- Calendar Grid (Samsung One UI Style) --- */
         .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
@@ -69,15 +66,15 @@
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
-        /* --- การตั้งค่าช่องปฏิทิน (ตอกหมุด Absolute) --- */
+        /* --- การตั้งค่าช่องปฏิทิน (Flexbox แก้ปัญหาตัวหนังสือโดนตัด) --- */
         .calendar-cell { 
             position: relative; 
-            height: 95px; min-height: 95px; 
-            padding: 26px 6px 6px 6px; 
+            height: 100px; min-height: 100px; 
+            padding: 28px 4px 4px 4px; /* เว้นที่ด้านบนให้วันหยุดและวันที่ */
             background: white; border-radius: 16px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
             cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 2px;
+            display: flex; flex-direction: column; gap: 2px; /* ใช้ Flexbox แทน Grid */
             border: 1px solid rgba(0,0,0,0.02);
         }
         .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
@@ -111,58 +108,65 @@
         .today-color-5 { background: #3b82f6 !important; color: white !important; box-shadow: 0 2px 8px rgba(59,130,246,0.4); } /* ศุกร์ */
         .today-color-6 { background: #a855f7 !important; color: white !important; box-shadow: 0 2px 8px rgba(168,85,247,0.4); } /* เสาร์ */
 
-        /* ชื่อคนเข้าเวร (Minimalist + ดอกจัน *) */
+        /* --- ชื่อคนเข้าเวร (Minimalist + แถบสี + ดอกจัน *) --- */
         .duty-name { 
-            font-size: 0.75rem; padding: 2px 4px; white-space: nowrap; overflow: hidden; 
-            text-overflow: ellipsis; font-weight: 500; display: flex; align-items: flex-start; gap: 2px;
-            border-radius: 6px; transition: 0.2s;
+            font-size: 0.75rem; padding: 2px 4px 2px 6px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            font-weight: 500; display: flex; align-items: center;
+            color: var(--text-main); /* สีเทาเข้มเหมือนกันหมด */
+            border-radius: 0 4px 4px 0; transition: 0.2s;
+            border-left: 3px solid transparent; /* แถบสีบอกหน้าที่ */
+            line-height: 1.4; /* ป้องกันสระภาษาไทยโดนตัด */
+            margin-bottom: 1px;
         }
         
+        /* แถบสีบอกหน้าที่ (สไตล์ Google Calendar) */
+        .duty-inv { border-left-color: #1d4ed8; } 
+        .duty-asst { border-left-color: #15803d; } 
+        .duty-clerk { border-left-color: #c2410c; } 
+
         /* ดอกจัน (เวรปกติ - ซ่อนไว้เพื่อรักษา Alignment) */
         .duty-name::before { 
             content: '*'; font-family: 'Kanit', sans-serif; font-weight: 700;
-            font-size: 0.9rem; opacity: 0; flex-shrink: 0; line-height: 1; transform: translateY(1px);
-            width: 8px; text-align: center; margin-left: -2px;
+            font-size: 1rem; opacity: 0; flex-shrink: 0; 
+            width: 10px; text-align: center; margin-right: 2px;
+            transform: translateY(2px); /* ขยับลงนิดนึงให้ตรงกับตัวหนังสือไทย */
         }
         
         /* แสดงดอกจัน (เวรแทน/แลก) */
-        .duty-name.is-swap::before { opacity: 1; }
+        .duty-name.is-swap::before { opacity: 1; color: var(--danger); }
         
-        .duty-inv { color: #1d4ed8; } 
-        .duty-asst { color: #15803d; } 
-        .duty-clerk { color: #c2410c; } 
-
         /* การแสดงผลเมื่อถูกกรอง (Highlight & Dimmed) */
-        /* ปรับสีเทาให้เข้มขึ้นเพื่อให้อ่านออกง่ายขึ้น (Accessibility) */
-        .duty-name.dimmed-text { color: #94a3b8 !important; font-weight: 400; }
+        .duty-name.dimmed-text { color: #94a3b8 !important; font-weight: 400; border-left-color: transparent; }
+        .duty-name.dimmed-text.is-swap::before { color: #94a3b8 !important; }
         
-        .duty-inv.highlight { background-color: #eff6ff; }
-        .duty-asst.highlight { background-color: #f0fdf4; }
-        .duty-clerk.highlight { background-color: #fff7ed; }
+        /* ไฮไลต์พื้นหลังเมื่อถูกกรอง */
+        .duty-inv.highlight { background-color: #eff6ff; color: #1d4ed8; }
+        .duty-asst.highlight { background-color: #f0fdf4; color: #15803d; }
+        .duty-clerk.highlight { background-color: #fff7ed; color: #c2410c; }
 
         /* --- Responsive Desktop --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 105px; min-height: 105px; padding: 28px 8px 6px 8px; gap: 2px; }
+            .calendar-cell { height: 115px; min-height: 115px; padding: 30px 8px 6px 8px; gap: 3px; }
             .date-num { font-size: 1.05rem; width: 26px; height: 26px; top: 6px; right: 6px; }
             .holiday-label { top: 6px; left: 6px; font-size: 0.75rem; padding: 2px 8px; }
-            .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
-            .duty-name::before { font-size: 1rem; width: 10px; transform: translateY(2px); margin-left: 0; }
+            .duty-name { font-size: 0.85rem; padding: 2px 6px 2px 8px; }
+            .duty-name::before { font-size: 1.1rem; width: 12px; transform: translateY(3px); }
             .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
         }
 
-        /* --- Responsive Mobile (Edge-to-Edge & ขยับดอกจันชิดซ้าย) --- */
+        /* --- Responsive Mobile (Edge-to-Edge) --- */
         @media (max-width: 768px) {
-            .container { padding: 15px 4px; } 
-            .calendar-grid { gap: 4px; }
-            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 10px; }
+            .container { padding: 15px 2px; } /* ลดขอบซ้ายขวาเกือบชิดจอ */
+            .calendar-grid { gap: 2px; }
+            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 8px; }
             
             .date-num { font-size: 0.85rem; width: 18px; height: 18px; top: 2px; right: 2px; }
-            .holiday-label { font-size: 0.65rem; top: 2px; left: 2px; padding: 1px 4px; max-width: calc(100% - 24px); }
+            .holiday-label { font-size: 0.6rem; top: 2px; left: 2px; padding: 1px 4px; max-width: calc(100% - 22px); }
             
-            /* ขยับดอกจันชิดซ้ายสุดในมือถือ */
-            .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 2px; margin-left: -2px; }
-            .duty-name::before { font-size: 0.8rem; width: 6px; transform: translateY(1px); margin-left: 0; }
+            .duty-name { font-size: 0.65rem; padding: 1px 2px 1px 4px; border-left-width: 2px; margin-bottom: 1px; }
+            .duty-name::before { font-size: 0.8rem; width: 8px; margin-right: 1px; transform: translateY(1px); }
             
             .calendar-header { font-size: 0.8rem; padding: 2px 6px; }
             .current-month-label { font-size: 1.1rem; width: 160px; } 
@@ -236,9 +240,6 @@
             </div>
             
             <div class="toolbar-actions">
-                <!-- ไอคอนโหลดเบื้องหลัง (ซ่อนไว้) -->
-                <i id="syncIndicator" class="fa-solid fa-arrows-rotate fa-spin sync-indicator" title="กำลังอัปเดตข้อมูล..."></i>
-
                 <!-- 1. ปุ่มกรอง -->
                 <button class="btn-toolbar" onclick="openFilterModal()" id="btnFilterLabel">
                     <i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ทุกคน
@@ -470,7 +471,6 @@
         let rosterData = {}; 
         let holidayData = {}; 
         let cachedRange = { start: null, end: null }; 
-        let isSyncing = false; // ตัวล็อคป้องกันการกดรัวๆ
         
         // View State
         let isShowOriginal = false;
@@ -546,9 +546,6 @@
         }
 
         async function backgroundSync(isInitial = false) {
-            if (isSyncing) return; // ป้องกันการโหลดซ้ำซ้อน
-            isSyncing = true;
-
             try {
                 // โหลดตารางเวร + วันหยุด (ย้อนหลัง 2 เดือน, ล่วงหน้า 4 เดือน)
                 const fetchStart = new Date(currentYear, currentMonth - 2, 1);
@@ -567,8 +564,7 @@
                     cachedRange.end = fetchEnd;
                     localStorage.setItem('roster_db', JSON.stringify(rosterData)); 
                     
-                    // ป้องกันวันหยุดหาย ถ้าระบบ Google ล่ม
-                    if (rosterJson.holidays !== null) {
+                    if (rosterJson.holidays) {
                         holidayData = rosterJson.holidays;
                         localStorage.setItem('holiday_db', JSON.stringify(holidayData));
                     }
@@ -591,8 +587,6 @@
             } catch (error) {
                 console.error("Background Sync Failed:", error);
                 if (isInitial) Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
-            } finally {
-                isSyncing = false; // ปลดล็อค
             }
         }
 
@@ -620,7 +614,6 @@
             if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
                 renderCalendar(); 
             } else {
-                if (isSyncing) return; // ถ้ากำลังโหลดอยู่ ห้ามกดรัว
                 Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 await backgroundSync();
                 Swal.close();
@@ -658,7 +651,6 @@
                     if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
                         renderCalendar();
                     } else {
-                        if (isSyncing) return;
                         Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                         await backgroundSync();
                         Swal.close();
@@ -695,19 +687,17 @@
             const today = new Date();
             const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; 
 
-            // คำนวณจำนวนช่องทั้งหมดให้พอดีกับสัปดาห์ (ยืดหดตามจริง)
-            const totalCells = startOffset + totalDays;
-            const remainingCells = (7 - (totalCells % 7)) % 7;
-            const totalGridCells = totalCells + remainingCells;
-
-            for (let i = 0; i < totalGridCells; i++) {
-                if (i < startOffset || i >= startOffset + totalDays) {
+            // วาด 42 ช่องเสมอ (6 สัปดาห์) เพื่อล็อคความสูง
+            for (let i = 0; i < 42; i++) {
+                const cellDate = new Date(currentYear, currentMonth, 1 - startOffset + i);
+                const isCurrentMonth = cellDate.getMonth() === currentMonth;
+                
+                if (!isCurrentMonth) {
                     calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
                     continue;
                 }
 
-                const day = i - startOffset + 1;
-                const cellDate = new Date(currentYear, currentMonth, day);
+                const day = cellDate.getDate();
                 const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; 
                 
                 let isTodayClass = '';
@@ -747,13 +737,11 @@
                 }
 
                 // วันหยุด
-                let holidayText = holidayData[dateKey] ? `<div class="holiday-label" title="${holidayData[dateKey]}">${holidayData[dateKey]}</div>` : `<div></div>`;
+                let holidayText = holidayData[dateKey] ? `<div class="holiday-label" title="${holidayData[dateKey]}">${holidayData[dateKey]}</div>` : ``;
 
                 let html = `<div class="calendar-cell" onclick="openDailyModal('${dateKey}')">
-                                <div class="cell-header">
-                                    ${holidayText}
-                                    <div class="date-num ${isTodayClass}">${day}</div>
-                                </div>`;
+                                ${holidayText}
+                                <div class="date-num ${isTodayClass}">${day}</div>`;
                 
                 html += invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''} ${invHighlight ? 'highlight' : ''} ${invDimmed ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
                 html += asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''} ${asstHighlight ? 'highlight' : ''} ${asstDimmed ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
