@@ -16,9 +16,12 @@
     <link rel="stylesheet" href="theme.css">
 
     <style>
+        /* --- บังคับแสดง Scrollbar เพื่อป้องกันหน้าเว็บขยับซ้าย-ขวา --- */
+        body { overflow-y: scroll; background-color: #f3f4f6; } 
+
         /* --- Navbar --- */
-        .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); text-decoration: none; flex-shrink: 0; }
-        .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; height: auto; padding: 5px 15px 5px 0; }
+        .nav-btn { background: #ffffff; border: none; font-size: 1.1rem; color: var(--text-light); cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); text-decoration: none; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; height: auto; padding: 5px 15px 5px 0; box-shadow: none; }
         .btn-back:hover { color: var(--navy-main); transform: translateX(-5px); }
         .nav-left { flex: 1; min-width: 0; display: flex; align-items: center; }
         .page-title { font-weight: 600; font-size: 1.25rem; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -26,118 +29,121 @@
         /* --- Calendar Toolbar --- */
         .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .month-nav { display: flex; align-items: center; gap: 10px; }
-        .month-nav button { background: white; border: 1px solid #cbd5e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: var(--shadow-soft); }
-        .month-nav button:hover { background: var(--navy-main); color: white; }
+        .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .month-nav button:hover { background: var(--navy-main); color: white; transform: scale(1.05); }
         
-        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); min-width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; }
-        .current-month-label:hover { background: #f1f5f9; }
+        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); min-width: 150px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; }
+        .current-month-label:hover { background: #e2e8f0; }
         
-        .toolbar-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .btn-toolbar { background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow-soft); font-weight: 500; }
-        .btn-toolbar:hover { background: #f8fafc; border-color: var(--navy-main); color: var(--navy-main); }
+        .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .btn-toolbar { background: white; border: none; padding: 8px 16px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-weight: 500; }
+        .btn-toolbar:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: var(--navy-main); transform: translateY(-1px); }
         
-        /* Toggle Switch สำหรับดูคำสั่งเดิม */
-        .toggle-container { display: flex; align-items: center; gap: 6px; background: white; padding: 4px 10px; border-radius: 50px; border: 1px solid #cbd5e1; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
-        .toggle-switch { position: relative; width: 32px; height: 18px; background: #cbd5e1; border-radius: 20px; transition: 0.3s; }
-        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: white; border-radius: 50%; transition: 0.3s; }
-        .toggle-container.active .toggle-switch { background: var(--warning); }
+        /* Toggle Switch สำหรับดูคำสั่งเดิม (เปลี่ยนเป็นสีเขียว) */
+        .toggle-container { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .toggle-container:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .toggle-switch { position: relative; width: 34px; height: 20px; background: #cbd5e1; border-radius: 20px; transition: 0.3s; }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .toggle-container.active .toggle-switch { background: var(--success); } /* เปลี่ยนเป็นสีเขียว */
         .toggle-container.active .toggle-switch::after { transform: translateX(14px); }
 
         /* Dropdown Menu (ปุ่ม +) */
         .dropdown { position: relative; display: inline-block; }
-        .btn-add { background: var(--success); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-add { background: var(--success); color: white; border: none; width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .btn-add:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.4); }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: var(--shadow-modal); z-index: 100; border-radius: 12px; overflow: hidden; margin-top: 8px; border: 1px solid #e2e8f0; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); }
         .dropdown-content.show { display: block; animation: fadeUp 0.2s ease; }
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
-        /* --- Calendar Grid (Soft Neumorphism & Fixed 42 Cells) --- */
-        .calendar-card { background: white; border-radius: var(--radius-xl); box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); overflow: hidden; border: none; padding: 2px; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); background: #e2e8f0; gap: 1px; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); overflow: hidden; }
+        /* ไอคอนโหลดเบื้องหลัง */
+        .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
+
+        /* --- Calendar Grid (Samsung One UI Style) --- */
+        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
         
         /* ย้ายตัวอักษรวันไปชิดขวา */
-        .calendar-header { background: #f8fafc; text-align: right; padding: 10px 12px 10px 5px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); }
+        .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
         .calendar-cell { 
-            height: 85px; min-height: 85px; padding: 4px; 
-            background: white; cursor: pointer; transition: 0.2s; 
-            display: grid; grid-template-rows: 20px repeat(3, minmax(0, 1fr)); gap: 1px;
-            position: relative;
+            height: 95px; min-height: 95px; padding: 6px 8px; 
+            background: white; border-radius: 16px; /* ขอบมนแบบ One UI */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* เงานุ่มๆ */
+            cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: grid; grid-template-rows: 22px repeat(3, minmax(0, 1fr)); gap: 2px;
+            border: 1px solid rgba(0,0,0,0.02);
         }
-        .calendar-cell:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.08); transform: translateY(-1px); z-index: 10; border-radius: 8px; }
-        .calendar-cell.empty { background: #fcfcfc; cursor: default; }
-        .calendar-cell.empty:hover { box-shadow: none; transform: none; z-index: 1; border-radius: 0; }
+        .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
+        .calendar-cell.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
+        .calendar-cell.empty:hover { transform: none; box-shadow: none; z-index: 1; }
 
-        .date-num { font-weight: 600; font-size: 0.95rem; color: var(--text-main); justify-self: end; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .date-num { font-weight: 600; font-size: 0.95rem; color: var(--text-main); justify-self: end; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
         /* สี "วันนี้" ตามวันไทย */
-        .today-color-0 { background: #ef4444 !important; color: white !important; box-shadow: 0 2px 5px rgba(239,68,68,0.4); } /* อาทิตย์ */
-        .today-color-1 { background: #eab308 !important; color: white !important; box-shadow: 0 2px 5px rgba(234,179,8,0.4); } /* จันทร์ */
-        .today-color-2 { background: #ec4899 !important; color: white !important; box-shadow: 0 2px 5px rgba(236,72,153,0.4); } /* อังคาร */
-        .today-color-3 { background: #22c55e !important; color: white !important; box-shadow: 0 2px 5px rgba(34,197,94,0.4); } /* พุธ */
-        .today-color-4 { background: #f97316 !important; color: white !important; box-shadow: 0 2px 5px rgba(249,115,22,0.4); } /* พฤหัสฯ */
-        .today-color-5 { background: #3b82f6 !important; color: white !important; box-shadow: 0 2px 5px rgba(59,130,246,0.4); } /* ศุกร์ */
-        .today-color-6 { background: #a855f7 !important; color: white !important; box-shadow: 0 2px 5px rgba(168,85,247,0.4); } /* เสาร์ */
+        .today-color-0 { background: #ef4444 !important; color: white !important; box-shadow: 0 2px 8px rgba(239,68,68,0.4); } /* อาทิตย์ */
+        .today-color-1 { background: #eab308 !important; color: white !important; box-shadow: 0 2px 8px rgba(234,179,8,0.4); } /* จันทร์ */
+        .today-color-2 { background: #ec4899 !important; color: white !important; box-shadow: 0 2px 8px rgba(236,72,153,0.4); } /* อังคาร */
+        .today-color-3 { background: #22c55e !important; color: white !important; box-shadow: 0 2px 8px rgba(34,197,94,0.4); } /* พุธ */
+        .today-color-4 { background: #f97316 !important; color: white !important; box-shadow: 0 2px 8px rgba(249,115,22,0.4); } /* พฤหัสฯ */
+        .today-color-5 { background: #3b82f6 !important; color: white !important; box-shadow: 0 2px 8px rgba(59,130,246,0.4); } /* ศุกร์ */
+        .today-color-6 { background: #a855f7 !important; color: white !important; box-shadow: 0 2px 8px rgba(168,85,247,0.4); } /* เสาร์ */
 
-        /* ชื่อคนเข้าเวร (Alignment เป๊ะ 100%) */
+        /* ชื่อคนเข้าเวร (Minimalist + ดอกจัน *) */
         .duty-name { 
-            font-size: 0.7rem; padding: 1px 4px; white-space: nowrap; overflow: hidden; 
-            text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 4px;
-            letter-spacing: -0.2px; transition: 0.2s; border-radius: 4px;
+            font-size: 0.75rem; padding: 2px 6px; white-space: nowrap; overflow: hidden; 
+            text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 2px;
+            border-radius: 6px; transition: 0.2s;
         }
         
-        /* จุดวงกลม (เวรปกติ - ซ่อนไว้เพื่อรักษา Alignment) */
+        /* ดอกจัน (เวรปกติ - ซ่อนไว้เพื่อรักษา Alignment) */
         .duty-name::before { 
-            content: '\f111'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
-            font-size: 0.35rem; opacity: 0; flex-shrink: 0; width: 10px; text-align: center;
+            content: '*'; font-family: 'Kanit', sans-serif; font-weight: 700;
+            font-size: 1rem; opacity: 0; flex-shrink: 0; line-height: 0; transform: translateY(3px);
+            width: 8px; text-align: center;
         }
         
-        /* เครื่องหมายตกใจ (เวรแทน/แลก) */
-        .duty-name.is-swap::before { 
-            content: '\f06a'; font-size: 0.75rem; opacity: 1;
-        }
+        /* แสดงดอกจัน (เวรแทน/แลก) */
+        .duty-name.is-swap::before { opacity: 1; }
         
-        .duty-inv { color: #1d4ed8; } .duty-inv.is-swap::before { color: #1d4ed8; }
-        .duty-asst { color: #15803d; } .duty-asst.is-swap::before { color: #15803d; }
-        .duty-clerk { color: #c2410c; } .duty-clerk.is-swap::before { color: #c2410c; }
+        .duty-inv { color: #1d4ed8; } 
+        .duty-asst { color: #15803d; } 
+        .duty-clerk { color: #c2410c; } 
 
         /* การแสดงผลเมื่อถูกกรอง (Highlight & Dimmed) */
         .duty-name.dimmed-text { color: #cbd5e1 !important; font-weight: 400; }
-        .duty-name.dimmed-text.is-swap::before { color: #cbd5e1 !important; }
         
         .duty-inv.highlight { background-color: #eff6ff; }
         .duty-asst.highlight { background-color: #f0fdf4; }
         .duty-clerk.highlight { background-color: #fff7ed; }
 
-        /* --- Responsive Desktop (ขยายปฏิทินให้ใหญ่ขึ้น) --- */
+        /* --- Responsive Desktop --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            /* ปรับความสูงลงนิดนึงตามที่ขอ */
-            .calendar-cell { height: 105px; min-height: 105px; padding: 6px 8px; grid-template-rows: 24px repeat(3, minmax(0, 1fr)); gap: 2px; }
-            .date-num { font-size: 1.05rem; width: 26px; height: 26px; }
-            .duty-name { font-size: 0.85rem; gap: 6px; letter-spacing: 0; padding: 2px 6px; }
-            .duty-name::before { font-size: 0.4rem; width: 12px; }
-            .duty-name.is-swap::before { font-size: 0.85rem; }
-            .calendar-header { font-size: 0.95rem; padding: 12px 15px 12px 5px; }
+            .calendar-cell { height: 110px; min-height: 110px; padding: 8px 10px; grid-template-rows: 26px repeat(3, minmax(0, 1fr)); gap: 3px; }
+            .date-num { font-size: 1.05rem; width: 28px; height: 28px; }
+            .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 8px; }
+            .duty-name::before { font-size: 1.1rem; width: 10px; transform: translateY(4px); }
+            .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
         }
 
         @media (max-width: 768px) {
-            .calendar-cell { height: 78px; min-height: 78px; grid-template-rows: 18px repeat(3, minmax(0, 1fr)); padding: 2px; }
-            .date-num { font-size: 0.85rem; width: 18px; height: 18px; }
-            .duty-name { font-size: 0.65rem; gap: 2px; padding: 0 2px; }
-            .duty-name::before { font-size: 0.3rem; width: 8px; }
-            .duty-name.is-swap::before { font-size: 0.65rem; }
-            .current-month-label { font-size: 1.1rem; min-width: 140px; }
+            .calendar-grid { gap: 4px; }
+            .calendar-cell { height: 85px; min-height: 85px; padding: 4px; border-radius: 12px; grid-template-rows: 20px repeat(3, minmax(0, 1fr)); }
+            .date-num { font-size: 0.85rem; width: 20px; height: 20px; }
+            .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 4px; }
+            .duty-name::before { font-size: 0.85rem; width: 6px; transform: translateY(2px); }
+            .calendar-header { font-size: 0.8rem; padding: 2px 6px; }
+            .current-month-label { font-size: 1.1rem; min-width: 120px; }
         }
 
         /* --- Modals --- */
         .modal-body { padding: 25px; overflow-y: auto; max-height: 75vh; }
-        .detail-row { margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .detail-row { margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; }
         .detail-role { font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; }
         .detail-name { font-size: 1.1rem; font-weight: 600; color: var(--navy-main); margin-bottom: 2px; }
         .detail-phone { font-size: 0.95rem; color: #64748b; }
@@ -151,18 +157,19 @@
         .btn-edit-daily:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3); }
 
         /* --- Checkbox แลกเวร (Independent) --- */
-        .swap-box { margin-top: 8px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #166534; animation: fadeUp 0.2s ease; transition: 0.3s; }
+        .swap-box { margin-top: 8px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; color: #166534; animation: fadeUp 0.2s ease; transition: 0.3s; }
         .swap-box.is-base { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
         .swap-box label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
         .swap-box input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
         /* --- Filter Modal Styles --- */
         .filter-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .filter-tab { flex: 1; text-align: center; padding: 8px; background: #f1f5f9; border-radius: 8px; cursor: pointer; font-weight: 500; color: var(--text-light); transition: 0.2s; font-size: 0.95rem; }
-        .filter-tab.active { background: var(--navy-main); color: white; }
+        .filter-tab { flex: 1; text-align: center; padding: 8px; background: #f1f5f9; border-radius: 12px; cursor: pointer; font-weight: 500; color: var(--text-light); transition: 0.2s; font-size: 0.95rem; }
+        .filter-tab.active { background: var(--navy-main); color: white; box-shadow: 0 4px 10px rgba(30, 58, 138, 0.2); }
         
-        .filter-checkbox-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
-        .filter-cb-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .filter-group-title { font-size: 0.85rem; font-weight: 600; color: var(--navy-main); margin: 15px 0 5px 5px; text-transform: uppercase; }
+        .filter-checkbox-list { display: flex; flex-direction: column; gap: 6px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
+        .filter-cb-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: white; border: 1px solid #cbd5e1; border-radius: 12px; cursor: pointer; transition: 0.2s; }
         .filter-cb-row:hover { background: #f8fafc; border-color: var(--navy-main); }
         .filter-cb-row input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
@@ -174,10 +181,10 @@
         .btn-remove-pattern:hover { background: var(--danger); color: white; }
         
         /* Reference View */
-        .ref-view-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: none; }
+        .ref-view-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; margin-bottom: 15px; display: none; }
         .ref-view-title { font-size: 0.85rem; color: #166534; font-weight: 600; margin-bottom: 8px; }
         .ref-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .ref-item { background: white; padding: 8px 12px; border-radius: 8px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; }
+        .ref-item { background: white; padding: 8px 12px; border-radius: 12px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .ref-date { font-size: 0.75rem; color: #64748b; margin-bottom: 2px; }
         .ref-name { font-size: 0.9rem; font-weight: 600; color: #15803d; }
     </style>
@@ -202,6 +209,9 @@
             </div>
             
             <div class="toolbar-actions">
+                <!-- ไอคอนโหลดเบื้องหลัง (ซ่อนไว้) -->
+                <i id="syncIndicator" class="fa-solid fa-arrows-rotate fa-spin sync-indicator" title="กำลังอัปเดตข้อมูล..."></i>
+
                 <!-- 1. ปุ่มกรอง -->
                 <button class="btn-toolbar" onclick="openFilterModal()" id="btnFilterLabel">
                     <i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ทุกคน
@@ -218,13 +228,13 @@
                     <button class="btn-add" onclick="toggleDropdown(event)"><i class="fa-solid fa-plus"></i></button>
                     <div class="dropdown-content" id="addMenu">
                         <div class="dropdown-item" onclick="openLoopModal()"><i class="fa-solid fa-rotate"></i> จัดเวรวนลูป</div>
-                        <div class="dropdown-item" onclick="openOrderModal()"><i class="fa-solid fa-file-signature"></i> ออกคำสั่งเวร</div>
+                        <div class="dropdown-item" onclick="window.location.href='order.html'"><i class="fa-solid fa-file-signature"></i> ออกคำสั่งเวร</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Calendar Grid -->
+        <!-- Calendar Grid (One UI Style) -->
         <div class="calendar-card">
             <div class="calendar-grid">
                 <div class="calendar-header">จ.</div>
@@ -235,7 +245,7 @@
                 <div class="calendar-header">ส.</div>
                 <div class="calendar-header">อา.</div>
             </div>
-            <div class="calendar-grid" id="calendarBody">
+            <div class="calendar-grid" id="calendarBody" style="margin-top: 8px;">
                 <!-- Cells will be generated by JS -->
             </div>
         </div>
@@ -278,25 +288,25 @@
                 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">พนักงานสอบสวนเวร</label>
-                    <select class="form-input" id="editInvSelect" onchange="checkEditChanges()"></select>
+                    <select class="form-input" id="editInvSelect" onchange="handleSelectChange('inv')"></select>
                     <div id="swap-box-inv" class="swap-box" style="display: none;">
-                        <label><input type="checkbox" id="cb-swap-inv" checked onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
+                        <label><input type="checkbox" id="cb-swap-inv" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
                     </div>
                 </div>
                 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">ผู้ช่วยพนักงานสอบสวน</label>
-                    <select class="form-input" id="editAsstSelect" onchange="checkEditChanges()"></select>
+                    <select class="form-input" id="editAsstSelect" onchange="handleSelectChange('asst')"></select>
                     <div id="swap-box-asst" class="swap-box" style="display: none;">
-                        <label><input type="checkbox" id="cb-swap-asst" checked onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
+                        <label><input type="checkbox" id="cb-swap-asst" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
                     </div>
                 </div>
                 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">เสมียนประจำวัน</label>
-                    <select class="form-input" id="editClerkSelect" onchange="checkEditChanges()"></select>
+                    <select class="form-input" id="editClerkSelect" onchange="handleSelectChange('clerk')"></select>
                     <div id="swap-box-clerk" class="swap-box" style="display: none;">
-                        <label><input type="checkbox" id="cb-swap-clerk" checked onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
+                        <label><input type="checkbox" id="cb-swap-clerk" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
                     </div>
                 </div>
 
@@ -358,7 +368,7 @@
 
                 <div class="preview-section" id="previewSection" style="display: none; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                     <h4 style="margin-bottom: 10px; color: var(--navy-main);">ตัวอย่างตารางเวร</h4>
-                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                             <tbody id="previewBody"></tbody>
                         </table>
@@ -415,47 +425,6 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL 4: ออกคำสั่งเวร (Order Generation)
-         ========================================== -->
-    <div id="orderModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 500px;">
-            <button class="close-modal-btn" onclick="closeModal('orderModal')"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;">
-                <h3><i class="fa-solid fa-file-signature"></i> ออกคำสั่งจัดเวร</h3>
-            </div>
-            <div class="modal-body">
-                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label class="form-label">เลขคำสั่ง</label>
-                        <input type="text" class="form-input" id="orderNo" placeholder="เช่น 123/2569">
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label class="form-label">วันที่ออกคำสั่ง</label>
-                        <input type="text" class="form-input datepicker" id="orderDate" placeholder="เลือกวันที่">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">จัดเวรตั้งแต่วันที่</label>
-                        <input type="text" class="form-input datepicker" id="orderStartDate" placeholder="เลือกวันเริ่มต้น">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">ถึงวันที่</label>
-                        <input type="text" class="form-input datepicker" id="orderEndDate" placeholder="เลือกวันสิ้นสุด">
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label class="form-label">ผู้ออกคำสั่ง</label>
-                        <select class="form-input" id="orderCommander">
-                            <!-- จะถูกเติมด้วย JS เฉพาะคนที่เป็น พงส. -->
-                        </select>
-                    </div>
-                </div>
-                <button class="btn-primary" style="width: 100%; margin-top: 25px;" onclick="generateOrderDoc()">
-                    <i class="fa-solid fa-file-word"></i> สร้างเอกสารคำสั่ง
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // API URLs
         const API_URL_MAIN = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
@@ -467,11 +436,11 @@
         let allOfficers = [];
         let officerMap = {}; 
         let rosterData = {}; 
-        let cachedRange = { start: null, end: null }; // เก็บช่วงวันที่โหลดมาแล้ว (6 เดือน)
+        let cachedRange = { start: null, end: null }; 
         
         // View State
         let isShowOriginal = false;
-        let currentFilter = { type: 'all', customNames: [] };
+        let currentFilter = { type: 'all', customNames: [] }; 
 
         // Edit State
         let selectedDateAD = ''; 
@@ -505,7 +474,7 @@
         });
 
         // ==========================================
-        // 1. ระบบโหลดข้อมูล 6 เดือน (Silent Background Sync)
+        // 1. ระบบโหลดข้อมูลความเร็วสูงสุด (Ultimate Speed Engine)
         // ==========================================
         async function fetchWithRetry(url, options = {}, retries = 3) {
             for (let i = 0; i < retries; i++) {
@@ -521,22 +490,28 @@
         }
 
         async function startUltimateSpeedEngine() {
+            const cachedRoster = localStorage.getItem('roster_db');
             const cachedOfficers = localStorage.getItem('officer_db');
-            if (cachedOfficers) {
+
+            if (cachedRoster && cachedOfficers) {
+                // มี Cache: โชว์ทันที
                 allOfficers = JSON.parse(cachedOfficers);
+                rosterData = JSON.parse(cachedRoster);
                 buildOfficerMap();
+                renderCalendar();
+                backgroundSync(); // แอบอัปเดต
+            } else {
+                // ไม่มี Cache: โหลดครั้งแรก
+                Swal.fire({ title: 'กำลังเตรียมระบบครั้งแรก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                await backgroundSync(true); 
+                Swal.close();
             }
-            
-            // วาดปฏิทินทันที (อาจจะว่างเปล่าถ้าไม่มี Cache)
-            renderCalendar();
-            
-            // แอบโหลดข้อมูล 6 เดือนเบื้องหลัง
-            await backgroundSync(true); 
         }
 
         async function backgroundSync(isInitial = false) {
+            // ไม่โชว์ไอคอนหมุนๆ แล้ว (Silent Background Sync)
             try {
-                // คำนวณช่วง 6 เดือน (ย้อนหลัง 2 เดือน, ล่วงหน้า 4 เดือน)
+                // โหลดตารางเวร (ย้อนหลัง 2 เดือน, ล่วงหน้า 4 เดือน)
                 const fetchStart = new Date(currentYear, currentMonth - 2, 1);
                 const fetchEnd = new Date(currentYear, currentMonth + 4, 0);
                 
@@ -547,14 +522,18 @@
                 
                 const rosterJson = await fetchWithRetry(rosterUrl);
                 if (rosterJson.data) {
+                    rosterData = {}; 
                     rosterJson.data.forEach(row => { rosterData[row.dateAD] = row; });
                     cachedRange.start = fetchStart;
                     cachedRange.end = fetchEnd;
+                    localStorage.setItem('roster_db', JSON.stringify(rosterData)); 
                 }
 
-                renderCalendar();
+                if (!isInitial) renderCalendar();
 
-                // โหลดรายชื่อเจ้าหน้าที่เงียบๆ
+                await new Promise(resolve => setTimeout(resolve, 1000)); // พัก 1 วิ
+
+                // โหลดรายชื่อเจ้าหน้าที่
                 const officerJson = await fetchWithRetry(API_URL_MAIN + '?action=getOfficers');
                 if (officerJson.officers) {
                     allOfficers = officerJson.officers;
@@ -562,10 +541,11 @@
                     buildOfficerMap();
                 }
 
-                renderCalendar();
+                if (!isInitial) renderCalendar();
 
             } catch (error) {
                 console.error("Background Sync Failed:", error);
+                if (isInitial) Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
             }
         }
 
@@ -577,7 +557,6 @@
                 officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
             });
             populateEditDropdowns();
-            populateOrderCommanders(); 
         }
 
         // ==========================================
@@ -592,9 +571,8 @@
             
             // เช็คว่าเดือนที่กดไป อยู่ในกรอบ 6 เดือนที่โหลดมาแล้วหรือไม่
             if (cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end) {
-                renderCalendar(); // เปลี่ยนทันที 0 วินาที
+                renderCalendar(); 
             } else {
-                // ถ้าหลุดกรอบ 6 เดือน ค่อยขึ้นหน้าต่างโหลด
                 Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 await backgroundSync();
                 Swal.close();
@@ -656,26 +634,31 @@
             document.getElementById('monthLabel').innerText = `${thaiMonths[currentMonth]} ${currentYear + 543}`;
 
             const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            
             let startOffset = firstDay.getDay() - 1;
             if (startOffset === -1) startOffset = 6; 
 
+            const totalDays = lastDay.getDate();
             const calendarBody = document.getElementById('calendarBody');
             calendarBody.innerHTML = '';
 
             const today = new Date();
             const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; 
 
-            // วาด 42 ช่องเสมอ (6 สัปดาห์)
-            for (let i = 0; i < 42; i++) {
-                const cellDate = new Date(currentYear, currentMonth, 1 - startOffset + i);
-                const isCurrentMonth = cellDate.getMonth() === currentMonth;
-                
-                if (!isCurrentMonth) {
+            // คำนวณจำนวนช่องทั้งหมดให้พอดีกับสัปดาห์ (ยืดหดตามจริง)
+            const totalCells = startOffset + totalDays;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            const totalGridCells = totalCells + remainingCells;
+
+            for (let i = 0; i < totalGridCells; i++) {
+                if (i < startOffset || i >= startOffset + totalDays) {
                     calendarBody.innerHTML += `<div class="calendar-cell empty"></div>`;
                     continue;
                 }
 
-                const day = cellDate.getDate();
+                const day = i - startOffset + 1;
+                const cellDate = new Date(currentYear, currentMonth, day);
                 const dateKey = `${day}/${currentMonth + 1}/${currentYear}`; 
                 
                 let isTodayClass = '';
@@ -733,27 +716,30 @@
             document.querySelector('input[name="filterRole"][value="all"]').checked = true;
             switchFilterTab('role');
             
-            const namesInMonth = new Set();
-            Object.keys(rosterData).forEach(date => {
-                const parts = date.split('/');
-                if (parseInt(parts[1]) === currentMonth + 1 && parseInt(parts[2]) === currentYear) {
-                    const d = rosterData[date];
-                    if (d.baseInv) namesInMonth.add(d.baseInv); if (d.swapInv) namesInMonth.add(d.swapInv);
-                    if (d.baseAsst) namesInMonth.add(d.baseAsst); if (d.swapAsst) namesInMonth.add(d.swapAsst);
-                    if (d.baseClerk) namesInMonth.add(d.baseClerk); if (d.swapClerk) namesInMonth.add(d.swapClerk);
-                }
-            });
+            let invList = '', asstList = '', clerkList = '';
 
-            let listHtml = '';
-            Array.from(namesInMonth).sort().forEach(name => {
-                listHtml += `
+            // ดึงรายชื่อทั้งหมดจากฐานข้อมูลมาจัดกลุ่ม
+            allOfficers.forEach(off => {
+                const name = off[4];
+                const role = off[8];
+                if (!name) return;
+
+                const cbHtml = `
                     <label class="filter-cb-row">
                         <input type="checkbox" class="filter-person-cb" value="${name}">
                         <span>${name}</span>
                     </label>
                 `;
+
+                if (role === 'พนักงานสอบสวน') invList += cbHtml;
+                else if (role === 'ผู้ช่วยพนักงานสอบสวน') asstList += cbHtml;
+                else if (role === 'เสมียนประจำวัน') clerkList += cbHtml;
             });
-            if (listHtml === '') listHtml = '<p style="color:#94a3b8; font-size:0.9rem; padding:10px;">ไม่มีข้อมูลเวรในเดือนนี้</p>';
+
+            let listHtml = '';
+            if(invList) listHtml += `<div class="filter-group-title">พนักงานสอบสวน</div>${invList}`;
+            if(asstList) listHtml += `<div class="filter-group-title">ผู้ช่วยพนักงานสอบสวน</div>${asstList}`;
+            if(clerkList) listHtml += `<div class="filter-group-title">เสมียนประจำวัน</div>${clerkList}`;
             
             document.getElementById('filterListContainer').innerHTML = listHtml;
             document.getElementById('filterModal').style.display = 'flex';
@@ -817,6 +803,11 @@
             document.getElementById('editAsstSelect').value = curAsst;
             document.getElementById('editClerkSelect').value = curClerk;
             
+            // บังคับรีเซ็ต Checkbox เป็น "ติ๊กถูก" เสมอเมื่อเปิดหน้าต่าง
+            document.getElementById('cb-swap-inv').checked = true;
+            document.getElementById('cb-swap-asst').checked = true;
+            document.getElementById('cb-swap-clerk').checked = true;
+
             // ซ่อน Checkbox ทั้งหมดตอนเปิด
             document.getElementById('swap-box-inv').style.display = 'none';
             document.getElementById('swap-box-asst').style.display = 'none';
@@ -860,14 +851,10 @@
             document.getElementById('editClerkSelect').innerHTML = otherOptions;
         }
 
-        function populateOrderCommanders() {
-            let options = '';
-            allOfficers.forEach(off => {
-                if (off[8] === 'พนักงานสอบสวน') {
-                    options += `<option value="${off[4]}">${off[4]}</option>`;
-                }
-            });
-            document.getElementById('orderCommander').innerHTML = options;
+        // เมื่อเปลี่ยนชื่อใน Dropdown ให้บังคับรีเซ็ต Checkbox เป็นติ๊กถูกเสมอ
+        function handleSelectChange(role) {
+            document.getElementById(`cb-swap-${role}`).checked = true;
+            checkEditChanges();
         }
 
         // ตรวจสอบการเปลี่ยนแปลงและแสดง Checkbox อิสระ
@@ -891,11 +878,9 @@
                     if (curVal !== baseVal) {
                         box.style.display = 'block';
                         if (cb.checked) {
-                            box.className = 'swap-box';
-                            box.querySelector('span').innerText = 'แลกเวร / แทนเวร';
+                            box.className = 'swap-box'; // สีเขียว
                         } else {
-                            box.className = 'swap-box is-base';
-                            box.querySelector('span').innerText = 'แก้ไขคำสั่งถาวร';
+                            box.className = 'swap-box is-base'; // สีแดง
                         }
                     } else {
                         box.style.display = 'none';
@@ -1214,16 +1199,6 @@
                     }
                 }
             });
-        }
-
-        // ==========================================
-        // 6. เมนูออกคำสั่งเวร (Order Generation UI)
-        // ==========================================
-        function openOrderModal() {
-            document.getElementById('orderModal').style.display = 'flex';
-        }
-        function generateOrderDoc() {
-            Swal.fire('กำลังพัฒนา', 'ระบบสร้างเอกสารคำสั่งเวรอัตโนมัติ จะเปิดใช้งานในเฟสถัดไปครับ', 'info');
         }
 
         // ==========================================
