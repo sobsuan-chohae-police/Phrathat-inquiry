@@ -54,24 +54,28 @@
         .btn-add:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(5, 150, 105, 0.4); }
         
         /* แอนิเมชัน Dropdown แบบห้อยลงมา (Fade Down) */
-        @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.9); } to { opacity: 1; transform: scaleY(1); } }
+        @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
         .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
-        /* ไอคอนโหลดเบื้องหลัง */
-        .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
-
         /* --- Calendar Grid (Samsung One UI Style + Swipe Support) --- */
-        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; /* อนุญาตให้เลื่อนจอขึ้นลงได้ แต่ดักซ้ายขวา */ }
+        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; }
         
         /* คอนเทนเนอร์สำหรับสไลด์ 120Hz */
         .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; }
-        .calendar-grid { 
-            display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; 
-            will-change: transform; /* เร่งความเร็วด้วย GPU */
-        }
+        
+        /* แอนิเมชันสไลด์เปลี่ยนเดือน */
+        .calendar-grid-anim { transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease-out; }
+        .slide-out-left { transform: translateX(-30%); opacity: 0; }
+        .slide-out-right { transform: translateX(30%); opacity: 0; }
+        .slide-in-right { transform: translateX(30%); opacity: 0; transition: none !important; }
+        .slide-in-left { transform: translateX(-30%); opacity: 0; transition: none !important; }
+        .fade-out { opacity: 0; transform: scale(0.98); }
+        .fade-in { opacity: 0; transform: scale(0.98); transition: none !important; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; will-change: transform, opacity; }
         
         .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
@@ -83,7 +87,7 @@
             padding: 26px 6px 6px 6px; 
             background: white; border-radius: 16px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
-            cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; 
+            cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; flex-direction: column; gap: 2px; 
             border: 1px solid rgba(0,0,0,0.02);
         }
@@ -154,25 +158,30 @@
         /* --- Responsive Desktop --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 115px; min-height: 115px; padding: 30px 8px 6px 8px; gap: 3px; }
+            .calendar-cell { height: 105px; min-height: 105px; padding: 28px 8px 6px 8px; gap: 2px; }
             .date-num { font-size: 1.05rem; width: 26px; height: 26px; top: 6px; right: 6px; }
             .holiday-label { top: 6px; left: 6px; font-size: 0.75rem; padding: 2px 8px; }
-            .duty-name { font-size: 0.85rem; padding: 2px 6px 2px 8px; }
-            .duty-name::before { font-size: 1.1rem; width: 12px; transform: translateY(3px); }
+            .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
+            .duty-name::before { font-size: 1.1rem; width: 12px; transform: translateY(3px); margin-left: 0; }
             .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
         }
 
-        /* --- Responsive Mobile (Edge-to-Edge) --- */
+        /* --- Responsive Mobile (Edge-to-Edge & จัดปุ่มกึ่งกลาง) --- */
         @media (max-width: 768px) {
             .container { padding: 15px 4px; } 
-            .calendar-grid { gap: 2px; }
-            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 8px; }
+            
+            /* จัดปุ่ม Toolbar ให้สมดุลในมือถือ */
+            .calendar-toolbar { flex-direction: column; align-items: center; gap: 12px; }
+            .toolbar-actions { justify-content: center; width: 100%; }
+            
+            .calendar-grid { gap: 4px; }
+            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 10px; }
             
             .date-num { font-size: 0.85rem; width: 18px; height: 18px; top: 2px; right: 2px; }
             .holiday-label { font-size: 0.6rem; top: 2px; left: 2px; padding: 1px 4px; max-width: calc(100% - 22px); }
             
-            .duty-name { font-size: 0.65rem; padding: 1px 2px 1px 4px; border-left-width: 2px; margin-bottom: 1px; }
-            .duty-name::before { font-size: 0.8rem; width: 8px; margin-right: 1px; transform: translateY(1px); }
+            .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 2px; margin-left: -2px; }
+            .duty-name::before { font-size: 0.8rem; width: 6px; transform: translateY(1px); margin-left: 0; }
             
             .calendar-header { font-size: 0.8rem; padding: 2px 6px; }
             .current-month-label { font-size: 1.1rem; width: 160px; } 
@@ -191,7 +200,7 @@
             transform: scale(0.9); opacity: 0; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             background: white; width: 95%; max-width: 800px; border-radius: var(--radius-xl);
             box-shadow: var(--shadow-modal); display: flex; flex-direction: column;
-            max-height: 90vh; position: relative; overflow-y: auto;
+            max-height: 90vh; position: relative; overflow: hidden;
         }
         .modal-overlay.show .modal-card { transform: scale(1); opacity: 1; }
 
@@ -221,7 +230,12 @@
         .swap-box label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
         .swap-box input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
-        /* --- Unified Filter Modal (Tree View) --- */
+        /* --- Unified Filter Modal (Sticky Footer) --- */
+        #filterModal .modal-body { padding: 0; display: flex; flex-direction: column; max-height: 70vh; }
+        .filter-header-section { padding: 20px 25px 10px 25px; border-bottom: 1px solid #e2e8f0; }
+        .filter-scroll-section { padding: 15px 25px; overflow-y: auto; flex: 1; }
+        .filter-footer-section { padding: 15px 25px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
+        
         .filter-tree { display: flex; flex-direction: column; gap: 15px; }
         .filter-master { padding: 12px 15px; background: #f1f5f9; border-radius: 12px; font-weight: 600; color: var(--navy-main); display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .filter-master input { transform: scale(1.3); cursor: pointer; }
@@ -270,9 +284,6 @@
             </div>
             
             <div class="toolbar-actions">
-                <!-- ไอคอนโหลดเบื้องหลัง (ซ่อนไว้) -->
-                <i id="syncIndicator" class="fa-solid fa-arrows-rotate fa-spin sync-indicator" title="กำลังอัปเดตข้อมูล..."></i>
-
                 <!-- 1. ปุ่มกรอง -->
                 <button class="btn-toolbar" onclick="openModalAnim('filterModal')" id="btnFilterLabel">
                     <i class="fa-solid fa-filter" style="color: var(--gold-main);"></i> ทุกคน
@@ -458,14 +469,20 @@
             <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;">
                 <h3><i class="fa-solid fa-filter"></i> ตัวกรองการแสดงผล</h3>
             </div>
-            <div class="modal-body">
-                
+            
+            <!-- Sticky Header -->
+            <div class="filter-header-section">
                 <div class="filter-tree">
                     <label class="filter-master">
                         <input type="checkbox" id="cb-filter-all" checked onchange="toggleFilterAll(this)"> 
                         <span>เลือกทุกคน</span>
                     </label>
-
+                </div>
+            </div>
+            
+            <!-- Scrollable List -->
+            <div class="filter-scroll-section">
+                <div class="filter-tree">
                     <div class="filter-group">
                         <label class="filter-group-header">
                             <input type="checkbox" class="cb-filter-role" data-role="inv" checked onchange="toggleFilterRole(this)"> 
@@ -490,8 +507,11 @@
                         <div class="filter-items" id="filter-list-clerk"></div>
                     </div>
                 </div>
-
-                <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="applyFilter()">ตกลง</button>
+            </div>
+            
+            <!-- Sticky Footer -->
+            <div class="filter-footer-section">
+                <button class="btn-primary" style="width: 100%;" onclick="applyFilter()">ตกลง</button>
             </div>
         </div>
     </div>
@@ -509,10 +529,11 @@
         let rosterData = {}; 
         let holidayData = {}; 
         let cachedRange = { start: null, end: null }; 
+        let isFetching = false; // ตัวล็อคป้องกันโหลดซ้ำซ้อนเบื้องหลัง
         
         // View State
         let isShowOriginal = false;
-        let currentFilterNames = []; // เก็บชื่อคนที่ถูกเลือกให้แสดง
+        let currentFilterNames = []; 
         let isFilterAll = true;
 
         // Edit State
@@ -524,11 +545,10 @@
         let patternCount = 0;
         let generatedData = [];
 
-        // Swipe & Wheel State
+        // Swipe Gesture State
         let touchStartX = 0;
         let currentTranslateX = 0;
         let isSwiping = false;
-        let wheelTimeout = null;
 
         // จัดการ Dropdown เมนู +
         function toggleDropdown(e) {
@@ -574,13 +594,12 @@
         });
 
         // ==========================================
-        // 0. ระบบปัดหน้าจอ 1:1 (Swipe & Trackpad)
+        // 0. ระบบปัดหน้าจอ 1:1 (Swipe Gestures)
         // ==========================================
         function initSwipeGestures() {
             const wrapper = document.getElementById('swipeWrapper');
             const grid = document.getElementById('calendarBody');
             
-            // --- Touch Events (Mobile/Tablet) ---
             wrapper.addEventListener('touchstart', e => {
                 touchStartX = e.touches[0].clientX;
                 isSwiping = false;
@@ -591,7 +610,7 @@
                 const touchCurrentX = e.touches[0].clientX;
                 currentTranslateX = touchCurrentX - touchStartX;
                 
-                // ถ้าลากแนวนอนมากกว่าแนวตั้ง ถือว่าเป็นการปัด
+                // ถ้าลากแนวนอนมากกว่า 10px ถือว่าเป็นการปัด
                 if (Math.abs(currentTranslateX) > 10) {
                     isSwiping = true;
                     grid.style.transform = `translateX(${currentTranslateX}px)`;
@@ -601,47 +620,21 @@
             wrapper.addEventListener('touchend', e => {
                 if (!isSwiping) return;
                 
-                grid.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                const swipeThreshold = 40; // ต้องลากเกิน 40px ถึงจะเปลี่ยนเดือน
+                grid.style.transition = 'transform 0.2s ease';
+                grid.style.transform = `translateX(0)`; // เด้งกลับที่เดิมก่อน
                 
-                const swipeThreshold = 50; // ต้องลากเกิน 50px ถึงจะเปลี่ยนเดือน
                 if (currentTranslateX < -swipeThreshold) {
-                    // ปัดซ้าย -> เดือนถัดไป
-                    grid.style.transform = `translateX(-100%)`;
-                    setTimeout(() => { changeMonth(1, 'right'); }, 300);
+                    setTimeout(() => changeMonth(1), 50); // ปัดซ้าย -> เดือนถัดไป
                 } else if (currentTranslateX > swipeThreshold) {
-                    // ปัดขวา -> เดือนก่อนหน้า
-                    grid.style.transform = `translateX(100%)`;
-                    setTimeout(() => { changeMonth(-1, 'left'); }, 300);
-                } else {
-                    // ลากไม่ถึง เด้งกลับที่เดิม
-                    grid.style.transform = `translateX(0)`;
+                    setTimeout(() => changeMonth(-1), 50); // ปัดขวา -> เดือนก่อนหน้า
                 }
                 
-                setTimeout(() => { isSwiping = false; }, 300);
+                setTimeout(() => { 
+                    isSwiping = false; 
+                    grid.style.transition = '';
+                }, 250);
             }, {passive: true});
-
-            // --- Wheel Events (Trackpad/Mouse) ---
-            wrapper.addEventListener('wheel', e => {
-                // ตรวจจับการปัดแนวนอน (Horizontal Scroll)
-                if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 20) {
-                    e.preventDefault(); // ป้องกันหน้าเว็บขยับ
-                    if (!wheelTimeout) {
-                        if (e.deltaX > 0) {
-                            // ปัดซ้าย (Trackpad)
-                            grid.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-                            grid.style.transform = `translateX(-100%)`;
-                            setTimeout(() => { changeMonth(1, 'right'); }, 300);
-                        } else {
-                            // ปัดขวา (Trackpad)
-                            grid.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-                            grid.style.transform = `translateX(100%)`;
-                            setTimeout(() => { changeMonth(-1, 'left'); }, 300);
-                        }
-                        // หน่วงเวลา 0.6 วิ ป้องกันการปัดรัวๆ
-                        wheelTimeout = setTimeout(() => { wheelTimeout = null; }, 600);
-                    }
-                }
-            }, {passive: false});
         }
 
         // ==========================================
@@ -681,8 +674,8 @@
         }
 
         async function backgroundSync(isInitial = false) {
-            const syncIcon = document.getElementById('syncIndicator');
-            if (!isInitial) syncIcon.style.display = 'inline-block';
+            if (isFetching) return; 
+            isFetching = true;
 
             try {
                 const fetchStart = new Date(currentYear, currentMonth - 2, 1);
@@ -724,7 +717,7 @@
                 console.error("Background Sync Failed:", error);
                 if (isInitial) swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
             } finally {
-                syncIcon.style.display = 'none';
+                isFetching = false; 
             }
         }
 
@@ -736,7 +729,6 @@
                 officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
             });
             
-            // ถ้าเป็นการโหลดครั้งแรก ให้ตั้งค่า Filter เป็นทุกคน
             if (currentFilterNames.length === 0 && isFilterAll) {
                 currentFilterNames = Object.keys(officerMap);
             }
@@ -745,38 +737,58 @@
         // ==========================================
         // 2. ระบบปฏิทิน (Calendar View & Slide Animation)
         // ==========================================
-        async function changeMonth(delta, slideFrom = null) {
-            let newMonth = currentMonth + delta;
-            let newYear = currentYear;
-            while (newMonth > 11) { newMonth -= 12; newYear++; }
-            while (newMonth < 0) { newMonth += 12; newYear--; }
-            currentMonth = newMonth;
-            currentYear = newYear;
-            
-            const targetDate = new Date(currentYear, currentMonth, 1);
+        async function changeMonth(delta) {
             const grid = document.getElementById('calendarBody');
             
-            // ถ้ามีการสไลด์ (จากการปัด) ให้ย้ายตารางไปรอฝั่งตรงข้าม แล้วสไลด์เข้า
-            if (slideFrom) {
-                grid.style.transition = 'none';
-                grid.style.transform = slideFrom === 'right' ? 'translateX(100%)' : 'translateX(-100%)';
+            // กำหนดแอนิเมชัน
+            const isJump = Math.abs(delta) > 1;
+            const direction = delta > 0 ? 'left' : 'right';
+            const inDirection = delta > 0 ? 'right' : 'left';
+
+            if (isJump) {
+                grid.classList.add('calendar-grid-anim', 'fade-out');
+            } else {
+                grid.classList.add('calendar-grid-anim', `slide-out-${direction}`);
+            }
+
+            setTimeout(async () => {
+                let newMonth = currentMonth + delta;
+                let newYear = currentYear;
+                while (newMonth > 11) { newMonth -= 12; newYear++; }
+                while (newMonth < 0) { newMonth += 12; newYear--; }
+                currentMonth = newMonth;
+                currentYear = newYear;
+
+                // สั่งโหลดเบื้องหลัง (ไม่บล็อก UI)
+                const targetDate = new Date(currentYear, currentMonth, 1);
+                if (!(cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end)) {
+                    backgroundSync(); 
+                }
+
+                // ย้ายไปรอฝั่งตรงข้าม
+                if (isJump) {
+                    grid.classList.remove('fade-out');
+                    grid.classList.add('fade-in');
+                } else {
+                    grid.classList.remove(`slide-out-${direction}`);
+                    grid.classList.add(`slide-in-${inDirection}`);
+                }
+
+                renderCalendar(); 
                 void grid.offsetWidth; // Force reflow
-            }
+                
+                // สไลด์เข้า
+                if (isJump) {
+                    grid.classList.remove('fade-in');
+                } else {
+                    grid.classList.remove(`slide-in-${inDirection}`);
+                }
+                
+                setTimeout(() => {
+                    grid.classList.remove('calendar-grid-anim');
+                }, 250);
 
-            // เช็คว่ามีข้อมูลไหม
-            if (!(cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end)) {
-                swalCustom.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                await backgroundSync();
-                Swal.close();
-            }
-
-            renderCalendar(); 
-
-            // สไลด์เข้าตรงกลาง
-            if (slideFrom) {
-                grid.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
-                grid.style.transform = 'translateX(0)';
-            }
+            }, 200);
         }
 
         function openMonthYearPicker() {
@@ -788,6 +800,8 @@
 
             swalCustom.fire({
                 title: 'เลือกเดือนและปี',
+                showCloseButton: true,
+                scrollbarPadding: false,
                 html: `
                     <select id="swal-month" class="form-input" style="margin-bottom: 15px;">${monthOptions}</select>
                     <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
@@ -801,13 +815,13 @@
                     const y = parseInt(document.getElementById('swal-year').value);
                     return { month: parseInt(document.getElementById('swal-month').value), year: y - 543 };
                 }
-            }).then(async (result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
                     const newMonth = result.value.month;
                     const newYear = result.value.year;
                     const delta = (newYear - currentYear) * 12 + (newMonth - currentMonth);
                     if (delta !== 0) {
-                        changeMonth(delta); // เปลี่ยนเดือนแบบไม่มีสไลด์
+                        changeMonth(delta);
                     }
                 }
             });
@@ -1031,7 +1045,6 @@
                 if (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน') otherOptions += `<option value="${fullName}">${fullName}</option>`;
             });
 
-            // ถ้าเดิมว่าง ให้เพิ่ม option ซ่อนไว้เป็นค่าเริ่มต้น
             document.getElementById('editInvSelect').innerHTML = curInv ? invOptions : `<option value="" disabled selected hidden></option>${invOptions}`;
             document.getElementById('editAsstSelect').innerHTML = curAsst ? otherOptions : `<option value="" disabled selected hidden></option>${otherOptions}`;
             document.getElementById('editClerkSelect').innerHTML = curClerk ? otherOptions : `<option value="" disabled selected hidden></option>${otherOptions}`;
@@ -1164,12 +1177,14 @@
             processSaveRole(curClerk, origClerk, currentEditDuty.baseClerk, currentEditDuty.swapClerk, 'cb-swap-clerk', 'baseClerk', 'swapClerk');
 
             try {
+                // อัปเดตข้อมูลในเครื่องทันที (Optimistic UI)
                 rosterData[selectedDateAD] = newData;
                 localStorage.setItem('roster_db', JSON.stringify(rosterData));
                 renderCalendar();
                 closeModalAnim('dailyModal');
                 swalCustom.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
 
+                // ส่งไปบันทึกที่ Google เบื้องหลัง
                 await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'saveRoster', data: [newData] })
