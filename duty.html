@@ -30,8 +30,15 @@
         .nav-left { flex: 1; min-width: 0; display: flex; align-items: center; }
         .page-title { font-weight: 600; font-size: 1.25rem; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* --- Calendar Toolbar (สลับ Layout ซ้าย-ขวา) --- */
-        .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
+        /* --- Calendar Toolbar --- */
+        .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .month-nav { display: flex; align-items: center; gap: 10px; }
+        .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .month-nav button:hover { background: var(--navy-main); color: white; transform: scale(1.05); }
+        
+        /* ล็อคความกว้างของชื่อเดือนให้คงที่ และห้ามตกบรรทัด */
+        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; display: inline-block; white-space: nowrap; }
+        .current-month-label:hover { background: #e2e8f0; }
         
         .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .btn-toolbar { background: white; border: none; padding: 8px 16px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-weight: 500; }
@@ -56,25 +63,14 @@
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
-        /* ส่วนเลือกเดือน (ย้ายไปขวา) */
-        .month-nav { display: flex; align-items: center; gap: 10px; }
-        .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .month-nav button:hover { background: var(--navy-main); color: white; transform: scale(1.05); }
-        .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; display: inline-block; white-space: nowrap; }
-        .current-month-label:hover { background: #e2e8f0; }
-
         /* ไอคอนโหลดเบื้องหลัง */
         .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
 
         /* --- Calendar Grid (Samsung One UI Style + Carousel) --- */
-        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 5px; overflow: hidden; touch-action: pan-y; }
+        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; }
         
-        /* แคปซูลวัน จ.-อา. (One UI Style) */
-        .calendar-header-grid { 
-            display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); 
-            background: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-            padding: 8px 4px; margin-bottom: 12px;
-        }
+        /* หัวตาราง จ.-อา. (กลับไปเป็น Minimal) */
+        .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); padding: 0 4px; margin-bottom: 8px; }
         .calendar-header { text-align: right; padding: 0 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
@@ -128,7 +124,7 @@
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
-        /* วันสำคัญ (สีแดง) - ดักไว้ไม่ให้ทับสีขาวของวันนี้ */
+        /* วันสำคัญ (สีแดง) */
         .holiday-date-text:not(.today) { color: #ef4444 !important; }
 
         /* สี "วันนี้" ตามวันไทย (Sunburst Badge) */
@@ -615,6 +611,12 @@
             showClass: { popup: 'swal2-custom-show' },
             hideClass: { popup: 'swal2-custom-hide' }
         });
+        
+        // Toast Notification แบบแท้ๆ (ไม่บล็อกหน้าจอ ไม่กะพริบ)
+        const Toast = Swal.mixin({
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 2000,
+            showClass: { popup: 'swal2-custom-show' }, hideClass: { popup: 'swal2-custom-hide' }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             initDatepickers();
@@ -697,7 +699,16 @@
                 renderCalendar();
                 backgroundSync(); 
             } else {
+                // โหลดครั้งแรก: ป้องกันหน้าจอกระโดดด้วย scrollbarPadding: false
+                Swal.fire({ 
+                    title: 'กำลังเตรียมระบบครั้งแรก...', 
+                    allowOutsideClick: false, 
+                    scrollbarPadding: false, heightAuto: false,
+                    didOpen: () => Swal.showLoading() 
+                });
                 await backgroundSync(true); 
+                Swal.close();
+                window.scrollTo(0, 0); // บังคับเลื่อนกลับไปบนสุด
             }
         }
 
@@ -815,10 +826,10 @@
                 monthOptions += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>${m}</option>`;
             });
 
-            swalCustom.fire({
+            Swal.fire({
                 title: 'เลือกเดือนและปี',
                 showCloseButton: true,
-                scrollbarPadding: false,
+                scrollbarPadding: false, heightAuto: false, // ป้องกันหน้าจอกระโดด
                 html: `
                     <select id="swal-month" class="form-input" style="margin-bottom: 15px;">${monthOptions}</select>
                     <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
@@ -1209,11 +1220,8 @@
                 renderCalendar();
                 closeModalAnim('dailyModal');
                 
-                // แจ้งเตือนแบบ Popup กลางจอ (ไม่กะพริบ)
-                Swal.fire({ 
-                    icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false,
-                    scrollbarPadding: false, customClass: { popup: 'swal2-custom-show' }
-                });
+                // แจ้งเตือนแบบ Toast (ไม่บล็อกหน้าจอ ไม่กะพริบ)
+                Toast.fire({ icon: 'success', title: 'บันทึกสำเร็จ' });
 
                 await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1247,11 +1255,8 @@
             const msg = `วันนี้ (${shortDateTH}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(curInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(curAsst)}\n\nเสมียนประจำวัน\n${getLineText(curClerk)}`;
 
             navigator.clipboard.writeText(msg).then(() => {
-                // แจ้งเตือนแบบ Popup กลางจอ (ไม่กะพริบ)
-                Swal.fire({ 
-                    icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false,
-                    scrollbarPadding: false, customClass: { popup: 'swal2-custom-show' }
-                });
+                // แจ้งเตือนแบบ Toast (ไม่บล็อกหน้าจอ ไม่กะพริบ)
+                Toast.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว' });
             }).catch(err => {
                 swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
             });
