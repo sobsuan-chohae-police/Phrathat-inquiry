@@ -57,14 +57,14 @@
         /* Dropdown Menu (Hamburger) */
         .dropdown { position: relative; display: inline-block; }
         @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
-        .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
+        .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
         .dropdown-item i { width: 20px; text-align: center; font-size: 1.1rem; }
 
         /* --- Calendar Grid (Samsung One UI Style + Carousel) --- */
-        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 5px; overflow: hidden; touch-action: pan-y; }
+        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; }
         
         .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
         .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
@@ -72,7 +72,7 @@
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
         /* คอนเทนเนอร์สำหรับสไลด์ขบวนรถไฟ */
-        .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 0 0 16px 16px; padding-bottom: 10px; }
+        .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 0 0 16px 16px; padding-bottom: 10px; padding-top: 6px; /* เพิ่มช่องไฟขอบบน */ }
         .carousel-container { 
             display: flex; width: 100%; 
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
@@ -91,26 +91,26 @@
         .calendar-cell { 
             position: relative; 
             height: 95px; min-height: 95px; 
-            padding: 28px 4px 4px 4px; /* เพิ่มพื้นที่ด้านบนให้ดูโปร่งขึ้น */
+            padding: 26px 6px 6px 6px; 
             background: white; border-radius: 16px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
             cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; flex-direction: column; gap: 2px; 
-            border: 2px solid transparent; /* เตรียมไว้สำหรับกรอบวันนี้ */
+            border: 2px solid transparent; 
         }
         .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
         .calendar-cell.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
         .calendar-cell.empty:hover { transform: none; box-shadow: none; z-index: 1; }
 
-        /* ตอกหมุดวันหยุด (ซ้ายบน) + ดาวสีแดง */
+        /* ตอกหมุดวันหยุด (ซ้ายบน) + ดาวสีแดง + ตัดคำสมบูรณ์แบบ */
         .holiday-label { 
-            position: absolute; top: 6px; left: 6px; 
-            font-size: 0.65rem; color: #ef4444; 
-            max-width: calc(100% - 34px); /* ห้ามกว้างไปทับตัวเลขวันที่ */
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            position: absolute; top: 4px; left: 4px; 
+            font-size: 0.7rem; color: #ef4444; 
+            max-width: calc(100% - 32px); /* ห้ามกว้างไปทับตัวเลขวันที่ */
             display: flex; align-items: center; gap: 3px; font-weight: 500;
         }
-        .holiday-label i { font-size: 0.6rem; }
+        .holiday-label i { font-size: 0.6rem; flex-shrink: 0; }
+        .holiday-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
         
         /* ตอกหมุดตัวเลขวันที่ (ขวาบน) */
         .date-num { 
@@ -148,7 +148,7 @@
             font-size: 0.75rem; padding: 2px 4px 2px 6px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
             font-weight: 500; display: flex; align-items: flex-start; gap: 2px;
-            color: var(--text-main); /* สีเทาเข้มเหมือนกันหมด */
+            color: var(--text-main); 
             border-radius: 4px; transition: 0.2s;
             line-height: 1.4; 
             margin-bottom: 1px;
@@ -171,12 +171,12 @@
         /* ไฮไลต์พื้นหลังเมื่อถูกกรอง (ฟ้า, เขียว, เหลือง) */
         .duty-inv.highlight { background-color: #eff6ff; color: #1d4ed8; }
         .duty-asst.highlight { background-color: #f0fdf4; color: #15803d; }
-        .duty-clerk.highlight { background-color: #fef9c3; color: #a16207; } /* สีเหลืองอ่อน */
+        .duty-clerk.highlight { background-color: #fef9c3; color: #a16207; } 
 
         /* --- Responsive Desktop --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 105px; min-height: 105px; padding: 30px 8px 6px 8px; gap: 2px; }
+            .calendar-cell { height: 105px; min-height: 105px; padding: 28px 8px 6px 8px; gap: 2px; }
             .date-num { font-size: 1.05rem; width: 26px; height: 26px; top: 6px; right: 6px; }
             .holiday-label { top: 8px; left: 8px; font-size: 0.75rem; }
             .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
@@ -184,7 +184,7 @@
             .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
         }
 
-        /* --- Responsive Mobile (Edge-to-Edge) --- */
+        /* --- Responsive Mobile (Edge-to-Edge & ขยับดอกจันชิดซ้าย) --- */
         @media (max-width: 768px) {
             .container { padding: 15px 4px; } 
             .calendar-grid { gap: 4px; }
@@ -219,6 +219,12 @@
             max-height: 90vh; position: relative; overflow: hidden;
         }
         .modal-overlay.show .modal-card { transform: scale(1); opacity: 1; }
+
+        /* SweetAlert2 Custom Animation */
+        .swal2-custom-show { animation: swal2-fade-scale-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
+        .swal2-custom-hide { animation: swal2-fade-scale-out 0.2s ease forwards !important; }
+        @keyframes swal2-fade-scale-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes swal2-fade-scale-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.9); } }
 
         .modal-body { padding: 25px; overflow-y: auto; max-height: 75vh; scroll-behavior: smooth; }
         .detail-row { margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; }
@@ -264,14 +270,16 @@
         .filter-item input { transform: scale(1.1); cursor: pointer; }
 
         /* --- Loop Builder Styles --- */
-        .pattern-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius-lg); padding: 15px; margin-top: 10px; }
+        #loopModal .form-grid { gap: 10px; }
+        #loopModal .form-group { margin-bottom: 5px; }
+        .pattern-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius-lg); padding: 10px 15px; margin-top: 5px; }
         .pattern-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; animation: fadeUp 0.3s ease; }
         .pattern-num { width: 30px; height: 30px; background: var(--navy-main); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; flex-shrink: 0; }
         .btn-remove-pattern { background: #fee2e2; color: var(--danger); border: none; width: 38px; height: 38px; border-radius: 12px; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
         .btn-remove-pattern:hover { background: var(--danger); color: white; }
         
         /* Reference View */
-        .ref-view-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; margin-bottom: 15px; display: none; }
+        .ref-view-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; margin-bottom: 5px; display: none; }
         .ref-view-title { font-size: 0.85rem; color: #166534; font-weight: 600; margin-bottom: 8px; }
         .ref-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth; }
         .ref-item { background: white; padding: 8px 12px; border-radius: 12px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
@@ -426,10 +434,10 @@
                 <h3><i class="fa-solid fa-rotate"></i> จัดตารางเวรแบบวนลูป</h3>
             </div>
             <div class="modal-body">
-                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div class="form-group" style="grid-column: span 2;">
                         <label class="form-label">เลือกหน้าที่ที่ต้องการจัดเวร</label>
-                        <select class="form-input" id="loopRoleSelect" onchange="resetLoopBuilder()">
+                        <select class="form-input" id="loopRoleSelect" onchange="resetLoopBuilder(false)">
                             <option value="" disabled selected hidden>- กรุณาเลือกหน้าที่ -</option>
                             <option value="พนักงานสอบสวนเวร">พนักงานสอบสวนเวร</option>
                             <option value="ผู้ช่วยพนักงานสอบสวน">ผู้ช่วยพนักงานสอบสวน</option>
@@ -459,11 +467,11 @@
                     </div>
                 </div>
 
-                <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="generatePreview()">
+                <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="generatePreview()">
                     <i class="fa-solid fa-eye"></i> ดูตัวอย่างการจัดเวร
                 </button>
 
-                <div class="preview-section" id="previewSection" style="display: none; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                <div class="preview-section" id="previewSection" style="display: none; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
                     <h4 style="margin-bottom: 10px; color: var(--navy-main);">ตัวอย่างตารางเวร</h4>
                     <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
@@ -594,6 +602,7 @@
         // ระบบแอนิเมชันเปิด-ปิด Modal (Fade & Scale)
         function openModalAnim(id) {
             if (id === 'filterModal') buildFilterTree();
+            if (id === 'loopModal') resetLoopBuilder(true); // true = เคลียร์ทุกช่อง
             const modal = document.getElementById(id);
             modal.style.display = 'flex';
             void modal.offsetWidth; // Trigger reflow
@@ -605,7 +614,7 @@
             setTimeout(() => { modal.style.display = 'none'; }, 250);
         }
 
-        // Override SweetAlert2 Animation
+        // Override SweetAlert2 Animation & Toast
         const swalCustom = Swal.mixin({
             showClass: { popup: 'swal2-custom-show' },
             hideClass: { popup: 'swal2-custom-hide' }
@@ -687,11 +696,16 @@
             const cachedRoster = localStorage.getItem('roster_db');
             const cachedOfficers = localStorage.getItem('officer_db');
             const cachedHolidays = localStorage.getItem('holiday_db');
+            const savedRange = localStorage.getItem('cached_range');
 
-            if (cachedRoster && cachedOfficers) {
+            if (cachedRoster && cachedOfficers && savedRange) {
                 allOfficers = JSON.parse(cachedOfficers);
                 rosterData = JSON.parse(cachedRoster);
                 if (cachedHolidays) holidayData = JSON.parse(cachedHolidays);
+                
+                const parsedRange = JSON.parse(savedRange);
+                cachedRange.start = new Date(parsedRange.start);
+                cachedRange.end = new Date(parsedRange.end);
                 
                 buildOfficerMap();
                 renderCalendar();
@@ -734,6 +748,7 @@
                     cachedRange.start = fetchStart;
                     cachedRange.end = fetchEnd;
                     localStorage.setItem('roster_db', JSON.stringify(rosterData)); 
+                    localStorage.setItem('cached_range', JSON.stringify({ start: fetchStart.getTime(), end: fetchEnd.getTime() }));
                     
                     if (rosterJson.holidays !== null) {
                         holidayData = rosterJson.holidays;
@@ -860,12 +875,9 @@
 
         function toggleOriginalView() {
             isShowOriginal = !isShowOriginal;
-            const container = document.getElementById('toggleOriginalModalBtn');
-            if (isShowOriginal) {
-                container.classList.add('active');
-            } else {
-                container.classList.remove('active');
-            }
+            // ซิงค์สวิตช์ทั้ง 2 ตัว
+            document.getElementById('toggleOriginalBtn').classList.toggle('active', isShowOriginal);
+            document.getElementById('toggleOriginalModalBtn').classList.toggle('active', isShowOriginal);
             updateFilterButtonState();
             renderCalendar();
         }
@@ -938,15 +950,13 @@
                 let holidayText = '';
                 let isHolidayClass = '';
                 if (holidayData[dateKey]) {
-                    holidayText = `<div class="holiday-label" title="${holidayData[dateKey]}"><i class="fa-solid fa-star"></i> ${holidayData[dateKey]}</div>`;
+                    holidayText = `<div class="holiday-label" title="${holidayData[dateKey]}"><i class="fa-solid fa-star"></i> <span class="holiday-text">${holidayData[dateKey]}</span></div>`;
                     isHolidayClass = 'holiday-date-text';
                 }
 
                 html += `<div class="calendar-cell ${isTodayCellClass}" onclick="openDailyModal('${dateKey}')">
-                            <div class="cell-header">
-                                ${holidayText}
-                                <div class="date-num ${isTodayClass} ${isHolidayClass}">${day}</div>
-                            </div>`;
+                            ${holidayText}
+                            <div class="date-num ${isTodayClass} ${isHolidayClass}">${day}</div>`;
                 
                 html += invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''} ${invHighlight ? 'highlight' : ''} ${invDimmed ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
                 html += asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''} ${asstHighlight ? 'highlight' : ''} ${asstDimmed ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
@@ -1229,7 +1239,7 @@
                 renderCalendar();
                 closeModalAnim('dailyModal');
                 
-                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
+                swalCustom.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
 
                 await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1263,7 +1273,7 @@
             const msg = `วันนี้ (${shortDateTH}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(curInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(curAsst)}\n\nเสมียนประจำวัน\n${getLineText(curClerk)}`;
 
             navigator.clipboard.writeText(msg).then(() => {
-                Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
+                swalCustom.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
             }).catch(err => {
                 swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
             });
@@ -1279,7 +1289,12 @@
             }, 50);
         }
 
-        function resetLoopBuilder() {
+        function resetLoopBuilder(isFullReset = false) {
+            if (isFullReset) {
+                document.getElementById('loopRoleSelect').value = "";
+                if(document.getElementById('loopStartDate')._flatpickr) document.getElementById('loopStartDate')._flatpickr.clear();
+                if(document.getElementById('loopEndDate')._flatpickr) document.getElementById('loopEndDate')._flatpickr.clear();
+            }
             document.getElementById('patternContainer').innerHTML = '';
             patternCount = 0;
             document.getElementById('previewSection').style.display = 'none';
