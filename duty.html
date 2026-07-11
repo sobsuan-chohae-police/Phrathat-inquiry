@@ -17,7 +17,7 @@
 
     <style>
         /* --- บังคับแสดง Scrollbar เพื่อป้องกันหน้าเว็บขยับซ้าย-ขวา --- */
-        body { overflow-y: scroll; background-color: #f3f4f6; overflow-x: hidden; } 
+        body { overflow-y: scroll; background-color: #f8fafc; overflow-x: hidden; } 
 
         /* --- Navbar --- */
         .nav-btn { background: #ffffff; border: none; font-size: 1.1rem; color: var(--text-light); cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); text-decoration: none; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
@@ -29,20 +29,19 @@
         /* --- Calendar Toolbar --- */
         .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .month-nav { display: flex; align-items: center; gap: 10px; }
-        .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .month-nav button:hover { background: var(--navy-main); color: white; transform: scale(1.05); }
+        .month-nav button { background: white; border: 1px solid #e2e8f0; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: var(--shadow-soft); }
+        .month-nav button:hover { background: var(--navy-main); color: white; border-color: var(--navy-main); }
         
-        /* ล็อคความกว้างของชื่อเดือนให้คงที่ และห้ามตกบรรทัด */
         .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; display: inline-block; white-space: nowrap; }
-        .current-month-label:hover { background: #e2e8f0; }
+        .current-month-label:hover { background: #f1f5f9; }
         
         .toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .btn-toolbar { background: white; border: none; padding: 8px 16px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-weight: 500; }
-        .btn-toolbar:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: var(--navy-main); transform: translateY(-1px); }
+        .btn-toolbar { background: white; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 50px; font-family: 'Kanit'; font-size: 0.9rem; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow-soft); font-weight: 500; }
+        .btn-toolbar:hover { background: #f8fafc; border-color: var(--navy-main); color: var(--navy-main); }
         
-        /* Toggle Switch สำหรับดูคำสั่งเดิม (เปลี่ยนเป็นสีเขียว) */
-        .toggle-container { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .toggle-container:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        /* Toggle Switch */
+        .toggle-container { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 50px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-soft); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .toggle-container:hover { background: #f8fafc; border-color: var(--navy-main); }
         .toggle-switch { position: relative; width: 34px; height: 20px; background: #cbd5e1; border-radius: 20px; transition: 0.3s; }
         .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         .toggle-container.active .toggle-switch { background: var(--success); } 
@@ -62,26 +61,41 @@
         /* ไอคอนโหลดเบื้องหลัง */
         .sync-indicator { display: none; color: var(--text-light); font-size: 1.1rem; margin-left: 5px; }
 
-        /* --- Calendar Grid (Samsung One UI Style + Carousel) --- */
-        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; }
-        
-        /* แคปซูลวัน จ.-อา. (One UI Style) */
-        .calendar-header-grid { 
-            display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); 
-            background: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-            padding: 8px 4px; margin-bottom: 12px;
+        /* --- Calendar Grid (Solid Grid Style) --- */
+        .calendar-card { 
+            background: white; 
+            border-radius: var(--radius-xl); 
+            box-shadow: var(--shadow-soft); 
+            border: 1px solid #e2e8f0; 
+            overflow: hidden; 
+            margin-top: 10px; 
         }
-        .calendar-header { text-align: right; padding: 0 8px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
+        
+        /* หัวตาราง (Fixed) */
+        .calendar-header-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, minmax(0, 1fr)); 
+            background: #f8fafc; 
+            border-bottom: 1px solid #e2e8f0; 
+        }
+        .calendar-header { 
+            text-align: right; 
+            padding: 12px 8px; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            color: var(--text-light); 
+            border-right: 1px solid #e2e8f0; 
+        }
+        .calendar-header:last-child { border-right: none; }
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
         /* คอนเทนเนอร์สำหรับสไลด์ขบวนรถไฟ */
-        .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 16px; }
+        .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; touch-action: pan-y; }
         .carousel-container { 
             display: flex; width: 100%; 
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
-            transform: translateX(calc(-100% - var(--grid-gap))); 
-            gap: var(--grid-gap); 
+            transform: translateX(-100%); 
             will-change: transform;
         }
         .carousel-container.no-transition { transition: none; }
@@ -90,21 +104,24 @@
         .fade-wrapper { transition: opacity 0.2s ease, transform 0.2s ease; }
         .fade-wrapper.fade-out { opacity: 0; transform: scale(0.98); }
 
-        .calendar-grid { flex: 0 0 100%; width: 100%; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
+        .calendar-grid { flex: 0 0 100%; width: 100%; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 
         .calendar-cell { 
             position: relative; 
             height: 95px; min-height: 95px; 
-            padding: 26px 6px 6px 6px; 
-            background: white; border-radius: 16px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
-            cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; flex-direction: column; gap: 2px; 
-            border: 1px solid rgba(0,0,0,0.02);
+            padding: 26px 4px 4px 4px; 
+            background: white; 
+            cursor: pointer; transition: background 0.2s; 
+            display: flex; flex-direction: column; gap: 1px; 
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
         }
-        .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
-        .calendar-cell.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
-        .calendar-cell.empty:hover { transform: none; box-shadow: none; z-index: 1; }
+        .calendar-cell:nth-child(7n) { border-right: none; }
+        .calendar-cell:hover { background: #f8fafc; }
+        
+        /* ช่องว่างสีเทา (Empty Cells) */
+        .calendar-cell.empty { background: #f8fafc; cursor: default; }
+        .calendar-cell.empty:hover { background: #f8fafc; }
 
         /* ตอกหมุดวันหยุด (ซ้ายบน) */
         .holiday-label { 
@@ -124,22 +141,22 @@
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
-        /* วันสำคัญ (สีแดง) - ดักไว้ไม่ให้ทับสีขาวของวันนี้ */
+        /* วันสำคัญ (สีแดง) */
         .holiday-date-text:not(.today) { color: #ef4444 !important; }
 
         /* สี "วันนี้" ตามวันไทย (Sunburst Badge) */
         .date-num.today {
             color: white !important;
             clip-path: polygon(50% 0%, 61% 15%, 79% 11%, 81% 29%, 98% 35%, 89% 50%, 98% 65%, 81% 71%, 79% 89%, 61% 85%, 50% 100%, 39% 85%, 21% 89%, 19% 71%, 2% 65%, 11% 50%, 2% 35%, 19% 29%, 21% 11%, 39% 15%);
-            transform: scale(1.15); 
+            transform: scale(1.1); 
         }
-        .today-color-0 { background: #ef4444 !important; filter: drop-shadow(0 2px 4px rgba(239,68,68,0.4)); } /* อาทิตย์ */
-        .today-color-1 { background: #eab308 !important; filter: drop-shadow(0 2px 4px rgba(234,179,8,0.4)); } /* จันทร์ */
-        .today-color-2 { background: #ec4899 !important; filter: drop-shadow(0 2px 4px rgba(236,72,153,0.4)); } /* อังคาร */
-        .today-color-3 { background: #22c55e !important; filter: drop-shadow(0 2px 4px rgba(34,197,94,0.4)); } /* พุธ */
-        .today-color-4 { background: #f97316 !important; filter: drop-shadow(0 2px 4px rgba(249,115,22,0.4)); } /* พฤหัสฯ */
-        .today-color-5 { background: #3b82f6 !important; filter: drop-shadow(0 2px 4px rgba(59,130,246,0.4)); } /* ศุกร์ */
-        .today-color-6 { background: #a855f7 !important; filter: drop-shadow(0 2px 4px rgba(168,85,247,0.4)); } /* เสาร์ */
+        .today-color-0 { background: #ef4444 !important; } /* อาทิตย์ */
+        .today-color-1 { background: #eab308 !important; } /* จันทร์ */
+        .today-color-2 { background: #ec4899 !important; } /* อังคาร */
+        .today-color-3 { background: #22c55e !important; } /* พุธ */
+        .today-color-4 { background: #f97316 !important; } /* พฤหัสฯ */
+        .today-color-5 { background: #3b82f6 !important; } /* ศุกร์ */
+        .today-color-6 { background: #a855f7 !important; } /* เสาร์ */
 
         /* ชื่อคนเข้าเวร (Minimalist + แถบสี + ดอกจัน *) */
         .duty-name { 
@@ -181,7 +198,6 @@
             .holiday-label { top: 6px; left: 6px; font-size: 0.75rem; padding: 2px 8px; }
             .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
             .duty-name::before { font-size: 1rem; width: 10px; transform: translateY(2px); margin-left: 0; }
-            .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
         }
 
         /* --- Responsive Mobile (Edge-to-Edge & จัดปุ่มแนวตั้ง) --- */
@@ -192,17 +208,18 @@
         }
 
         @media (max-width: 768px) {
-            .container { padding: 15px 4px; } 
-            .calendar-grid { gap: 4px; }
-            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 10px; }
+            .container { padding: 15px 0; } /* ชิดขอบจอ 100% */
+            .calendar-card { border-radius: 0; border-left: none; border-right: none; }
+            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; }
             
             .date-num { font-size: 0.85rem; width: 18px; height: 18px; top: 2px; right: 2px; }
             .holiday-label { font-size: 0.6rem; top: 2px; left: 2px; padding: 1px 4px; max-width: calc(100% - 22px); }
             
+            /* ขยับดอกจันชิดซ้ายสุดในมือถือ */
             .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 2px 1px 4px; margin-left: -2px; }
             .duty-name::before { font-size: 0.8rem; width: 6px; transform: translateY(1px); margin-left: 0; }
             
-            .calendar-header { font-size: 0.8rem; padding: 2px 6px; }
+            .calendar-header { font-size: 0.8rem; padding: 8px 4px; }
             .current-month-label { font-size: 1.1rem; width: 160px; } 
         }
 
@@ -328,7 +345,7 @@
             </div>
         </div>
 
-        <!-- Calendar Grid (One UI Style + Carousel Wrapper) -->
+        <!-- Calendar Grid (Solid Grid Style + Carousel Wrapper) -->
         <div class="calendar-card fade-wrapper" id="fadeWrapper">
             <div class="calendar-header-grid">
                 <div class="calendar-header">จ.</div>
@@ -605,7 +622,7 @@
             setTimeout(() => { modal.style.display = 'none'; }, 250);
         }
 
-        // Override SweetAlert2 Animation
+        // Override SweetAlert2 Animation & Popup กลางจอ
         const swalCustom = Swal.mixin({
             showClass: { popup: 'swal2-custom-show' },
             hideClass: { popup: 'swal2-custom-hide' }
@@ -636,8 +653,8 @@
                 
                 if (Math.abs(deltaX) > 10) {
                     isSwiping = true;
-                    const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
-                    container.style.transform = `translateX(calc(-100% - ${gap}px + ${deltaX}px))`;
+                    const gap = 0; // ไม่มี gap แล้ว
+                    container.style.transform = `translateX(calc(-100% + ${deltaX}px))`;
                 }
             }, {passive: true});
 
@@ -646,17 +663,16 @@
                 
                 const deltaX = e.changedTouches[0].clientX - touchStartX;
                 container.classList.remove('no-transition');
-                const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
                 
                 const swipeThreshold = 40;
                 if (deltaX < -swipeThreshold) {
-                    container.style.transform = `translateX(calc(-200% - ${gap * 2}px))`;
+                    container.style.transform = `translateX(-200%)`;
                     setTimeout(() => changeMonth(1, true), 300);
                 } else if (deltaX > swipeThreshold) {
-                    container.style.transform = `translateX(0px)`;
+                    container.style.transform = `translateX(0%)`;
                     setTimeout(() => changeMonth(-1, true), 300);
                 } else {
-                    container.style.transform = `translateX(calc(-100% - ${gap}px))`;
+                    container.style.transform = `translateX(-100%)`;
                 }
                 setTimeout(() => { isSwiping = false; }, 300);
             }, {passive: true});
@@ -692,21 +708,11 @@
                 renderCalendar();
                 backgroundSync(); 
             } else {
-                Swal.fire({ 
-                    title: 'กำลังเตรียมระบบครั้งแรก...', 
-                    allowOutsideClick: false, 
-                    scrollbarPadding: false, heightAuto: false,
-                    didOpen: () => Swal.showLoading() 
-                });
+                // โหลดครั้งแรก: ไม่มีหน้าต่างโหลด โชว์ปฏิทินเปล่าๆ แล้วซิงค์เลย
+                renderCalendar();
+                document.getElementById('syncIndicator').style.display = 'inline-block';
                 await backgroundSync(true); 
-                Swal.close();
-                
-                // บังคับเลื่อนกลับไปบนสุดเพื่อแก้ปัญหาหน้าจอกระโดด
-                setTimeout(() => {
-                    window.scrollTo({ top: 0, behavior: 'instant' });
-                    document.body.scrollTop = 0; 
-                    document.documentElement.scrollTop = 0; 
-                }, 50);
+                document.getElementById('syncIndicator').style.display = 'none';
             }
         }
 
@@ -775,13 +781,12 @@
         // ==========================================
         function arrowChangeMonth(delta) {
             const container = document.getElementById('carouselContainer');
-            const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
             
             container.classList.remove('no-transition');
             if (delta === 1) {
-                container.style.transform = `translateX(calc(-200% - ${gap * 2}px))`;
+                container.style.transform = `translateX(-200%)`;
             } else {
-                container.style.transform = `translateX(0px)`;
+                container.style.transform = `translateX(0%)`;
             }
             setTimeout(() => changeMonth(delta, true), 300);
         }
@@ -802,9 +807,8 @@
             if (isCarousel) {
                 renderCalendar();
                 const container = document.getElementById('carouselContainer');
-                const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
                 container.classList.add('no-transition');
-                container.style.transform = `translateX(calc(-100% - ${gap}px))`;
+                container.style.transform = `translateX(-100%)`;
                 void container.offsetWidth; 
                 container.classList.remove('no-transition');
             } else {
@@ -1218,7 +1222,7 @@
                 renderCalendar();
                 closeModalAnim('dailyModal');
                 
-                swalCustom.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false, scrollbarPadding: false });
+                swalCustom.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false, scrollbarPadding: false, heightAuto: false });
 
                 await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1258,7 +1262,8 @@
                     title: 'คัดลอกข้อความแล้ว', 
                     timer: 1500, 
                     showConfirmButton: false,
-                    scrollbarPadding: false 
+                    scrollbarPadding: false,
+                    heightAuto: false
                 });
             }).catch(err => {
                 swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
@@ -1462,7 +1467,7 @@
                         localStorage.setItem('roster_db', JSON.stringify(rosterData));
                         renderCalendar();
                         closeModalAnim('loopModal');
-                        swalCustom.fire({ icon: 'success', title: 'บันทึกตารางเวรเรียบร้อยแล้ว', showConfirmButton: false, timer: 1500, scrollbarPadding: false });
+                        swalCustom.fire({ icon: 'success', title: 'บันทึกตารางเวรเรียบร้อยแล้ว', showConfirmButton: false, timer: 1500, scrollbarPadding: false, heightAuto: false });
 
                         await fetch(API_URL_ROSTER, {
                             method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
