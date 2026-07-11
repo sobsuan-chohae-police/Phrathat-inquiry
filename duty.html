@@ -39,9 +39,14 @@
         .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px; }
         
         /* ปุ่มไอคอน (Hamburger & Filter) */
-        .btn-icon { background: white; border: 1px solid #cbd5e1; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 1.1rem; flex-shrink: 0; }
+        .btn-icon { position: relative; background: white; border: 1px solid #cbd5e1; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 1.1rem; flex-shrink: 0; }
         .btn-icon:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: var(--navy-main); transform: translateY(-1px); }
         
+        /* สถานะ Active ของปุ่มกรอง */
+        .btn-icon.filter-active { color: var(--success); border-color: var(--success); background: #f0fdf4; }
+        .filter-badge { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: #ef4444; border: 2px solid white; border-radius: 50%; display: none; }
+        .btn-icon.filter-active .filter-badge { display: block; animation: popUp 0.3s ease; }
+
         /* ตรงกลาง (เดือน/ปี) */
         .month-nav { display: flex; align-items: center; gap: 8px; justify-content: center; flex: 1; }
         .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex-shrink: 0; }
@@ -52,13 +57,14 @@
         /* Dropdown Menu (Hamburger) */
         .dropdown { position: relative; display: inline-block; }
         @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
-        .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
+        .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
+        .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
+        .dropdown-item i { width: 20px; text-align: center; font-size: 1.1rem; }
 
         /* --- Calendar Grid (Samsung One UI Style + Carousel) --- */
-        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; }
+        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 5px; overflow: hidden; touch-action: pan-y; }
         
         .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
         .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
@@ -85,12 +91,12 @@
         .calendar-cell { 
             position: relative; 
             height: 95px; min-height: 95px; 
-            padding: 26px 6px 6px 6px; 
+            padding: 28px 4px 4px 4px; /* เพิ่มพื้นที่ด้านบนให้ดูโปร่งขึ้น */
             background: white; border-radius: 16px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
             cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; flex-direction: column; gap: 2px; 
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 2px solid transparent; /* เตรียมไว้สำหรับกรอบวันนี้ */
         }
         .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
         .calendar-cell.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
@@ -98,12 +104,11 @@
 
         /* ตอกหมุดวันหยุด (ซ้ายบน) + ดาวสีแดง */
         .holiday-label { 
-            position: absolute; top: 4px; left: 4px; 
-            font-size: 0.7rem; color: #ef4444; background: #fef2f2; 
-            padding: 2px 6px; border-radius: 6px; font-weight: 500;
-            max-width: calc(100% - 32px); 
+            position: absolute; top: 6px; left: 6px; 
+            font-size: 0.65rem; color: #ef4444; 
+            max-width: calc(100% - 34px); /* ห้ามกว้างไปทับตัวเลขวันที่ */
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            display: flex; align-items: center; gap: 4px;
+            display: flex; align-items: center; gap: 3px; font-weight: 500;
         }
         .holiday-label i { font-size: 0.6rem; }
         
@@ -127,13 +132,13 @@
         .today-color-6 { background: #a855f7 !important; box-shadow: 0 2px 5px rgba(168,85,247,0.4); } /* เสาร์ */
 
         /* เส้นขอบการ์ดของ "วันนี้" */
-        .today-cell-0 { border: 2px solid #ef4444 !important; box-shadow: 0 4px 12px rgba(239,68,68,0.15) !important; }
-        .today-cell-1 { border: 2px solid #eab308 !important; box-shadow: 0 4px 12px rgba(234,179,8,0.15) !important; }
-        .today-cell-2 { border: 2px solid #ec4899 !important; box-shadow: 0 4px 12px rgba(236,72,153,0.15) !important; }
-        .today-cell-3 { border: 2px solid #22c55e !important; box-shadow: 0 4px 12px rgba(34,197,94,0.15) !important; }
-        .today-cell-4 { border: 2px solid #f97316 !important; box-shadow: 0 4px 12px rgba(249,115,22,0.15) !important; }
-        .today-cell-5 { border: 2px solid #3b82f6 !important; box-shadow: 0 4px 12px rgba(59,130,246,0.15) !important; }
-        .today-cell-6 { border: 2px solid #a855f7 !important; box-shadow: 0 4px 12px rgba(168,85,247,0.15) !important; }
+        .today-cell-0 { border-color: #ef4444 !important; box-shadow: 0 4px 12px rgba(239,68,68,0.15) !important; }
+        .today-cell-1 { border-color: #eab308 !important; box-shadow: 0 4px 12px rgba(234,179,8,0.15) !important; }
+        .today-cell-2 { border-color: #ec4899 !important; box-shadow: 0 4px 12px rgba(236,72,153,0.15) !important; }
+        .today-cell-3 { border-color: #22c55e !important; box-shadow: 0 4px 12px rgba(34,197,94,0.15) !important; }
+        .today-cell-4 { border-color: #f97316 !important; box-shadow: 0 4px 12px rgba(249,115,22,0.15) !important; }
+        .today-cell-5 { border-color: #3b82f6 !important; box-shadow: 0 4px 12px rgba(59,130,246,0.15) !important; }
+        .today-cell-6 { border-color: #a855f7 !important; box-shadow: 0 4px 12px rgba(168,85,247,0.15) !important; }
 
         /* วันสำคัญ (สีแดง) */
         .holiday-date-text:not(.today) { color: #ef4444 !important; }
@@ -171,9 +176,9 @@
         /* --- Responsive Desktop --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 105px; min-height: 105px; padding: 28px 8px 6px 8px; gap: 2px; }
+            .calendar-cell { height: 105px; min-height: 105px; padding: 30px 8px 6px 8px; gap: 2px; }
             .date-num { font-size: 1.05rem; width: 26px; height: 26px; top: 6px; right: 6px; }
-            .holiday-label { top: 6px; left: 6px; font-size: 0.75rem; padding: 2px 8px; }
+            .holiday-label { top: 8px; left: 8px; font-size: 0.75rem; }
             .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
             .duty-name::before { font-size: 1rem; width: 10px; transform: translateY(2px); margin-left: 0; }
             .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
@@ -183,11 +188,12 @@
         @media (max-width: 768px) {
             .container { padding: 15px 4px; } 
             .calendar-grid { gap: 4px; }
-            .calendar-cell { height: 85px; min-height: 85px; padding: 22px 2px 2px 2px; border-radius: 10px; }
+            .calendar-cell { height: 85px; min-height: 85px; padding: 24px 2px 2px 2px; border-radius: 10px; }
             
             .date-num { font-size: 0.85rem; width: 18px; height: 18px; top: 2px; right: 2px; }
-            .holiday-label { font-size: 0.6rem; top: 2px; left: 2px; padding: 1px 4px; max-width: calc(100% - 22px); }
+            .holiday-label { font-size: 0.6rem; top: 4px; left: 4px; max-width: calc(100% - 24px); }
             
+            /* ขยับดอกจันชิดซ้ายสุดในมือถือ */
             .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 2px; margin-left: -2px; }
             .duty-name::before { font-size: 0.8rem; width: 6px; transform: translateY(1px); margin-left: 0; }
             
@@ -214,13 +220,7 @@
         }
         .modal-overlay.show .modal-card { transform: scale(1); opacity: 1; }
 
-        /* SweetAlert2 Custom Animation */
-        .swal2-custom-show { animation: swal2-fade-scale-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
-        .swal2-custom-hide { animation: swal2-fade-scale-out 0.2s ease forwards !important; }
-        @keyframes swal2-fade-scale-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes swal2-fade-scale-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.9); } }
-
-        .modal-body { padding: 25px; overflow-y: auto; max-height: 75vh; }
+        .modal-body { padding: 25px; overflow-y: auto; max-height: 75vh; scroll-behavior: smooth; }
         .detail-row { margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; }
         .detail-role { font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; }
         .detail-name { font-size: 1.1rem; font-weight: 600; color: var(--navy-main); margin-bottom: 2px; }
@@ -301,7 +301,8 @@
             <div class="dropdown">
                 <button class="btn-icon" onclick="toggleDropdown(event)"><i class="fa-solid fa-bars"></i></button>
                 <div class="dropdown-content" id="addMenu">
-                    <div class="dropdown-item" onclick="openModalAnim('loopModal')"><i class="fa-solid fa-rotate"></i> จัดเวรวนลูป</div>
+                    <div class="dropdown-item" onclick="manualRefresh()"><i class="fa-solid fa-arrows-rotate"></i> รีเฟรชข้อมูล</div>
+                    <div class="dropdown-item" onclick="openModalAnim('loopModal')"><i class="fa-solid fa-calendar-week"></i> จัดเวรวนลูป</div>
                     <div class="dropdown-item" onclick="window.location.href='order.html'"><i class="fa-solid fa-file-signature"></i> ออกคำสั่งเวร</div>
                 </div>
             </div>
@@ -313,9 +314,10 @@
                 <button onclick="arrowChangeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
             
-            <!-- ขวาสุด: ปุ่มกรอง -->
+            <!-- ขวาสุด: ปุ่มกรอง (มี Badge) -->
             <button class="btn-icon" onclick="openModalAnim('filterModal')" id="btnFilterLabel">
                 <i class="fa-solid fa-filter"></i>
+                <span id="filterBadge" class="filter-badge"></span>
             </button>
 
         </div>
@@ -551,6 +553,7 @@
         let rosterData = {}; 
         let holidayData = {}; 
         let cachedRange = { start: null, end: null }; 
+        let isSyncing = false; 
         
         // View State
         let isShowOriginal = false;
@@ -612,6 +615,11 @@
             initDatepickers();
             startUltimateSpeedEngine(); 
             initSwipeGestures();
+            
+            // ตั้งเวลา Auto-Sync ทุก 5 นาที
+            setInterval(() => {
+                if (!isSyncing) backgroundSync();
+            }, 5 * 60 * 1000);
         });
 
         // ==========================================
@@ -660,7 +668,7 @@
         }
 
         // ==========================================
-        // 1. ระบบโหลดข้อมูลความเร็วสูงสุด (Silent Background Sync)
+        // 1. ระบบโหลดข้อมูลความเร็วสูงสุด (1-Year Cache)
         // ==========================================
         async function fetchWithRetry(url, options = {}, retries = 3) {
             for (let i = 0; i < retries; i++) {
@@ -687,16 +695,32 @@
                 
                 buildOfficerMap();
                 renderCalendar();
+                updateFilterButtonState();
                 backgroundSync(); 
             } else {
+                swalCustom.fire({ title: 'กำลังเตรียมระบบครั้งแรก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 await backgroundSync(true); 
+                Swal.close();
             }
         }
 
+        // Manual Refresh
+        async function manualRefresh() {
+            document.getElementById('addMenu').classList.remove('show');
+            swalCustom.fire({ title: 'กำลังอัปเดตข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            await backgroundSync(true);
+            Swal.close();
+            swalCustom.fire({ icon: 'success', title: 'อัปเดตข้อมูลล่าสุดแล้ว', timer: 1500, showConfirmButton: false });
+        }
+
         async function backgroundSync(isInitial = false) {
+            if (isSyncing) return; 
+            isSyncing = true;
+
             try {
+                // โหลดตารางเวร + วันหยุด (ย้อนหลัง 2 เดือน, ล่วงหน้า 10 เดือน = 1 ปี)
                 const fetchStart = new Date(currentYear, currentMonth - 2, 1);
-                const fetchEnd = new Date(currentYear, currentMonth + 4, 0);
+                const fetchEnd = new Date(currentYear, currentMonth + 10, 0);
                 
                 const startStr = `${fetchStart.getDate()}/${fetchStart.getMonth()+1}/${fetchStart.getFullYear()}`;
                 const endStr = `${fetchEnd.getDate()}/${fetchEnd.getMonth()+1}/${fetchEnd.getFullYear()}`;
@@ -732,6 +756,9 @@
 
             } catch (error) {
                 console.error("Background Sync Failed:", error);
+                if (isInitial) swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
+            } finally {
+                isSyncing = false; 
             }
         }
 
@@ -839,7 +866,17 @@
             } else {
                 container.classList.remove('active');
             }
+            updateFilterButtonState();
             renderCalendar();
+        }
+
+        function updateFilterButtonState() {
+            const btn = document.getElementById('btnFilterLabel');
+            if (!isFilterAll || isShowOriginal) {
+                btn.classList.add('filter-active');
+            } else {
+                btn.classList.remove('filter-active');
+            }
         }
 
         function getMonthHTML(year, month) {
@@ -1014,6 +1051,7 @@
             isFilterAll = (allPersons.length === allChecked.length);
             currentFilterNames = Array.from(allChecked).map(cb => cb.value);
 
+            updateFilterButtonState();
             closeModalAnim('filterModal');
             renderCalendar();
         }
@@ -1191,7 +1229,7 @@
                 renderCalendar();
                 closeModalAnim('dailyModal');
                 
-                swalCustom.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
 
                 await fetch(API_URL_ROSTER, {
                     method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1225,7 +1263,7 @@
             const msg = `วันนี้ (${shortDateTH}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(curInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(curAsst)}\n\nเสมียนประจำวัน\n${getLineText(curClerk)}`;
 
             navigator.clipboard.writeText(msg).then(() => {
-                swalCustom.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
             }).catch(err => {
                 swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
             });
@@ -1234,6 +1272,13 @@
         // ==========================================
         // 5. ระบบจัดเวรวนลูป (Loop Builder)
         // ==========================================
+        function scrollToBottom(elementSelector) {
+            setTimeout(() => {
+                const el = document.querySelector(elementSelector);
+                if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+            }, 50);
+        }
+
         function resetLoopBuilder() {
             document.getElementById('patternContainer').innerHTML = '';
             patternCount = 0;
@@ -1272,6 +1317,7 @@
             `;
             container.appendChild(row);
             reindexPatterns();
+            scrollToBottom('#loopModal .modal-body');
         }
 
         function handleSlotChange(selectEl) {
@@ -1391,6 +1437,7 @@
             }
 
             document.getElementById('previewSection').style.display = 'block';
+            scrollToBottom('#loopModal .modal-body');
         }
 
         async function saveRosterLoop() {
