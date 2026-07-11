@@ -20,14 +20,11 @@
         :root { --grid-gap: 8px; }
         @media (max-width: 768px) { :root { --grid-gap: 4px; } }
 
-        /* --- บังคับแสดง Scrollbar เพื่อป้องกันหน้าเว็บขยับซ้าย-ขวา --- */
         body { overflow-y: scroll; background-color: #f3f4f6; overflow-x: hidden; } 
-
-        /* --- แอนิเมชันโหลดหน้าเว็บ (Fade & Scale) --- */
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .container { animation: fadeInScale 0.4s ease-out forwards; }
 
-        /* --- Navbar (ปรับให้เท่ากับ staff.html 100%) --- */
+        /* --- Navbar --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 100; }
         .nav-left, .nav-right { display: flex; align-items: center; gap: 15px; }
         .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); text-decoration: none; flex-shrink: 0; }
@@ -35,103 +32,62 @@
         .btn-back:hover { color: var(--navy-main); transform: translateX(-5px); }
         .page-title { font-weight: 600; font-size: 1.25rem; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* --- Calendar Toolbar (1 บรรทัด มินิมอล) --- */
+        /* --- Calendar Toolbar --- */
         .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px; }
-        
-        /* ปุ่มไอคอน (Hamburger & Filter) */
         .btn-icon { position: relative; background: white; border: 1px solid #cbd5e1; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 1.1rem; flex-shrink: 0; }
         .btn-icon:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: var(--navy-main); transform: translateY(-1px); }
-        
-        /* สถานะ Active ของปุ่มกรอง */
         .btn-icon.filter-active { color: var(--success); border-color: var(--success); background: #f0fdf4; }
         .filter-badge { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: #ef4444; border: 2px solid white; border-radius: 50%; display: none; }
         .btn-icon.filter-active .filter-badge { display: block; animation: popUp 0.3s ease; }
 
-        /* ตรงกลาง (เดือน/ปี) */
         .month-nav { display: flex; align-items: center; gap: 8px; justify-content: center; flex: 1; }
         .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex-shrink: 0; }
         .month-nav button:hover { background: var(--navy-main); color: white; transform: scale(1.05); }
         .current-month-label { font-size: 1.2rem; font-weight: 600; color: var(--navy-main); width: 180px; text-align: center; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.2s; display: inline-block; white-space: nowrap; }
         .current-month-label:hover { background: #e2e8f0; }
 
-        /* Dropdown Menu (Hamburger) */
+        /* Dropdown Menu */
         .dropdown { position: relative; display: inline-block; }
         @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
-        .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
+        .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
-        .dropdown-item i { width: 20px; text-align: center; font-size: 1.1rem; }
 
-        /* --- Calendar Grid (Samsung One UI Style + Carousel) --- */
-        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 10px; overflow: hidden; touch-action: pan-y; }
-        
+        /* --- Calendar Grid --- */
+        .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 5px; overflow: hidden; touch-action: pan-y; }
         .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
         .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
         .calendar-header:nth-child(6) { color: #8b5cf6; } 
         .calendar-header:nth-child(7) { color: #ef4444; } 
 
-        /* คอนเทนเนอร์สำหรับสไลด์ขบวนรถไฟ */
-        .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 0 0 16px 16px; padding-bottom: 10px; padding-top: 6px; /* เพิ่มช่องไฟขอบบน */ }
-        .carousel-container { 
-            display: flex; width: 100%; 
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
-            transform: translateX(calc(-100% - var(--grid-gap))); 
-            gap: var(--grid-gap); 
-            will-change: transform;
-        }
+        .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 0 0 16px 16px; padding-bottom: 10px; }
+        .carousel-container { display: flex; width: 100%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(calc(-100% - var(--grid-gap))); gap: var(--grid-gap); will-change: transform; }
         .carousel-container.no-transition { transition: none; }
-        
-        /* แอนิเมชัน Fade สำหรับกดเลือกเดือนข้ามไปไกลๆ */
         .fade-wrapper { transition: opacity 0.2s ease, transform 0.2s ease; }
         .fade-wrapper.fade-out { opacity: 0; transform: scale(0.98); }
 
         .calendar-grid { flex: 0 0 100%; width: 100%; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
 
-        .calendar-cell { 
-            position: relative; 
-            height: 95px; min-height: 95px; 
-            padding: 26px 6px 6px 6px; 
-            background: white; border-radius: 16px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
-            cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; flex-direction: column; gap: 2px; 
-            border: 2px solid transparent; 
-        }
+        .calendar-cell { position: relative; height: 95px; min-height: 95px; padding: 28px 4px 4px 4px; background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 2px; border: 2px solid transparent; }
         .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
         .calendar-cell.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
         .calendar-cell.empty:hover { transform: none; box-shadow: none; z-index: 1; }
 
-        /* ตอกหมุดวันหยุด (ซ้ายบน) + ดาวสีแดง + ตัดคำสมบูรณ์แบบ */
-        .holiday-label { 
-            position: absolute; top: 4px; left: 4px; 
-            font-size: 0.7rem; color: #ef4444; 
-            max-width: calc(100% - 32px); /* ห้ามกว้างไปทับตัวเลขวันที่ */
-            display: flex; align-items: center; gap: 3px; font-weight: 500;
-        }
-        .holiday-label i { font-size: 0.6rem; flex-shrink: 0; }
-        .holiday-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
-        
-        /* ตอกหมุดตัวเลขวันที่ (ขวาบน) */
-        .date-num { 
-            position: absolute; top: 4px; right: 4px;
-            font-weight: 600; font-size: 0.95rem; color: var(--text-main); 
-            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; 
-        }
+        .holiday-label { position: absolute; top: 6px; left: 6px; font-size: 0.65rem; color: #ef4444; max-width: calc(100% - 34px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; font-weight: 500; }
+        .date-num { position: absolute; top: 4px; right: 4px; font-weight: 600; font-size: 0.95rem; color: var(--text-main); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
-        /* สี "วันนี้" ตามวันไทย (วงกลมทึบ + เส้นขอบการ์ด) */
         .date-num.today { color: white !important; }
-        .today-color-0 { background: #ef4444 !important; box-shadow: 0 2px 5px rgba(239,68,68,0.4); } /* อาทิตย์ */
-        .today-color-1 { background: #eab308 !important; box-shadow: 0 2px 5px rgba(234,179,8,0.4); } /* จันทร์ */
-        .today-color-2 { background: #ec4899 !important; box-shadow: 0 2px 5px rgba(236,72,153,0.4); } /* อังคาร */
-        .today-color-3 { background: #22c55e !important; box-shadow: 0 2px 5px rgba(34,197,94,0.4); } /* พุธ */
-        .today-color-4 { background: #f97316 !important; box-shadow: 0 2px 5px rgba(249,115,22,0.4); } /* พฤหัสฯ */
-        .today-color-5 { background: #3b82f6 !important; box-shadow: 0 2px 5px rgba(59,130,246,0.4); } /* ศุกร์ */
-        .today-color-6 { background: #a855f7 !important; box-shadow: 0 2px 5px rgba(168,85,247,0.4); } /* เสาร์ */
+        .today-color-0 { background: #ef4444 !important; box-shadow: 0 2px 5px rgba(239,68,68,0.4); } 
+        .today-color-1 { background: #eab308 !important; box-shadow: 0 2px 5px rgba(234,179,8,0.4); } 
+        .today-color-2 { background: #ec4899 !important; box-shadow: 0 2px 5px rgba(236,72,153,0.4); } 
+        .today-color-3 { background: #22c55e !important; box-shadow: 0 2px 5px rgba(34,197,94,0.4); } 
+        .today-color-4 { background: #f97316 !important; box-shadow: 0 2px 5px rgba(249,115,22,0.4); } 
+        .today-color-5 { background: #3b82f6 !important; box-shadow: 0 2px 5px rgba(59,130,246,0.4); } 
+        .today-color-6 { background: #a855f7 !important; box-shadow: 0 2px 5px rgba(168,85,247,0.4); } 
 
-        /* เส้นขอบการ์ดของ "วันนี้" */
         .today-cell-0 { border-color: #ef4444 !important; box-shadow: 0 4px 12px rgba(239,68,68,0.15) !important; }
         .today-cell-1 { border-color: #eab308 !important; box-shadow: 0 4px 12px rgba(234,179,8,0.15) !important; }
         .today-cell-2 { border-color: #ec4899 !important; box-shadow: 0 4px 12px rgba(236,72,153,0.15) !important; }
@@ -140,93 +96,43 @@
         .today-cell-5 { border-color: #3b82f6 !important; box-shadow: 0 4px 12px rgba(59,130,246,0.15) !important; }
         .today-cell-6 { border-color: #a855f7 !important; box-shadow: 0 4px 12px rgba(168,85,247,0.15) !important; }
 
-        /* วันสำคัญ (สีแดง) */
         .holiday-date-text:not(.today) { color: #ef4444 !important; }
 
-        /* --- ชื่อคนเข้าเวร (Minimalist ไม่มีขีดสี) --- */
-        .duty-name { 
-            font-size: 0.75rem; padding: 2px 4px 2px 6px; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-            font-weight: 500; display: flex; align-items: flex-start; gap: 2px;
-            color: var(--text-main); 
-            border-radius: 4px; transition: 0.2s;
-            line-height: 1.4; 
-            margin-bottom: 1px;
-        }
-
-        /* ดอกจัน (เวรปกติ - ซ่อนไว้เพื่อรักษา Alignment) */
-        .duty-name::before { 
-            content: '*'; font-family: 'Kanit', sans-serif; font-weight: 700;
-            font-size: 0.9rem; opacity: 0; flex-shrink: 0; line-height: 1; transform: translateY(1px);
-            width: 8px; text-align: center; margin-left: -2px;
-        }
-        
-        /* แสดงดอกจัน (เวรแทน/แลก) */
+        .duty-name { font-size: 0.75rem; padding: 2px 4px 2px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; display: flex; align-items: flex-start; gap: 2px; color: var(--text-main); border-radius: 4px; transition: 0.2s; line-height: 1.4; margin-bottom: 1px; }
+        .duty-name::before { content: '*'; font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 0.9rem; opacity: 0; flex-shrink: 0; line-height: 1; transform: translateY(1px); width: 8px; text-align: center; margin-left: -2px; }
         .duty-name.is-swap::before { opacity: 1; color: var(--danger); }
-        
-        /* การแสดงผลเมื่อถูกกรอง (Highlight & Dimmed) */
         .duty-name.dimmed-text { color: #94a3b8 !important; font-weight: 400; }
         .duty-name.dimmed-text.is-swap::before { color: #94a3b8 !important; }
         
-        /* ไฮไลต์พื้นหลังเมื่อถูกกรอง (ฟ้า, เขียว, เหลือง) */
         .duty-inv.highlight { background-color: #eff6ff; color: #1d4ed8; }
         .duty-asst.highlight { background-color: #f0fdf4; color: #15803d; }
         .duty-clerk.highlight { background-color: #fef9c3; color: #a16207; } 
 
-        /* --- Responsive Desktop --- */
+        /* --- Responsive --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 105px; min-height: 105px; padding: 28px 8px 6px 8px; gap: 2px; }
+            .calendar-cell { height: 105px; min-height: 105px; padding: 30px 8px 6px 8px; gap: 2px; }
             .date-num { font-size: 1.05rem; width: 26px; height: 26px; top: 6px; right: 6px; }
             .holiday-label { top: 8px; left: 8px; font-size: 0.75rem; }
             .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
-            .duty-name::before { font-size: 1rem; width: 10px; transform: translateY(2px); margin-left: 0; }
-            .calendar-header { font-size: 0.95rem; padding: 5px 15px 5px 5px; }
         }
-
-        /* --- Responsive Mobile (Edge-to-Edge & ขยับดอกจันชิดซ้าย) --- */
         @media (max-width: 768px) {
             .container { padding: 15px 4px; } 
             .calendar-grid { gap: 4px; }
             .calendar-cell { height: 85px; min-height: 85px; padding: 24px 2px 2px 2px; border-radius: 10px; }
-            
             .date-num { font-size: 0.85rem; width: 18px; height: 18px; top: 2px; right: 2px; }
             .holiday-label { font-size: 0.6rem; top: 4px; left: 4px; max-width: calc(100% - 24px); }
-            
-            /* ขยับดอกจันชิดซ้ายสุดในมือถือ */
             .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 2px; margin-left: -2px; }
-            .duty-name::before { font-size: 0.8rem; width: 6px; transform: translateY(1px); margin-left: 0; }
-            
-            .calendar-header { font-size: 0.8rem; padding: 2px 6px; }
             .current-month-label { font-size: 1.1rem; width: 140px; } 
-            .month-nav button { width: 34px; height: 34px; font-size: 0.9rem; }
-            .btn-icon { width: 38px; height: 38px; font-size: 1rem; }
         }
 
-        /* --- Modals (Smooth Fade & Scale Animation) --- */
-        .modal-overlay { 
-            display: none; opacity: 0; transition: opacity 0.25s ease; 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            z-index: 999; align-items: center; justify-content: center;
-        }
+        /* --- Modals --- */
+        .modal-overlay { display: none; opacity: 0; transition: opacity 0.25s ease; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; }
         .modal-overlay.show { opacity: 1; }
-        
-        .modal-card { 
-            transform: scale(0.9); opacity: 0; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            background: white; width: 95%; max-width: 800px; border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-modal); display: flex; flex-direction: column;
-            max-height: 90vh; position: relative; overflow: hidden;
-        }
+        .modal-card { transform: scale(0.9); opacity: 0; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: white; width: 95%; max-width: 800px; border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); display: flex; flex-direction: column; max-height: 90vh; position: relative; overflow: hidden; }
         .modal-overlay.show .modal-card { transform: scale(1); opacity: 1; }
-
-        /* SweetAlert2 Custom Animation */
-        .swal2-custom-show { animation: swal2-fade-scale-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
-        .swal2-custom-hide { animation: swal2-fade-scale-out 0.2s ease forwards !important; }
-        @keyframes swal2-fade-scale-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes swal2-fade-scale-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.9); } }
-
         .modal-body { padding: 25px; overflow-y: auto; max-height: 75vh; scroll-behavior: smooth; }
+        
         .detail-row { margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; }
         .detail-role { font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; }
         .detail-name { font-size: 1.1rem; font-weight: 600; color: var(--navy-main); margin-bottom: 2px; }
@@ -236,55 +142,40 @@
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-group button { flex: 1; padding: 12px; font-size: 1rem; border-radius: 50px; font-family: 'Kanit'; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-copy { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); }
-        .btn-copy:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); }
         .btn-edit-daily { background: var(--warning); color: white; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
-        .btn-edit-daily:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3); }
 
-        /* --- Checkbox แลกเวร (Smart Logic) --- */
         .swap-box { margin-top: 8px; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; color: #166534; animation: fadeUp 0.2s ease; transition: 0.3s; }
         .swap-box.is-base { background: #fef2f2; border-color: #fecdd3; color: #be123c; }
         .swap-box label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
         .swap-box input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
-        /* --- Unified Filter Modal (Sticky Footer) --- */
+        /* Unified Filter Modal */
         #filterModal .modal-body { padding: 0; display: flex; flex-direction: column; max-height: 70vh; }
         .filter-header-section { padding: 20px 25px 10px 25px; border-bottom: 1px solid #e2e8f0; }
         .filter-scroll-section { padding: 15px 25px; overflow-y: auto; flex: 1; }
         .filter-footer-section { padding: 15px 25px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
-        
-        /* Toggle Switch ในหน้าต่างกรอง */
         .toggle-container-modal { display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px 15px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
         .toggle-container-modal.active .toggle-switch { background: var(--success); } 
         .toggle-container-modal.active .toggle-switch::after { transform: translateX(14px); }
-
         .filter-tree { display: flex; flex-direction: column; gap: 15px; }
         .filter-master { padding: 12px 15px; background: #f1f5f9; border-radius: 12px; font-weight: 600; color: var(--navy-main); display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .filter-master input { transform: scale(1.3); cursor: pointer; }
-        
         .filter-group { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
         .filter-group-header { padding: 12px 15px; background: #f8fafc; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid #e2e8f0; }
-        .filter-group-header input { transform: scale(1.2); cursor: pointer; }
-        
         .filter-items { padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
         .filter-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: var(--text-main); cursor: pointer; }
-        .filter-item input { transform: scale(1.1); cursor: pointer; }
 
-        /* --- Loop Builder Styles --- */
-        #loopModal .form-grid { gap: 10px; }
-        #loopModal .form-group { margin-bottom: 5px; }
-        .pattern-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius-lg); padding: 10px 15px; margin-top: 5px; }
+        /* Loop Builder */
+        .pattern-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius-lg); padding: 15px; margin-top: 10px; }
         .pattern-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; animation: fadeUp 0.3s ease; }
         .pattern-num { width: 30px; height: 30px; background: var(--navy-main); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; flex-shrink: 0; }
         .btn-remove-pattern { background: #fee2e2; color: var(--danger); border: none; width: 38px; height: 38px; border-radius: 12px; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
-        .btn-remove-pattern:hover { background: var(--danger); color: white; }
-        
-        /* Reference View */
-        .ref-view-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; margin-bottom: 5px; display: none; }
-        .ref-view-title { font-size: 0.85rem; color: #166534; font-weight: 600; margin-bottom: 8px; }
+        .ref-view-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 15px; margin-bottom: 15px; display: none; }
         .ref-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth; }
-        .ref-item { background: white; padding: 8px 12px; border-radius: 12px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .ref-date { font-size: 0.75rem; color: #64748b; margin-bottom: 2px; }
-        .ref-name { font-size: 0.9rem; font-weight: 600; color: #15803d; }
+        .ref-item { background: white; padding: 8px 12px; border-radius: 12px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; }
+        
+        /* Toast Notification สำหรับ Background Sync */
+        .sync-toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 10px 20px; border-radius: 50px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .sync-toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
@@ -294,18 +185,11 @@
             <a href="staff.html" class="nav-btn btn-back"><i class="fa-solid fa-chevron-left"></i></a>
             <span class="page-title">ตารางเวรงานสอบสวน</span>
         </div>
-        <!-- ใส่ nav-right เปล่าๆ เพื่อรักษาสมดุลความสูงให้เท่ากับ staff.html -->
-        <div class="nav-right">
-            <div style="width: 42px; height: 42px;"></div>
-        </div>
+        <div class="nav-right"><div style="width: 42px; height: 42px;"></div></div>
     </nav>
 
     <div class="container">
-        
-        <!-- Toolbar (1 บรรทัด มินิมอล) -->
         <div class="calendar-toolbar">
-            
-            <!-- ซ้ายสุด: Hamburger Menu -->
             <div class="dropdown">
                 <button class="btn-icon" onclick="toggleDropdown(event)"><i class="fa-solid fa-bars"></i></button>
                 <div class="dropdown-content" id="addMenu">
@@ -315,31 +199,21 @@
                 </div>
             </div>
             
-            <!-- ตรงกลาง: เดือน/ปี -->
             <div class="month-nav">
                 <button onclick="arrowChangeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                <div class="current-month-label" id="monthLabel" onclick="openMonthYearPicker()" title="คลิกเพื่อเลือกเดือน/ปี">มิถุนายน 2569</div>
+                <div class="current-month-label" id="monthLabel" onclick="openMonthYearPicker()">มิถุนายน 2569</div>
                 <button onclick="arrowChangeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
             
-            <!-- ขวาสุด: ปุ่มกรอง (มี Badge) -->
             <button class="btn-icon" onclick="openModalAnim('filterModal')" id="btnFilterLabel">
-                <i class="fa-solid fa-filter"></i>
-                <span id="filterBadge" class="filter-badge"></span>
+                <i class="fa-solid fa-filter"></i><span id="filterBadge" class="filter-badge"></span>
             </button>
-
         </div>
 
-        <!-- Calendar Grid (One UI Style + Carousel Wrapper) -->
         <div class="calendar-card fade-wrapper" id="fadeWrapper">
             <div class="calendar-header-grid" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">
-                <div class="calendar-header">จ.</div>
-                <div class="calendar-header">อ.</div>
-                <div class="calendar-header">พ.</div>
-                <div class="calendar-header">พฤ.</div>
-                <div class="calendar-header">ศ.</div>
-                <div class="calendar-header">ส.</div>
-                <div class="calendar-header">อา.</div>
+                <div class="calendar-header">จ.</div><div class="calendar-header">อ.</div><div class="calendar-header">พ.</div>
+                <div class="calendar-header">พฤ.</div><div class="calendar-header">ศ.</div><div class="calendar-header">ส.</div><div class="calendar-header">อา.</div>
             </div>
             <div class="calendar-swipe-wrapper" id="swipeWrapper">
                 <div id="carouselContainer" class="carousel-container">
@@ -349,12 +223,9 @@
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- ==========================================
-         MODAL 1: รายละเอียดรายวัน / แก้ไข / คัดลอก
-         ========================================== -->
+    <!-- Modals (Daily, Loop, Filter) -->
     <div id="dailyModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 500px;">
             <button class="close-modal-btn" onclick="closeModalAnim('dailyModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -362,60 +233,34 @@
                 <h3 id="dailyModalTitle">รายละเอียดเวร</h3>
             </div>
             <div class="modal-body" id="dailyViewMode">
-                
-                <!-- แบนเนอร์วันหยุด -->
                 <div id="modalHolidayBanner" style="display: none; background: #fef2f2; color: #b91c1c; padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 0.9rem; font-weight: 500; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-star"></i> <span id="modalHolidayText"></span>
                 </div>
-
-                <div class="detail-row">
-                    <div class="detail-role">พนักงานสอบสวนเวร</div>
-                    <div class="detail-name" id="viewInvName">-</div>
-                    <div class="detail-phone" id="viewInvPhone"></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-role">ผู้ช่วยพนักงานสอบสวน</div>
-                    <div class="detail-name" id="viewAsstName">-</div>
-                    <div class="detail-phone" id="viewAsstPhone"></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-role">เสมียนประจำวัน</div>
-                    <div class="detail-name" id="viewClerkName">-</div>
-                    <div class="detail-phone" id="viewClerkPhone"></div>
-                </div>
+                <div class="detail-row"><div class="detail-role">พนักงานสอบสวนเวร</div><div class="detail-name" id="viewInvName">-</div><div class="detail-phone" id="viewInvPhone"></div></div>
+                <div class="detail-row"><div class="detail-role">ผู้ช่วยพนักงานสอบสวน</div><div class="detail-name" id="viewAsstName">-</div><div class="detail-phone" id="viewAsstPhone"></div></div>
+                <div class="detail-row"><div class="detail-role">เสมียนประจำวัน</div><div class="detail-name" id="viewClerkName">-</div><div class="detail-phone" id="viewClerkPhone"></div></div>
                 <div class="btn-group">
                     <button class="btn-edit-daily" onclick="toggleEditDailyMode(true)"><i class="fa-solid fa-pen"></i> แก้ไขเวร</button>
                     <button class="btn-copy" onclick="copyLineMessage()"><i class="fa-brands fa-line"></i> คัดลอกข้อความ</button>
                 </div>
             </div>
 
-            <!-- โหมดแก้ไขรายวัน (Smart Checkbox) -->
             <div class="modal-body" id="dailyEditMode" style="display: none;">
-                
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">พนักงานสอบสวนเวร</label>
                     <select class="form-input" id="editInvSelect" onchange="handleSelectChange('inv')"></select>
-                    <div id="swap-box-inv" class="swap-box" style="display: none;">
-                        <label><input type="checkbox" id="cb-swap-inv" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
-                    </div>
+                    <div id="swap-box-inv" class="swap-box" style="display: none;"><label><input type="checkbox" id="cb-swap-inv" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label></div>
                 </div>
-                
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">ผู้ช่วยพนักงานสอบสวน</label>
                     <select class="form-input" id="editAsstSelect" onchange="handleSelectChange('asst')"></select>
-                    <div id="swap-box-asst" class="swap-box" style="display: none;">
-                        <label><input type="checkbox" id="cb-swap-asst" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
-                    </div>
+                    <div id="swap-box-asst" class="swap-box" style="display: none;"><label><input type="checkbox" id="cb-swap-asst" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label></div>
                 </div>
-                
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">เสมียนประจำวัน</label>
                     <select class="form-input" id="editClerkSelect" onchange="handleSelectChange('clerk')"></select>
-                    <div id="swap-box-clerk" class="swap-box" style="display: none;">
-                        <label><input type="checkbox" id="cb-swap-clerk" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label>
-                    </div>
+                    <div id="swap-box-clerk" class="swap-box" style="display: none;"><label><input type="checkbox" id="cb-swap-clerk" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label></div>
                 </div>
-
                 <div class="btn-group" style="margin-top: 25px;">
                     <button class="btn-secondary" onclick="toggleEditDailyMode(false)">ยกเลิก</button>
                     <button class="btn-primary" onclick="saveDailyEdit()" id="btnSaveDaily" disabled><i class="fa-solid fa-save"></i> บันทึก</button>
@@ -424,136 +269,64 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL 2: จัดเวรวนลูป (Loop Builder)
-         ========================================== -->
     <div id="loopModal" class="modal-overlay">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeModalAnim('loopModal')"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;">
-                <h3><i class="fa-solid fa-rotate"></i> จัดตารางเวรแบบวนลูป</h3>
-            </div>
+            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;"><h3><i class="fa-solid fa-rotate"></i> จัดตารางเวรแบบวนลูป</h3></div>
             <div class="modal-body">
-                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group" style="grid-column: span 2;">
                         <label class="form-label">เลือกหน้าที่ที่ต้องการจัดเวร</label>
-                        <select class="form-input" id="loopRoleSelect" onchange="resetLoopBuilder(false)">
+                        <select class="form-input" id="loopRoleSelect" onchange="resetLoopBuilder()">
                             <option value="" disabled selected hidden>- กรุณาเลือกหน้าที่ -</option>
                             <option value="พนักงานสอบสวนเวร">พนักงานสอบสวนเวร</option>
                             <option value="ผู้ช่วยพนักงานสอบสวน">ผู้ช่วยพนักงานสอบสวน</option>
                             <option value="เสมียนประจำวัน">เสมียนประจำวัน</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">วันที่เริ่มต้น</label>
-                        <input type="text" class="form-input datepicker" id="loopStartDate" placeholder="เลือกวันเริ่มต้น">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">วันที่สิ้นสุด</label>
-                        <input type="text" class="form-input datepicker" id="loopEndDate" placeholder="เลือกวันสิ้นสุด">
-                    </div>
-                    
-                    <!-- Reference View -->
-                    <div class="ref-view-box" id="refViewBox" style="grid-column: span 2;">
-                        <div class="ref-view-title"><i class="fa-solid fa-clock-rotate-left"></i> ข้อมูลอ้างอิง: เวร 7 วันก่อนหน้า</div>
-                        <div class="ref-list" id="refListContainer">
-                            <!-- Items generated by JS -->
-                        </div>
-                    </div>
-
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label class="form-label">กำหนดรูปแบบการวนลูป (Pattern)</label>
-                        <div class="pattern-box" id="patternContainer"></div>
-                    </div>
+                    <div class="form-group"><label class="form-label">วันที่เริ่มต้น</label><input type="text" class="form-input datepicker" id="loopStartDate" placeholder="เลือกวันเริ่มต้น"></div>
+                    <div class="form-group"><label class="form-label">วันที่สิ้นสุด</label><input type="text" class="form-input datepicker" id="loopEndDate" placeholder="เลือกวันสิ้นสุด"></div>
+                    <div class="ref-view-box" id="refViewBox" style="grid-column: span 2;"><div class="ref-view-title"><i class="fa-solid fa-clock-rotate-left"></i> ข้อมูลอ้างอิง: เวร 7 วันก่อนหน้า</div><div class="ref-list" id="refListContainer"></div></div>
+                    <div class="form-group" style="grid-column: span 2;"><label class="form-label">กำหนดรูปแบบการวนลูป (Pattern)</label><div class="pattern-box" id="patternContainer"></div></div>
                 </div>
-
-                <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="generatePreview()">
-                    <i class="fa-solid fa-eye"></i> ดูตัวอย่างการจัดเวร
-                </button>
-
-                <div class="preview-section" id="previewSection" style="display: none; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="generatePreview()"><i class="fa-solid fa-eye"></i> ดูตัวอย่างการจัดเวร</button>
+                <div class="preview-section" id="previewSection" style="display: none; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                     <h4 style="margin-bottom: 10px; color: var(--navy-main);">ตัวอย่างตารางเวร</h4>
-                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-                            <tbody id="previewBody"></tbody>
-                        </table>
-                    </div>
-                    <button class="btn-primary" style="width: 100%; margin-top: 15px; background: var(--success);" onclick="saveRosterLoop()" id="btnSaveLoop">
-                        <i class="fa-solid fa-save"></i> บันทึกตารางเวรลงระบบ
-                    </button>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;"><table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;"><tbody id="previewBody"></tbody></table></div>
+                    <button class="btn-primary" style="width: 100%; margin-top: 15px; background: var(--success);" onclick="saveRosterLoop()" id="btnSaveLoop"><i class="fa-solid fa-save"></i> บันทึกตารางเวรลงระบบ</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-         MODAL 3: ตัวกรอง (Unified Filter Tree)
-         ========================================== -->
     <div id="filterModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 400px;">
             <button class="close-modal-btn" onclick="closeModalAnim('filterModal')"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;">
-                <h3><i class="fa-solid fa-filter"></i> ตัวกรองการแสดงผล</h3>
-            </div>
-            
-            <!-- Sticky Header -->
+            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;"><h3><i class="fa-solid fa-filter"></i> ตัวกรองการแสดงผล</h3></div>
             <div class="filter-header-section">
-                <!-- สวิตช์ดูคำสั่งเดิม ย้ายมาไว้ในนี้ -->
-                <div class="toggle-container-modal" id="toggleOriginalModalBtn" onclick="toggleOriginalView()" style="margin-bottom: 15px;">
-                    <span>ดูคำสั่งเดิม (ก่อนแลกเวร)</span>
-                    <div class="toggle-switch"></div>
-                </div>
-
-                <div class="filter-tree">
-                    <label class="filter-master">
-                        <input type="checkbox" id="cb-filter-all" checked onchange="toggleFilterAll(this)"> 
-                        <span>เลือกทุกคน</span>
-                    </label>
-                </div>
+                <div class="toggle-container-modal" id="toggleOriginalModalBtn" onclick="toggleOriginalView()" style="margin-bottom: 15px;"><span>ดูคำสั่งเดิม (ก่อนแลกเวร)</span><div class="toggle-switch"></div></div>
+                <div class="filter-tree"><label class="filter-master"><input type="checkbox" id="cb-filter-all" checked onchange="toggleFilterAll(this)"> <span>เลือกทุกคน</span></label></div>
             </div>
-            
-            <!-- Scrollable List -->
             <div class="filter-scroll-section">
                 <div class="filter-tree">
-                    <div class="filter-group">
-                        <label class="filter-group-header">
-                            <input type="checkbox" class="cb-filter-role" data-role="inv" checked onchange="toggleFilterRole(this)"> 
-                            <span>พนักงานสอบสวน</span>
-                        </label>
-                        <div class="filter-items" id="filter-list-inv"></div>
-                    </div>
-
-                    <div class="filter-group">
-                        <label class="filter-group-header">
-                            <input type="checkbox" class="cb-filter-role" data-role="asst" checked onchange="toggleFilterRole(this)"> 
-                            <span>ผู้ช่วยพนักงานสอบสวน</span>
-                        </label>
-                        <div class="filter-items" id="filter-list-asst"></div>
-                    </div>
-
-                    <div class="filter-group">
-                        <label class="filter-group-header">
-                            <input type="checkbox" class="cb-filter-role" data-role="clerk" checked onchange="toggleFilterRole(this)"> 
-                            <span>เสมียนประจำวัน</span>
-                        </label>
-                        <div class="filter-items" id="filter-list-clerk"></div>
-                    </div>
+                    <div class="filter-group"><label class="filter-group-header"><input type="checkbox" class="cb-filter-role" data-role="inv" checked onchange="toggleFilterRole(this)"> <span>พนักงานสอบสวน</span></label><div class="filter-items" id="filter-list-inv"></div></div>
+                    <div class="filter-group"><label class="filter-group-header"><input type="checkbox" class="cb-filter-role" data-role="asst" checked onchange="toggleFilterRole(this)"> <span>ผู้ช่วยพนักงานสอบสวน</span></label><div class="filter-items" id="filter-list-asst"></div></div>
+                    <div class="filter-group"><label class="filter-group-header"><input type="checkbox" class="cb-filter-role" data-role="clerk" checked onchange="toggleFilterRole(this)"> <span>เสมียนประจำวัน</span></label><div class="filter-items" id="filter-list-clerk"></div></div>
                 </div>
             </div>
-            
-            <!-- Sticky Footer -->
-            <div class="filter-footer-section">
-                <button class="btn-primary" style="width: 100%;" onclick="applyFilter()">ตกลง</button>
-            </div>
+            <div class="filter-footer-section"><button class="btn-primary" style="width: 100%;" onclick="applyFilter()">ตกลง</button></div>
         </div>
     </div>
 
+    <!-- Toast สำหรับ Background Sync -->
+    <div id="syncToast" class="sync-toast">
+        <i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> กำลังซิงค์ข้อมูล...
+    </div>
+
     <script>
-        // API URLs
         const API_URL_MAIN = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
         const API_URL_ROSTER = 'https://script.google.com/macros/s/AKfycbzyYvHYNyqMsvmS3C-wr9kfLb56nx_VlW1u6cS4upePHioI-nNgwWKTm684N9sxH9Tj3w/exec';
 
-        // Global State
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let allOfficers = [];
@@ -563,49 +336,33 @@
         let cachedRange = { start: null, end: null }; 
         let isSyncing = false; 
         
-        // View State
         let isShowOriginal = false;
         let currentFilterNames = []; 
         let isFilterAll = true;
 
-        // Edit State
         let selectedDateAD = ''; 
         let selectedDateTH = '';
         let currentEditDuty = {}; 
 
-        // Loop Builder State
         let patternCount = 0;
         let generatedData = [];
 
-        // Swipe State
         let touchStartX = 0;
-        let currentTranslateX = 0;
         let isSwiping = false;
 
-        // จัดการ Dropdown เมนู +
-        function toggleDropdown(e) {
-            e.stopPropagation();
-            document.getElementById('addMenu').classList.toggle('show');
-        }
+        function toggleDropdown(e) { e.stopPropagation(); document.getElementById('addMenu').classList.toggle('show'); }
         window.onclick = function(event) {
             if (!event.target.matches('.btn-icon') && !event.target.closest('.btn-icon')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
+                for (var i = 0; i < dropdowns.length; i++) { if (dropdowns[i].classList.contains('show')) dropdowns[i].classList.remove('show'); }
             }
         }
 
-        // ระบบแอนิเมชันเปิด-ปิด Modal (Fade & Scale)
         function openModalAnim(id) {
             if (id === 'filterModal') buildFilterTree();
-            if (id === 'loopModal') resetLoopBuilder(true); // true = เคลียร์ทุกช่อง
             const modal = document.getElementById(id);
             modal.style.display = 'flex';
-            void modal.offsetWidth; // Trigger reflow
+            void modal.offsetWidth; 
             modal.classList.add('show');
         }
         function closeModalAnim(id) {
@@ -614,81 +371,42 @@
             setTimeout(() => { modal.style.display = 'none'; }, 250);
         }
 
-        // Override SweetAlert2 Animation & Toast
-        const swalCustom = Swal.mixin({
-            showClass: { popup: 'swal2-custom-show' },
-            hideClass: { popup: 'swal2-custom-hide' }
-        });
+        const swalCustom = Swal.mixin({ showClass: { popup: 'swal2-custom-show' }, hideClass: { popup: 'swal2-custom-hide' } });
 
         document.addEventListener('DOMContentLoaded', () => {
             initDatepickers();
             startUltimateSpeedEngine(); 
             initSwipeGestures();
-            
-            // ตั้งเวลา Auto-Sync ทุก 5 นาที
-            setInterval(() => {
-                if (!isSyncing) backgroundSync();
-            }, 5 * 60 * 1000);
+            setInterval(() => { if (!isSyncing) backgroundSync(); }, 5 * 60 * 1000);
         });
 
-        // ==========================================
-        // 0. ระบบปัดหน้าจอ 1:1 (Swipe Gestures)
-        // ==========================================
         function initSwipeGestures() {
             const wrapper = document.getElementById('swipeWrapper');
             const container = document.getElementById('carouselContainer');
-            
-            wrapper.addEventListener('touchstart', e => {
-                touchStartX = e.touches[0].clientX;
-                isSwiping = false;
-                container.classList.add('no-transition');
-            }, {passive: true});
-
+            wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; isSwiping = false; container.classList.add('no-transition'); }, {passive: true});
             wrapper.addEventListener('touchmove', e => {
-                const touchCurrentX = e.touches[0].clientX;
-                const deltaX = touchCurrentX - touchStartX;
-                
-                if (Math.abs(deltaX) > 10) {
-                    isSwiping = true;
-                    const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
-                    container.style.transform = `translateX(calc(-100% - ${gap}px + ${deltaX}px))`;
-                }
+                const deltaX = e.touches[0].clientX - touchStartX;
+                if (Math.abs(deltaX) > 10) { isSwiping = true; const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8; container.style.transform = `translateX(calc(-100% - ${gap}px + ${deltaX}px))`; }
             }, {passive: true});
-
             wrapper.addEventListener('touchend', e => {
                 if (!isSwiping) return;
-                
                 const deltaX = e.changedTouches[0].clientX - touchStartX;
                 container.classList.remove('no-transition');
                 const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
-                
-                const swipeThreshold = 40;
-                if (deltaX < -swipeThreshold) {
-                    container.style.transform = `translateX(calc(-200% - ${gap * 2}px))`;
-                    setTimeout(() => changeMonth(1, true), 300);
-                } else if (deltaX > swipeThreshold) {
-                    container.style.transform = `translateX(0px)`;
-                    setTimeout(() => changeMonth(-1, true), 300);
-                } else {
-                    container.style.transform = `translateX(calc(-100% - ${gap}px))`;
-                }
+                if (deltaX < -40) { container.style.transform = `translateX(calc(-200% - ${gap * 2}px))`; setTimeout(() => changeMonth(1, true), 300); } 
+                else if (deltaX > 40) { container.style.transform = `translateX(0px)`; setTimeout(() => changeMonth(-1, true), 300); } 
+                else { container.style.transform = `translateX(calc(-100% - ${gap}px))`; }
                 setTimeout(() => { isSwiping = false; }, 300);
             }, {passive: true});
         }
 
-        // ==========================================
-        // 1. ระบบโหลดข้อมูลความเร็วสูงสุด (1-Year Cache)
-        // ==========================================
         async function fetchWithRetry(url, options = {}, retries = 3) {
             for (let i = 0; i < retries; i++) {
                 try {
                     const res = await fetch(url, options);
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     return await res.json();
-                } catch (err) {
-                    if (i === retries - 1) throw err; 
-                    await new Promise(resolve => setTimeout(resolve, 1000)); 
-                }
+                } catch (err) { if (i === retries - 1) throw err; await new Promise(resolve => setTimeout(resolve, 1000)); }
             }
         }
 
@@ -696,272 +414,144 @@
             const cachedRoster = localStorage.getItem('roster_db');
             const cachedOfficers = localStorage.getItem('officer_db');
             const cachedHolidays = localStorage.getItem('holiday_db');
-            const savedRange = localStorage.getItem('cached_range');
 
-            if (cachedRoster && cachedOfficers && savedRange) {
+            if (cachedRoster && cachedOfficers) {
                 allOfficers = JSON.parse(cachedOfficers);
                 rosterData = JSON.parse(cachedRoster);
                 if (cachedHolidays) holidayData = JSON.parse(cachedHolidays);
-                
-                const parsedRange = JSON.parse(savedRange);
-                cachedRange.start = new Date(parsedRange.start);
-                cachedRange.end = new Date(parsedRange.end);
-                
-                buildOfficerMap();
-                renderCalendar();
-                updateFilterButtonState();
-                backgroundSync(); 
+                buildOfficerMap(); renderCalendar(); updateFilterButtonState(); backgroundSync(); 
             } else {
                 swalCustom.fire({ title: 'กำลังเตรียมระบบครั้งแรก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                await backgroundSync(true); 
-                Swal.close();
+                await backgroundSync(true); Swal.close();
             }
         }
 
-        // Manual Refresh
         async function manualRefresh() {
             document.getElementById('addMenu').classList.remove('show');
             swalCustom.fire({ title: 'กำลังอัปเดตข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            await backgroundSync(true);
-            Swal.close();
-            swalCustom.fire({ icon: 'success', title: 'อัปเดตข้อมูลล่าสุดแล้ว', timer: 1500, showConfirmButton: false });
+            await backgroundSync(true); Swal.close();
+            Swal.fire({ icon: 'success', title: 'อัปเดตข้อมูลล่าสุดแล้ว', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' });
         }
 
         async function backgroundSync(isInitial = false) {
-            if (isSyncing) return; 
-            isSyncing = true;
-
+            if (isSyncing) return; isSyncing = true;
             try {
-                // โหลดตารางเวร + วันหยุด (ย้อนหลัง 2 เดือน, ล่วงหน้า 10 เดือน = 1 ปี)
-                const fetchStart = new Date(currentYear, currentMonth - 2, 1);
-                const fetchEnd = new Date(currentYear, currentMonth + 10, 0);
+                // โหลดข้อมูลล่วงหน้า 3 ปี (ปีที่แล้ว, ปีนี้, ปีหน้า) เพื่อป้องกันวันหยุดโหลดช้า
+                const fetchStart = new Date(currentYear - 1, 0, 1); 
+                const fetchEnd = new Date(currentYear + 2, 11, 31); 
                 
                 const startStr = `${fetchStart.getDate()}/${fetchStart.getMonth()+1}/${fetchStart.getFullYear()}`;
                 const endStr = `${fetchEnd.getDate()}/${fetchEnd.getMonth()+1}/${fetchEnd.getFullYear()}`;
                 
-                const rosterUrl = `${API_URL_ROSTER}?action=getRoster&startDate=${startStr}&endDate=${endStr}`;
-                
-                const rosterJson = await fetchWithRetry(rosterUrl);
+                const rosterJson = await fetchWithRetry(`${API_URL_ROSTER}?action=getRoster&startDate=${startStr}&endDate=${endStr}`);
                 if (rosterJson.data) {
-                    rosterData = {}; 
-                    rosterJson.data.forEach(row => { rosterData[row.dateAD] = row; });
-                    cachedRange.start = fetchStart;
-                    cachedRange.end = fetchEnd;
+                    rosterData = {}; rosterJson.data.forEach(row => { rosterData[row.dateAD] = row; });
+                    cachedRange.start = fetchStart; cachedRange.end = fetchEnd;
                     localStorage.setItem('roster_db', JSON.stringify(rosterData)); 
-                    localStorage.setItem('cached_range', JSON.stringify({ start: fetchStart.getTime(), end: fetchEnd.getTime() }));
-                    
-                    if (rosterJson.holidays !== null) {
-                        holidayData = rosterJson.holidays;
-                        localStorage.setItem('holiday_db', JSON.stringify(holidayData));
-                    }
+                    if (rosterJson.holidays) { holidayData = rosterJson.holidays; localStorage.setItem('holiday_db', JSON.stringify(holidayData)); }
                 }
-
                 if (!isInitial) renderCalendar();
-
-                await new Promise(resolve => setTimeout(resolve, 1000)); 
 
                 const officerJson = await fetchWithRetry(API_URL_MAIN + '?action=getOfficers');
                 if (officerJson.officers) {
-                    allOfficers = officerJson.officers;
-                    localStorage.setItem('officer_db', JSON.stringify(allOfficers)); 
-                    buildOfficerMap();
+                    allOfficers = officerJson.officers; localStorage.setItem('officer_db', JSON.stringify(allOfficers)); buildOfficerMap();
                 }
-
                 if (!isInitial) renderCalendar();
-
-            } catch (error) {
-                console.error("Background Sync Failed:", error);
-                if (isInitial) swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณาลองใหม่', 'error');
-            } finally {
-                isSyncing = false; 
-            }
+            } catch (error) { console.error(error); } finally { isSyncing = false; }
         }
 
         function buildOfficerMap() {
             officerMap = {};
-            allOfficers.forEach(off => {
-                const fullName = off[4]; 
-                if (!fullName) return;
-                officerMap[fullName] = { firstName: off[2], phone: off[10] || '-' };
-            });
-            
-            if (currentFilterNames.length === 0 && isFilterAll) {
-                currentFilterNames = Object.keys(officerMap);
-            }
+            allOfficers.forEach(off => { if (off[4]) officerMap[off[4]] = { firstName: off[2], phone: off[10] || '-' }; });
+            if (currentFilterNames.length === 0 && isFilterAll) currentFilterNames = Object.keys(officerMap);
         }
 
-        // ==========================================
-        // 2. ระบบปฏิทิน (Carousel View)
-        // ==========================================
         function arrowChangeMonth(delta) {
             const container = document.getElementById('carouselContainer');
             const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
-            
             container.classList.remove('no-transition');
-            if (delta === 1) {
-                container.style.transform = `translateX(calc(-200% - ${gap * 2}px))`;
-            } else {
-                container.style.transform = `translateX(0px)`;
-            }
+            container.style.transform = delta === 1 ? `translateX(calc(-200% - ${gap * 2}px))` : `translateX(0px)`;
             setTimeout(() => changeMonth(delta, true), 300);
         }
 
         async function changeMonth(delta, isCarousel = false) {
-            let newMonth = currentMonth + delta;
-            let newYear = currentYear;
+            let newMonth = currentMonth + delta; let newYear = currentYear;
             while (newMonth > 11) { newMonth -= 12; newYear++; }
             while (newMonth < 0) { newMonth += 12; newYear--; }
-            currentMonth = newMonth;
-            currentYear = newYear;
+            currentMonth = newMonth; currentYear = newYear;
 
             const targetDate = new Date(currentYear, currentMonth, 1);
-            if (!(cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end)) {
-                backgroundSync(); 
-            }
+            if (!(cachedRange.start && cachedRange.end && targetDate >= cachedRange.start && targetDate <= cachedRange.end)) backgroundSync(); 
 
             if (isCarousel) {
                 renderCalendar();
                 const container = document.getElementById('carouselContainer');
                 const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--grid-gap')) || 8;
-                container.classList.add('no-transition');
-                container.style.transform = `translateX(calc(-100% - ${gap}px))`;
-                void container.offsetWidth; 
-                container.classList.remove('no-transition');
+                container.classList.add('no-transition'); container.style.transform = `translateX(calc(-100% - ${gap}px))`;
+                void container.offsetWidth; container.classList.remove('no-transition');
             } else {
                 const wrapper = document.getElementById('fadeWrapper');
                 wrapper.classList.add('fade-out');
-                setTimeout(() => {
-                    renderCalendar();
-                    wrapper.classList.remove('fade-out');
-                }, 200);
+                setTimeout(() => { renderCalendar(); wrapper.classList.remove('fade-out'); }, 200);
             }
         }
 
         function openMonthYearPicker() {
             const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            let monthOptions = '';
-            thaiMonths.forEach((m, i) => {
-                monthOptions += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>${m}</option>`;
-            });
-
+            let monthOptions = ''; thaiMonths.forEach((m, i) => { monthOptions += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>${m}</option>`; });
             swalCustom.fire({
-                title: 'เลือกเดือนและปี',
-                showCloseButton: true,
-                scrollbarPadding: false,
-                html: `
-                    <select id="swal-month" class="form-input" style="margin-bottom: 15px;">${monthOptions}</select>
-                    <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
-                        <button type="button" class="btn-secondary" onclick="document.getElementById('swal-year').value--"><i class="fa-solid fa-minus"></i></button>
-                        <input type="number" id="swal-year" class="form-input" value="${currentYear + 543}" style="width:120px; text-align:center; font-size:1.2rem; font-weight:bold;" readonly>
-                        <button type="button" class="btn-secondary" onclick="document.getElementById('swal-year').value++"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                `,
+                title: 'เลือกเดือนและปี', showCloseButton: true, scrollbarPadding: false,
+                html: `<select id="swal-month" class="form-input" style="margin-bottom: 15px;">${monthOptions}</select>
+                       <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
+                           <button type="button" class="btn-secondary" onclick="document.getElementById('swal-year').value--"><i class="fa-solid fa-minus"></i></button>
+                           <input type="number" id="swal-year" class="form-input" value="${currentYear + 543}" style="width:120px; text-align:center; font-size:1.2rem; font-weight:bold;" readonly>
+                           <button type="button" class="btn-secondary" onclick="document.getElementById('swal-year').value++"><i class="fa-solid fa-plus"></i></button>
+                       </div>`,
                 showCancelButton: true, confirmButtonText: 'ตกลง', cancelButtonText: 'ยกเลิก',
-                preConfirm: () => {
-                    const y = parseInt(document.getElementById('swal-year').value);
-                    return { month: parseInt(document.getElementById('swal-month').value), year: y - 543 };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const newMonth = result.value.month;
-                    const newYear = result.value.year;
-                    const delta = (newYear - currentYear) * 12 + (newMonth - currentMonth);
-                    if (delta !== 0) {
-                        changeMonth(delta, false); // Fade effect
-                    }
-                }
-            });
+                preConfirm: () => { return { month: parseInt(document.getElementById('swal-month').value), year: parseInt(document.getElementById('swal-year').value) - 543 }; }
+            }).then((result) => { if (result.isConfirmed) { const delta = (result.value.year - currentYear) * 12 + (result.value.month - currentMonth); if (delta !== 0) changeMonth(delta, false); } });
         }
 
-        function toggleOriginalView() {
-            isShowOriginal = !isShowOriginal;
-            // ซิงค์สวิตช์ทั้ง 2 ตัว
-            document.getElementById('toggleOriginalBtn').classList.toggle('active', isShowOriginal);
-            document.getElementById('toggleOriginalModalBtn').classList.toggle('active', isShowOriginal);
-            updateFilterButtonState();
-            renderCalendar();
-        }
-
-        function updateFilterButtonState() {
-            const btn = document.getElementById('btnFilterLabel');
-            if (!isFilterAll || isShowOriginal) {
-                btn.classList.add('filter-active');
-            } else {
-                btn.classList.remove('filter-active');
-            }
-        }
+        function toggleOriginalView() { isShowOriginal = !isShowOriginal; document.getElementById('toggleOriginalModalBtn').classList.toggle('active', isShowOriginal); updateFilterButtonState(); renderCalendar(); }
+        function updateFilterButtonState() { document.getElementById('btnFilterLabel').classList.toggle('filter-active', !isFilterAll || isShowOriginal); }
 
         function getMonthHTML(year, month) {
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            
-            let startOffset = firstDay.getDay() - 1;
-            if (startOffset === -1) startOffset = 6; 
-
-            const totalDays = lastDay.getDate();
-            let html = '';
-
-            const today = new Date();
-            const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`; 
+            const firstDay = new Date(year, month, 1); const lastDay = new Date(year, month + 1, 0);
+            let startOffset = firstDay.getDay() - 1; if (startOffset === -1) startOffset = 6; 
+            let html = ''; const todayStr = `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`; 
 
             for (let i = 0; i < 42; i++) {
                 const cellDate = new Date(year, month, 1 - startOffset + i);
-                const isCurrentMonth = cellDate.getMonth() === month;
-                
-                if (!isCurrentMonth) {
-                    html += `<div class="calendar-cell empty"></div>`;
-                    continue;
-                }
+                if (cellDate.getMonth() !== month) { html += `<div class="calendar-cell empty"></div>`; continue; }
 
-                const day = cellDate.getDate();
-                const dateKey = `${day}/${month + 1}/${year}`; 
-                
-                let isTodayClass = '';
-                let isTodayCellClass = '';
-                if (dateKey === todayStr) {
-                    const dayOfWeek = cellDate.getDay(); 
-                    isTodayClass = `today today-color-${dayOfWeek}`;
-                    isTodayCellClass = `today-cell-${dayOfWeek}`;
-                }
+                const day = cellDate.getDate(); const dateKey = `${day}/${month + 1}/${year}`; 
+                let isTodayClass = '', isTodayCellClass = '';
+                if (dateKey === todayStr) { const dayOfWeek = cellDate.getDay(); isTodayClass = `today today-color-${dayOfWeek}`; isTodayCellClass = `today-cell-${dayOfWeek}`; }
                 
                 const duty = rosterData[dateKey] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
-                
                 const rawInv = isShowOriginal ? duty.baseInv : (duty.swapInv || duty.baseInv);
                 const rawAsst = isShowOriginal ? duty.baseAsst : (duty.swapAsst || duty.baseAsst);
                 const rawClerk = isShowOriginal ? duty.baseClerk : (duty.swapClerk || duty.baseClerk);
-
-                const isInvSwap = !isShowOriginal && duty.swapInv;
-                const isAsstSwap = !isShowOriginal && duty.swapAsst;
-                const isClerkSwap = !isShowOriginal && duty.swapClerk;
 
                 const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
                 const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
                 const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk) : '';
 
-                let invHighlight = false, asstHighlight = false, clerkHighlight = false;
-                let invDimmed = false, asstDimmed = false, clerkDimmed = false;
-
+                let invH = false, asstH = false, clerkH = false, invD = false, asstD = false, clerkD = false;
                 if (!isFilterAll) {
-                    if (currentFilterNames.includes(rawInv)) invHighlight = true; else invDimmed = true;
-                    if (currentFilterNames.includes(rawAsst)) asstHighlight = true; else asstDimmed = true;
-                    if (currentFilterNames.includes(rawClerk)) clerkHighlight = true; else clerkDimmed = true;
+                    if (currentFilterNames.includes(rawInv)) invH = true; else invD = true;
+                    if (currentFilterNames.includes(rawAsst)) asstH = true; else asstD = true;
+                    if (currentFilterNames.includes(rawClerk)) clerkH = true; else clerkD = true;
                 }
 
-                let holidayText = '';
-                let isHolidayClass = '';
-                if (holidayData[dateKey]) {
-                    holidayText = `<div class="holiday-label" title="${holidayData[dateKey]}"><i class="fa-solid fa-star"></i> <span class="holiday-text">${holidayData[dateKey]}</span></div>`;
-                    isHolidayClass = 'holiday-date-text';
-                }
+                let holidayText = '', isHolidayClass = '';
+                if (holidayData[dateKey]) { holidayText = `<div class="holiday-label" title="${holidayData[dateKey]}"><i class="fa-solid fa-star"></i> ${holidayData[dateKey]}</div>`; isHolidayClass = 'holiday-date-text'; }
 
                 html += `<div class="calendar-cell ${isTodayCellClass}" onclick="openDailyModal('${dateKey}')">
-                            ${holidayText}
-                            <div class="date-num ${isTodayClass} ${isHolidayClass}">${day}</div>`;
-                
-                html += invName ? `<div class="duty-name duty-inv ${isInvSwap ? 'is-swap' : ''} ${invHighlight ? 'highlight' : ''} ${invDimmed ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
-                html += asstName ? `<div class="duty-name duty-asst ${isAsstSwap ? 'is-swap' : ''} ${asstHighlight ? 'highlight' : ''} ${asstDimmed ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
-                html += clerkName ? `<div class="duty-name duty-clerk ${isClerkSwap ? 'is-swap' : ''} ${clerkHighlight ? 'highlight' : ''} ${clerkDimmed ? 'dimmed-text' : ''}">${clerkName}</div>` : `<div class="duty-name"></div>`;
-                
+                            <div class="cell-header">${holidayText}<div class="date-num ${isTodayClass} ${isHolidayClass}">${day}</div></div>`;
+                html += invName ? `<div class="duty-name duty-inv ${!isShowOriginal && duty.swapInv ? 'is-swap' : ''} ${invH ? 'highlight' : ''} ${invD ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
+                html += asstName ? `<div class="duty-name duty-asst ${!isShowOriginal && duty.swapAsst ? 'is-swap' : ''} ${asstH ? 'highlight' : ''} ${asstD ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
+                html += clerkName ? `<div class="duty-name duty-clerk ${!isShowOriginal && duty.swapClerk ? 'is-swap' : ''} ${clerkH ? 'highlight' : ''} ${clerkD ? 'dimmed-text' : ''}">${clerkName}</div>` : `<div class="duty-name"></div>`;
                 html += `</div>`;
             }
             return html;
@@ -970,588 +560,255 @@
         function renderCalendar() {
             const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             document.getElementById('monthLabel').innerText = `${thaiMonths[currentMonth]} ${currentYear + 543}`;
-
-            let prevMonth = currentMonth - 1; let prevYear = currentYear;
-            if (prevMonth < 0) { prevMonth = 11; prevYear--; }
-            
-            let nextMonth = currentMonth + 1; let nextYear = currentYear;
-            if (nextMonth > 11) { nextMonth = 0; nextYear++; }
-
+            let prevMonth = currentMonth - 1, prevYear = currentYear; if (prevMonth < 0) { prevMonth = 11; prevYear--; }
+            let nextMonth = currentMonth + 1, nextYear = currentYear; if (nextMonth > 11) { nextMonth = 0; nextYear++; }
             document.getElementById('calendarPrev').innerHTML = getMonthHTML(prevYear, prevMonth);
             document.getElementById('calendarCurrent').innerHTML = getMonthHTML(currentYear, currentMonth);
             document.getElementById('calendarNext').innerHTML = getMonthHTML(nextYear, nextMonth);
         }
 
-        // ==========================================
-        // 3. ระบบกรอง (Unified Filter Tree)
-        // ==========================================
         function buildFilterTree() {
             let invList = '', asstList = '', clerkList = '';
-
             allOfficers.forEach(off => {
-                const name = off[4];
-                const role = off[8];
-                if (!name) return;
-
-                const isChecked = isFilterAll || currentFilterNames.includes(name) ? 'checked' : '';
-
-                const cbHtml = `
-                    <label class="filter-item">
-                        <input type="checkbox" class="cb-person cb-person-${role === 'พนักงานสอบสวน' ? 'inv' : role === 'ผู้ช่วยพนักงานสอบสวน' ? 'asst' : 'clerk'}" value="${name}" ${isChecked} onchange="updateFilterTreeState()">
-                        <span>${name}</span>
-                    </label>
-                `;
-
-                if (role === 'พนักงานสอบสวน') invList += cbHtml;
-                else if (role === 'ผู้ช่วยพนักงานสอบสวน') asstList += cbHtml;
-                else if (role === 'เสมียนประจำวัน') clerkList += cbHtml;
+                if (!off[4]) return;
+                const isChecked = isFilterAll || currentFilterNames.includes(off[4]) ? 'checked' : '';
+                const cbHtml = `<label class="filter-item"><input type="checkbox" class="cb-person cb-person-${off[8] === 'พนักงานสอบสวน' ? 'inv' : off[8] === 'ผู้ช่วยพนักงานสอบสวน' ? 'asst' : 'clerk'}" value="${off[4]}" ${isChecked} onchange="updateFilterTreeState()"><span>${off[4]}</span></label>`;
+                if (off[8] === 'พนักงานสอบสวน') invList += cbHtml; else if (off[8] === 'ผู้ช่วยพนักงานสอบสวน') asstList += cbHtml; else if (off[8] === 'เสมียนประจำวัน') clerkList += cbHtml;
             });
-
-            document.getElementById('filter-list-inv').innerHTML = invList;
-            document.getElementById('filter-list-asst').innerHTML = asstList;
-            document.getElementById('filter-list-clerk').innerHTML = clerkList;
-            
-            document.getElementById('cb-filter-all').checked = isFilterAll;
-            updateFilterTreeState();
+            document.getElementById('filter-list-inv').innerHTML = invList; document.getElementById('filter-list-asst').innerHTML = asstList; document.getElementById('filter-list-clerk').innerHTML = clerkList;
+            document.getElementById('cb-filter-all').checked = isFilterAll; updateFilterTreeState();
         }
 
-        function toggleFilterAll(cb) {
-            const isChecked = cb.checked;
-            document.querySelectorAll('.cb-filter-role, .cb-person').forEach(el => el.checked = isChecked);
-        }
-
-        function toggleFilterRole(cb) {
-            const role = cb.dataset.role;
-            const isChecked = cb.checked;
-            document.querySelectorAll(`.cb-person-${role}`).forEach(el => el.checked = isChecked);
-            checkAllState();
-        }
-
+        function toggleFilterAll(cb) { document.querySelectorAll('.cb-filter-role, .cb-person').forEach(el => el.checked = cb.checked); }
+        function toggleFilterRole(cb) { document.querySelectorAll(`.cb-person-${cb.dataset.role}`).forEach(el => el.checked = cb.checked); checkAllState(); }
         function updateFilterTreeState() {
             ['inv', 'asst', 'clerk'].forEach(role => {
-                const cbs = document.querySelectorAll(`.cb-person-${role}`);
-                const checkedCbs = document.querySelectorAll(`.cb-person-${role}:checked`);
-                const roleCb = document.querySelector(`.cb-filter-role[data-role="${role}"]`);
-                
-                if (cbs.length > 0) {
-                    roleCb.checked = (cbs.length === checkedCbs.length);
-                    roleCb.indeterminate = (checkedCbs.length > 0 && checkedCbs.length < cbs.length);
-                }
-            });
-            checkAllState();
+                const cbs = document.querySelectorAll(`.cb-person-${role}`), checkedCbs = document.querySelectorAll(`.cb-person-${role}:checked`), roleCb = document.querySelector(`.cb-filter-role[data-role="${role}"]`);
+                if (cbs.length > 0) { roleCb.checked = (cbs.length === checkedCbs.length); roleCb.indeterminate = (checkedCbs.length > 0 && checkedCbs.length < cbs.length); }
+            }); checkAllState();
         }
-
         function checkAllState() {
-            const allPersons = document.querySelectorAll('.cb-person');
-            const allChecked = document.querySelectorAll('.cb-person:checked');
-            const cbAll = document.getElementById('cb-filter-all');
-            
-            cbAll.checked = (allPersons.length === allChecked.length);
-            cbAll.indeterminate = (allChecked.length > 0 && allChecked.length < allPersons.length);
+            const allPersons = document.querySelectorAll('.cb-person'), allChecked = document.querySelectorAll('.cb-person:checked'), cbAll = document.getElementById('cb-filter-all');
+            cbAll.checked = (allPersons.length === allChecked.length); cbAll.indeterminate = (allChecked.length > 0 && allChecked.length < allPersons.length);
         }
-
         function applyFilter() {
-            const allPersons = document.querySelectorAll('.cb-person');
             const allChecked = document.querySelectorAll('.cb-person:checked');
-            
-            if (allChecked.length === 0) {
-                return swalCustom.fire('แจ้งเตือน', 'กรุณาเลือกชื่อเจ้าหน้าที่อย่างน้อย 1 คน', 'warning');
-            }
-
-            isFilterAll = (allPersons.length === allChecked.length);
+            if (allChecked.length === 0) return swalCustom.fire('แจ้งเตือน', 'กรุณาเลือกชื่ออย่างน้อย 1 คน', 'warning');
+            isFilterAll = (document.querySelectorAll('.cb-person').length === allChecked.length);
             currentFilterNames = Array.from(allChecked).map(cb => cb.value);
-
-            updateFilterButtonState();
-            closeModalAnim('filterModal');
-            renderCalendar();
+            updateFilterButtonState(); closeModalAnim('filterModal'); renderCalendar();
         }
 
-        // ==========================================
-        // 4. ระบบจัดการรายวัน (Daily Modal & Smart Edit)
-        // ==========================================
         function openDailyModal(dateKey) {
             if (isSwiping) return; 
-
-            selectedDateAD = dateKey;
-            const parts = dateKey.split('/');
-            const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
-            selectedDateTH = formatThaiDate(dateObj);
-
+            selectedDateAD = dateKey; const parts = dateKey.split('/'); const dateObj = new Date(parts[2], parts[1] - 1, parts[0]); selectedDateTH = formatThaiDate(dateObj);
             currentEditDuty = rosterData[dateKey] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
-
             document.getElementById('dailyModalTitle').innerText = `เวรวันที่ ${selectedDateTH}`;
             
-            if (holidayData[dateKey]) {
-                document.getElementById('modalHolidayBanner').style.display = 'flex';
-                document.getElementById('modalHolidayText').innerText = holidayData[dateKey];
-            } else {
-                document.getElementById('modalHolidayBanner').style.display = 'none';
-            }
+            if (holidayData[dateKey]) { document.getElementById('modalHolidayBanner').style.display = 'flex'; document.getElementById('modalHolidayText').innerText = holidayData[dateKey]; } 
+            else { document.getElementById('modalHolidayBanner').style.display = 'none'; }
             
-            const curInv = currentEditDuty.swapInv || currentEditDuty.baseInv;
-            const curAsst = currentEditDuty.swapAsst || currentEditDuty.baseAsst;
-            const curClerk = currentEditDuty.swapClerk || currentEditDuty.baseClerk;
+            const curInv = currentEditDuty.swapInv || currentEditDuty.baseInv, curAsst = currentEditDuty.swapAsst || currentEditDuty.baseAsst, curClerk = currentEditDuty.swapClerk || currentEditDuty.baseClerk;
+            updateViewField('viewInvName', 'viewInvPhone', curInv); updateViewField('viewAsstName', 'viewAsstPhone', curAsst); updateViewField('viewClerkName', 'viewClerkPhone', curClerk);
 
-            updateViewField('viewInvName', 'viewInvPhone', curInv);
-            updateViewField('viewAsstName', 'viewAsstPhone', curAsst);
-            updateViewField('viewClerkName', 'viewClerkPhone', curClerk);
-
-            let invOptions = '<option value="" disabled selected hidden></option>';
-            let otherOptions = '<option value="" disabled selected hidden></option>';
+            let invOptions = '<option value="" disabled selected hidden></option>', otherOptions = '<option value="" disabled selected hidden></option>';
             allOfficers.forEach(off => {
-                const fullName = off[4];
-                if (!fullName) return;
-                if (off[8] === 'พนักงานสอบสวน') invOptions += `<option value="${fullName}">${fullName}</option>`;
-                if (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน') otherOptions += `<option value="${fullName}">${fullName}</option>`;
+                if (!off[4]) return;
+                if (off[8] === 'พนักงานสอบสวน') invOptions += `<option value="${off[4]}">${off[4]}</option>`;
+                if (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน') otherOptions += `<option value="${off[4]}">${off[4]}</option>`;
             });
-
-            document.getElementById('editInvSelect').innerHTML = invOptions;
-            document.getElementById('editAsstSelect').innerHTML = otherOptions;
-            document.getElementById('editClerkSelect').innerHTML = otherOptions;
-
-            document.getElementById('editInvSelect').value = curInv;
-            document.getElementById('editAsstSelect').value = curAsst;
-            document.getElementById('editClerkSelect').value = curClerk;
+            document.getElementById('editInvSelect').innerHTML = invOptions; document.getElementById('editAsstSelect').innerHTML = otherOptions; document.getElementById('editClerkSelect').innerHTML = otherOptions;
+            document.getElementById('editInvSelect').value = curInv; document.getElementById('editAsstSelect').value = curAsst; document.getElementById('editClerkSelect').value = curClerk;
             
-            document.getElementById('swap-box-inv').style.display = 'none';
-            document.getElementById('swap-box-asst').style.display = 'none';
-            document.getElementById('swap-box-clerk').style.display = 'none';
-            document.getElementById('btnSaveDaily').disabled = true;
-
-            toggleEditDailyMode(false);
-            openModalAnim('dailyModal');
+            ['inv', 'asst', 'clerk'].forEach(role => document.getElementById(`swap-box-${role}`).style.display = 'none');
+            document.getElementById('btnSaveDaily').disabled = true; toggleEditDailyMode(false); openModalAnim('dailyModal');
         }
 
         function updateViewField(nameId, phoneId, fullName) {
-            const nameEl = document.getElementById(nameId);
-            const phoneEl = document.getElementById(phoneId);
-            if (fullName && officerMap[fullName]) {
-                nameEl.innerText = fullName;
-                phoneEl.innerHTML = `<i class="fa-solid fa-phone"></i> ${officerMap[fullName].phone}`;
-            } else {
-                nameEl.innerText = ''; 
-                phoneEl.innerHTML = '';
-            }
+            if (fullName && officerMap[fullName]) { document.getElementById(nameId).innerText = fullName; document.getElementById(phoneId).innerHTML = `<i class="fa-solid fa-phone"></i> ${officerMap[fullName].phone}`; } 
+            else { document.getElementById(nameId).innerText = ''; document.getElementById(phoneId).innerHTML = ''; }
         }
 
-        function toggleEditDailyMode(isEdit) {
-            document.getElementById('dailyViewMode').style.display = isEdit ? 'none' : 'block';
-            document.getElementById('dailyEditMode').style.display = isEdit ? 'block' : 'none';
-        }
+        function toggleEditDailyMode(isEdit) { document.getElementById('dailyViewMode').style.display = isEdit ? 'none' : 'block'; document.getElementById('dailyEditMode').style.display = isEdit ? 'block' : 'none'; }
 
         function handleSelectChange(role) {
             const curVal = document.getElementById(`edit${role.charAt(0).toUpperCase() + role.slice(1)}Select`).value;
             const origVal = currentEditDuty[`swap${role.charAt(0).toUpperCase() + role.slice(1)}`] || currentEditDuty[`base${role.charAt(0).toUpperCase() + role.slice(1)}`];
             const cb = document.getElementById(`cb-swap-${role}`);
-            
-            if (curVal !== origVal) {
-                if (!origVal) {
-                    cb.checked = false; 
-                } else {
-                    cb.checked = true;  
-                }
-            }
+            if (curVal !== origVal) cb.checked = !!origVal;
             checkEditChanges();
         }
 
         function checkEditChanges() {
-            const curInv = document.getElementById('editInvSelect').value;
-            const curAsst = document.getElementById('editAsstSelect').value;
-            const curClerk = document.getElementById('editClerkSelect').value;
-
-            const origInv = currentEditDuty.swapInv || currentEditDuty.baseInv;
-            const origAsst = currentEditDuty.swapAsst || currentEditDuty.baseAsst;
-            const origClerk = currentEditDuty.swapClerk || currentEditDuty.baseClerk;
-
             let isChanged = false;
-
             const handleRoleChange = (curVal, origVal, baseVal, boxId, cbId) => {
-                const box = document.getElementById(boxId);
-                const cb = document.getElementById(cbId);
-                
+                const box = document.getElementById(boxId), cb = document.getElementById(cbId);
                 if (curVal !== origVal) {
                     isChanged = true;
-                    if (curVal !== baseVal) {
-                        box.style.display = 'block';
-                        if (cb.checked) {
-                            box.className = 'swap-box'; 
-                        } else {
-                            box.className = 'swap-box is-base'; 
-                        }
-                    } else {
-                        box.style.display = 'none';
-                    }
-                } else {
-                    box.style.display = 'none';
-                }
+                    if (curVal !== baseVal) { box.style.display = 'block'; box.className = cb.checked ? 'swap-box' : 'swap-box is-base'; } else { box.style.display = 'none'; }
+                } else { box.style.display = 'none'; }
             };
-
-            handleRoleChange(curInv, origInv, currentEditDuty.baseInv, 'swap-box-inv', 'cb-swap-inv');
-            handleRoleChange(curAsst, origAsst, currentEditDuty.baseAsst, 'swap-box-asst', 'cb-swap-asst');
-            handleRoleChange(curClerk, origClerk, currentEditDuty.baseClerk, 'swap-box-clerk', 'cb-swap-clerk');
-
+            handleRoleChange(document.getElementById('editInvSelect').value, currentEditDuty.swapInv || currentEditDuty.baseInv, currentEditDuty.baseInv, 'swap-box-inv', 'cb-swap-inv');
+            handleRoleChange(document.getElementById('editAsstSelect').value, currentEditDuty.swapAsst || currentEditDuty.baseAsst, currentEditDuty.baseAsst, 'swap-box-asst', 'cb-swap-asst');
+            handleRoleChange(document.getElementById('editClerkSelect').value, currentEditDuty.swapClerk || currentEditDuty.baseClerk, currentEditDuty.baseClerk, 'swap-box-clerk', 'cb-swap-clerk');
             document.getElementById('btnSaveDaily').disabled = !isChanged;
         }
 
+        // --- Optimistic UI Save ---
         async function saveDailyEdit() {
-            const btn = document.getElementById('btnSaveDaily');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
-            btn.disabled = true;
-
-            const curInv = document.getElementById('editInvSelect').value;
-            const curAsst = document.getElementById('editAsstSelect').value;
-            const curClerk = document.getElementById('editClerkSelect').value;
-
-            const origInv = currentEditDuty.swapInv || currentEditDuty.baseInv;
-            const origAsst = currentEditDuty.swapAsst || currentEditDuty.baseAsst;
-            const origClerk = currentEditDuty.swapClerk || currentEditDuty.baseClerk;
-
             let newData = { dateAD: selectedDateAD, dateTH: selectedDateTH };
-
             const processSaveRole = (curVal, origVal, baseVal, swapVal, cbId, keyBase, keySwap) => {
                 if (curVal !== origVal) {
-                    if (curVal === baseVal) {
-                        newData[keyBase] = baseVal;
-                        newData[keySwap] = "";
-                    } else {
-                        const isSwap = document.getElementById(cbId).checked;
-                        if (isSwap) {
-                            newData[keyBase] = baseVal; 
-                            newData[keySwap] = curVal;  
-                        } else {
-                            newData[keyBase] = curVal;  
-                            newData[keySwap] = "";      
-                        }
-                    }
-                } else {
-                    newData[keyBase] = baseVal;
-                    newData[keySwap] = swapVal;
-                }
+                    if (curVal === baseVal) { newData[keyBase] = baseVal; newData[keySwap] = ""; } 
+                    else { if (document.getElementById(cbId).checked) { newData[keyBase] = baseVal; newData[keySwap] = curVal; } else { newData[keyBase] = curVal; newData[keySwap] = ""; } }
+                } else { newData[keyBase] = baseVal; newData[keySwap] = swapVal; }
             };
 
-            processSaveRole(curInv, origInv, currentEditDuty.baseInv, currentEditDuty.swapInv, 'cb-swap-inv', 'baseInv', 'swapInv');
-            processSaveRole(curAsst, origAsst, currentEditDuty.baseAsst, currentEditDuty.swapAsst, 'cb-swap-asst', 'baseAsst', 'swapAsst');
-            processSaveRole(curClerk, origClerk, currentEditDuty.baseClerk, currentEditDuty.swapClerk, 'cb-swap-clerk', 'baseClerk', 'swapClerk');
+            processSaveRole(document.getElementById('editInvSelect').value, currentEditDuty.swapInv || currentEditDuty.baseInv, currentEditDuty.baseInv, currentEditDuty.swapInv, 'cb-swap-inv', 'baseInv', 'swapInv');
+            processSaveRole(document.getElementById('editAsstSelect').value, currentEditDuty.swapAsst || currentEditDuty.baseAsst, currentEditDuty.baseAsst, currentEditDuty.swapAsst, 'cb-swap-asst', 'baseAsst', 'swapAsst');
+            processSaveRole(document.getElementById('editClerkSelect').value, currentEditDuty.swapClerk || currentEditDuty.baseClerk, currentEditDuty.baseClerk, currentEditDuty.swapClerk, 'cb-swap-clerk', 'baseClerk', 'swapClerk');
 
+            // 1. อัปเดตหน้าจอทันที (Optimistic)
+            rosterData[selectedDateAD] = newData;
+            localStorage.setItem('roster_db', JSON.stringify(rosterData));
+            renderCalendar();
+            closeModalAnim('dailyModal');
+            
+            // 2. แสดง Toast ว่าบันทึกแล้ว
+            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' });
+
+            // 3. แอบส่งข้อมูลไปหลังบ้าน
+            const toast = document.getElementById('syncToast');
+            toast.classList.add('show');
             try {
-                rosterData[selectedDateAD] = newData;
-                localStorage.setItem('roster_db', JSON.stringify(rosterData));
-                renderCalendar();
-                closeModalAnim('dailyModal');
-                
-                swalCustom.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
-
-                await fetch(API_URL_ROSTER, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'saveRoster', data: [newData] })
-                });
-
+                const res = await fetch(API_URL_ROSTER, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveRoster', data: [newData] }) });
+                const result = await res.json();
+                if(result.status !== 'success') throw new Error(result.message);
             } catch (e) {
-                swalCustom.fire('ข้อผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
+                console.error(e);
+                Swal.fire({ icon: 'error', title: 'ซิงค์ข้อมูลล้มเหลว', text: 'กรุณารีเฟรชหน้าจอ', toast: true, position: 'top-end' });
+                backgroundSync(true); // Rollback
             } finally {
-                btn.innerHTML = '<i class="fa-solid fa-save"></i> บันทึก';
+                toast.classList.remove('show');
             }
         }
 
         function copyLineMessage() {
             const duty = rosterData[selectedDateAD] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
-            const getLineText = (fullName) => {
-                if (!fullName) return "-\nโทร. -";
-                const phone = officerMap[fullName]?.phone || '-';
-                return `${fullName}\nโทร. ${phone}`;
-            };
-
-            const curInv = duty.swapInv || duty.baseInv;
-            const curAsst = duty.swapAsst || duty.baseAsst;
-            const curClerk = duty.swapClerk || duty.baseClerk;
-
-            const parts = selectedDateAD.split('/');
-            const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+            const getLineText = (fullName) => fullName ? `${fullName}\nโทร. ${officerMap[fullName]?.phone || '-'}` : "-\nโทร. -";
+            const parts = selectedDateAD.split('/'); const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
             const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-            const shortDateTH = `${dateObj.getDate()} ${thaiMonthsShort[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
-
-            const msg = `วันนี้ (${shortDateTH}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(curInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(curAsst)}\n\nเสมียนประจำวัน\n${getLineText(curClerk)}`;
-
-            navigator.clipboard.writeText(msg).then(() => {
-                swalCustom.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false });
-            }).catch(err => {
-                swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถคัดลอกได้ กรุณาลองใหม่', 'error');
-            });
+            const msg = `วันนี้ (${dateObj.getDate()} ${thaiMonthsShort[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(duty.swapInv || duty.baseInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(duty.swapAsst || duty.baseAsst)}\n\nเสมียนประจำวัน\n${getLineText(duty.swapClerk || duty.baseClerk)}`;
+            navigator.clipboard.writeText(msg).then(() => Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' }));
         }
 
-        // ==========================================
-        // 5. ระบบจัดเวรวนลูป (Loop Builder)
-        // ==========================================
-        function scrollToBottom(elementSelector) {
-            setTimeout(() => {
-                const el = document.querySelector(elementSelector);
-                if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-            }, 50);
-        }
-
-        function resetLoopBuilder(isFullReset = false) {
-            if (isFullReset) {
-                document.getElementById('loopRoleSelect').value = "";
-                if(document.getElementById('loopStartDate')._flatpickr) document.getElementById('loopStartDate')._flatpickr.clear();
-                if(document.getElementById('loopEndDate')._flatpickr) document.getElementById('loopEndDate')._flatpickr.clear();
-            }
-            document.getElementById('patternContainer').innerHTML = '';
-            patternCount = 0;
-            document.getElementById('previewSection').style.display = 'none';
-            document.getElementById('refViewBox').style.display = 'none';
-            addPatternRow(); 
-        }
-
+        // --- Loop Builder ---
+        function scrollToBottom(selector) { setTimeout(() => { const el = document.querySelector(selector); if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }, 50); }
+        function resetLoopBuilder() { document.getElementById('patternContainer').innerHTML = ''; patternCount = 0; document.getElementById('previewSection').style.display = 'none'; document.getElementById('refViewBox').style.display = 'none'; addPatternRow(); }
         function getLoopOptionsHtml() {
-            const role = document.getElementById('loopRoleSelect').value;
-            let optionsHtml = '<option value="" disabled selected hidden>- เลือกเจ้าหน้าที่ -</option>';
-            allOfficers.forEach(off => {
-                const fullName = off[4];
-                if (!fullName) return;
-                if (role === 'พนักงานสอบสวนเวร' && off[8] === 'พนักงานสอบสวน') optionsHtml += `<option value="${fullName}">${fullName}</option>`;
-                if ((role === 'ผู้ช่วยพนักงานสอบสวน' || role === 'เสมียนประจำวัน') && (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน')) {
-                    optionsHtml += `<option value="${fullName}">${fullName}</option>`;
-                }
-            });
+            const role = document.getElementById('loopRoleSelect').value; let optionsHtml = '<option value="" disabled selected hidden>- เลือกเจ้าหน้าที่ -</option>';
+            allOfficers.forEach(off => { if (off[4] && ((role === 'พนักงานสอบสวนเวร' && off[8] === 'พนักงานสอบสวน') || ((role === 'ผู้ช่วยพนักงานสอบสวน' || role === 'เสมียนประจำวัน') && (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน')))) optionsHtml += `<option value="${off[4]}">${off[4]}</option>`; });
             return optionsHtml;
         }
-
         function addPatternRow() {
-            patternCount++;
-            const container = document.getElementById('patternContainer');
-            const row = document.createElement('div');
-            row.className = 'pattern-row';
-            row.id = `patternRow_${patternCount}`;
-            
-            row.innerHTML = `
-                <div class="pattern-num">${patternCount}</div>
-                <select class="form-input loop-officer-select" id="officer_${patternCount}" onchange="handleSlotChange(this)">
-                    ${getLoopOptionsHtml()}
-                </select>
-                <button class="btn-remove-pattern" onclick="removePatternRow(${patternCount})"><i class="fa-solid fa-trash"></i></button>
-            `;
-            container.appendChild(row);
-            reindexPatterns();
-            scrollToBottom('#loopModal .modal-body');
+            patternCount++; const row = document.createElement('div'); row.className = 'pattern-row'; row.id = `patternRow_${patternCount}`;
+            row.innerHTML = `<div class="pattern-num">${patternCount}</div><select class="form-input loop-officer-select" id="officer_${patternCount}" onchange="handleSlotChange(this)">${getLoopOptionsHtml()}</select><button class="btn-remove-pattern" onclick="removePatternRow(${patternCount})"><i class="fa-solid fa-trash"></i></button>`;
+            document.getElementById('patternContainer').appendChild(row); reindexPatterns(); scrollToBottom('#loopModal .modal-body');
         }
-
-        function handleSlotChange(selectEl) {
-            const allSelects = document.querySelectorAll('.loop-officer-select');
-            const lastSelect = allSelects[allSelects.length - 1];
-            if (selectEl === lastSelect && selectEl.value !== '') {
-                addPatternRow();
-            }
-        }
-
-        function removePatternRow(id) {
-            const row = document.getElementById(`patternRow_${id}`);
-            if (row) { row.remove(); reindexPatterns(); }
-        }
-
-        function reindexPatterns() {
-            const rows = document.querySelectorAll('.pattern-row');
-            rows.forEach((row, index) => { row.querySelector('.pattern-num').innerText = index + 1; });
-        }
+        function handleSlotChange(selectEl) { const allSelects = document.querySelectorAll('.loop-officer-select'); if (selectEl === allSelects[allSelects.length - 1] && selectEl.value !== '') addPatternRow(); }
+        function removePatternRow(id) { const row = document.getElementById(`patternRow_${id}`); if (row) { row.remove(); reindexPatterns(); } }
+        function reindexPatterns() { document.querySelectorAll('.pattern-row').forEach((row, index) => { row.querySelector('.pattern-num').innerText = index + 1; }); }
 
         async function loadReferenceData(startDateObj) {
-            const role = document.getElementById('loopRoleSelect').value;
-            if (!role || !startDateObj) return;
-
-            const refBox = document.getElementById('refViewBox');
-            const refContainer = document.getElementById('refListContainer');
-            refBox.style.display = 'block';
+            const role = document.getElementById('loopRoleSelect').value; if (!role || !startDateObj) return;
+            const refContainer = document.getElementById('refListContainer'); document.getElementById('refViewBox').style.display = 'block';
             refContainer.innerHTML = '<div style="padding: 10px; color: #15803d;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูลอ้างอิง...</div>';
-
-            const endRef = new Date(startDateObj); endRef.setDate(endRef.getDate() - 1);
-            const startRef = new Date(startDateObj); startRef.setDate(startRef.getDate() - 7);
-
+            const endRef = new Date(startDateObj); endRef.setDate(endRef.getDate() - 1); const startRef = new Date(startDateObj); startRef.setDate(startRef.getDate() - 7);
             try {
-                const url = `${API_URL_ROSTER}?action=getRoster&startDate=${formatDMY(startRef)}&endDate=${formatDMY(endRef)}`;
-                const res = await fetch(url);
-                const json = await res.json();
-                
-                let html = '';
-                let curDate = new Date(startRef);
-                
+                const res = await fetch(`${API_URL_ROSTER}?action=getRoster&startDate=${formatDMY(startRef)}&endDate=${formatDMY(endRef)}`);
+                const json = await res.json(); let html = ''; let curDate = new Date(startRef);
                 while (curDate <= endRef) {
-                    const dateStr = formatDMY(curDate);
-                    const duty = json.data.find(d => d.dateAD === dateStr) || {};
-                    
-                    let name = '-';
-                    if (role === 'พนักงานสอบสวนเวร') name = duty.baseInv || '-';
-                    if (role === 'ผู้ช่วยพนักงานสอบสวน') name = duty.baseAsst || '-';
-                    if (role === 'เสมียนประจำวัน') name = duty.baseClerk || '-';
-                    
-                    const shortName = name !== '-' ? (officerMap[name]?.firstName || name.split(' ')[0]) : '-';
-
-                    html += `
-                        <div class="ref-item">
-                            <div class="ref-date">${curDate.getDate()}/${curDate.getMonth()+1}</div>
-                            <div class="ref-name">${shortName}</div>
-                        </div>
-                    `;
+                    const duty = json.data.find(d => d.dateAD === formatDMY(curDate)) || {};
+                    let name = role === 'พนักงานสอบสวนเวร' ? duty.baseInv : role === 'ผู้ช่วยพนักงานสอบสวน' ? duty.baseAsst : duty.baseClerk;
+                    html += `<div class="ref-item"><div class="ref-date">${curDate.getDate()}/${curDate.getMonth()+1}</div><div class="ref-name">${name ? (officerMap[name]?.firstName || name.split(' ')[0]) : '-'}</div></div>`;
                     curDate.setDate(curDate.getDate() + 1);
                 }
-                refContainer.innerHTML = html;
-                
-                setTimeout(() => {
-                    refContainer.scrollLeft = refContainer.scrollWidth;
-                }, 50);
-
-            } catch (e) {
-                refContainer.innerHTML = '<div style="color: red;">โหลดข้อมูลอ้างอิงไม่สำเร็จ</div>';
-            }
+                refContainer.innerHTML = html; setTimeout(() => { refContainer.scrollLeft = refContainer.scrollWidth; }, 50);
+            } catch (e) { refContainer.innerHTML = '<div style="color: red;">โหลดข้อมูลอ้างอิงไม่สำเร็จ</div>'; }
         }
 
         function generatePreview() {
-            const role = document.getElementById('loopRoleSelect').value;
-            const startFp = document.getElementById('loopStartDate')._flatpickr;
-            const endFp = document.getElementById('loopEndDate')._flatpickr;
-            
-            if (!role || !startFp.selectedDates[0] || !endFp.selectedDates[0]) {
-                return swalCustom.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกหน้าที่และวันที่ให้ครบ', 'warning');
-            }
-
-            const startDate = new Date(startFp.selectedDates[0]);
-            const endDate = new Date(endFp.selectedDates[0]);
-            
-            startDate.setHours(0,0,0,0); endDate.setHours(0,0,0,0);
-
+            const role = document.getElementById('loopRoleSelect').value, startFp = document.getElementById('loopStartDate')._flatpickr, endFp = document.getElementById('loopEndDate')._flatpickr;
+            if (!role || !startFp.selectedDates[0] || !endFp.selectedDates[0]) return swalCustom.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกหน้าที่และวันที่ให้ครบ', 'warning');
+            const startDate = new Date(startFp.selectedDates[0]), endDate = new Date(endFp.selectedDates[0]); startDate.setHours(0,0,0,0); endDate.setHours(0,0,0,0);
             if (startDate > endDate) return swalCustom.fire('วันที่ไม่ถูกต้อง', 'วันเริ่มต้นต้องมาก่อนวันสิ้นสุด', 'error');
-
-            const selects = document.querySelectorAll('.loop-officer-select');
-            const pattern = [];
-            selects.forEach(sel => { if (sel.value) pattern.push(sel.value); }); 
+            const pattern = []; document.querySelectorAll('.loop-officer-select').forEach(sel => { if (sel.value) pattern.push(sel.value); }); 
             if (pattern.length === 0) return swalCustom.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกคนในลูปอย่างน้อย 1 คน', 'warning');
 
-            generatedData = [];
-            const tbody = document.getElementById('previewBody');
-            tbody.innerHTML = '';
-
-            let currentDate = new Date(startDate);
-            let loopIndex = 0;
-
+            generatedData = []; const tbody = document.getElementById('previewBody'); tbody.innerHTML = '';
+            let currentDate = new Date(startDate), loopIndex = 0;
             while (currentDate <= endDate) {
-                const dateAD = formatDMY(currentDate); 
-                const dateTH = formatThaiDate(currentDate);
-                const officerName = pattern[loopIndex % pattern.length];
-
+                const dateAD = formatDMY(currentDate), dateTH = formatThaiDate(currentDate), officerName = pattern[loopIndex % pattern.length];
                 let rowData = { dateAD: dateAD, dateTH: dateTH };
-                if (role === 'พนักงานสอบสวนเวร') rowData.baseInv = officerName;
-                if (role === 'ผู้ช่วยพนักงานสอบสวน') rowData.baseAsst = officerName;
-                if (role === 'เสมียนประจำวัน') rowData.baseClerk = officerName;
-                
+                if (role === 'พนักงานสอบสวนเวร') rowData.baseInv = officerName; if (role === 'ผู้ช่วยพนักงานสอบสวน') rowData.baseAsst = officerName; if (role === 'เสมียนประจำวัน') rowData.baseClerk = officerName;
                 generatedData.push(rowData);
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td style="padding:8px; border-bottom:1px solid #e2e8f0;">${dateTH}</td><td style="padding:8px; border-bottom:1px solid #e2e8f0; color:var(--navy-main); font-weight:500;">${officerName}</td>`;
-                tbody.appendChild(tr);
-
-                currentDate.setDate(currentDate.getDate() + 1);
-                loopIndex++;
+                tbody.innerHTML += `<tr><td style="padding:8px; border-bottom:1px solid #e2e8f0;">${dateTH}</td><td style="padding:8px; border-bottom:1px solid #e2e8f0; color:var(--navy-main); font-weight:500;">${officerName}</td></tr>`;
+                currentDate.setDate(currentDate.getDate() + 1); loopIndex++;
             }
-
-            document.getElementById('previewSection').style.display = 'block';
-            scrollToBottom('#loopModal .modal-body');
+            document.getElementById('previewSection').style.display = 'block'; scrollToBottom('#loopModal .modal-body');
         }
 
         async function saveRosterLoop() {
-            const btn = document.getElementById('btnSaveLoop');
             const role = document.getElementById('loopRoleSelect').value;
-
-            swalCustom.fire({
-                title: 'ยืนยันการบันทึก?', text: `บันทึกเวร "${role}" จำนวน ${generatedData.length} วัน (บันทึกเป็นคำสั่งหลัก)`, icon: 'question',
-                showCancelButton: true, confirmButtonText: 'บันทึกเลย', cancelButtonText: 'ยกเลิก'
-            }).then(async (result) => {
+            swalCustom.fire({ title: 'ยืนยันการบันทึก?', text: `บันทึกเวร "${role}" จำนวน ${generatedData.length} วัน`, icon: 'question', showCancelButton: true, confirmButtonText: 'บันทึกเลย', cancelButtonText: 'ยกเลิก' }).then(async (result) => {
                 if (result.isConfirmed) {
-                    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
-                    btn.disabled = true;
+                    const finalDataToSave = generatedData.map(newItem => {
+                        const oldItem = rosterData[newItem.dateAD];
+                        if (oldItem) {
+                            return {
+                                dateAD: newItem.dateAD, dateTH: newItem.dateTH,
+                                baseInv: role === 'พนักงานสอบสวนเวร' ? newItem.baseInv : oldItem.baseInv, swapInv: role === 'พนักงานสอบสวนเวร' ? "" : oldItem.swapInv,
+                                baseAsst: role === 'ผู้ช่วยพนักงานสอบสวน' ? newItem.baseAsst : oldItem.baseAsst, swapAsst: role === 'ผู้ช่วยพนักงานสอบสวน' ? "" : oldItem.swapAsst,
+                                baseClerk: role === 'เสมียนประจำวัน' ? newItem.baseClerk : oldItem.baseClerk, swapClerk: role === 'เสมียนประจำวัน' ? "" : oldItem.swapClerk
+                            };
+                        }
+                        return newItem;
+                    });
 
+                    // Optimistic Update
+                    finalDataToSave.forEach(d => rosterData[d.dateAD] = d);
+                    localStorage.setItem('roster_db', JSON.stringify(rosterData));
+                    renderCalendar(); closeModalAnim('loopModal');
+                    Swal.fire({ icon: 'success', title: 'บันทึกตารางเวรเรียบร้อยแล้ว', timer: 2000, showConfirmButton: false, toast: true, position: 'top-end' });
+
+                    // Background Sync
+                    const toast = document.getElementById('syncToast'); toast.classList.add('show');
                     try {
-                        const finalDataToSave = generatedData.map(newItem => {
-                            const oldItem = rosterData[newItem.dateAD];
-                            if (oldItem) {
-                                return {
-                                    dateAD: newItem.dateAD, dateTH: newItem.dateTH,
-                                    baseInv: role === 'พนักงานสอบสวนเวร' ? newItem.baseInv : oldItem.baseInv,
-                                    swapInv: role === 'พนักงานสอบสวนเวร' ? "" : oldItem.swapInv,
-                                    
-                                    baseAsst: role === 'ผู้ช่วยพนักงานสอบสวน' ? newItem.baseAsst : oldItem.baseAsst,
-                                    swapAsst: role === 'ผู้ช่วยพนักงานสอบสวน' ? "" : oldItem.swapAsst,
-                                    
-                                    baseClerk: role === 'เสมียนประจำวัน' ? newItem.baseClerk : oldItem.baseClerk,
-                                    swapClerk: role === 'เสมียนประจำวัน' ? "" : oldItem.swapClerk
-                                };
-                            }
-                            return newItem;
-                        });
-
-                        finalDataToSave.forEach(d => rosterData[d.dateAD] = d);
-                        localStorage.setItem('roster_db', JSON.stringify(rosterData));
-                        renderCalendar();
-                        closeModalAnim('loopModal');
-                        swalCustom.fire('สำเร็จ', 'บันทึกตารางเวรเรียบร้อยแล้ว', 'success');
-
-                        await fetch(API_URL_ROSTER, {
-                            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({ action: 'saveRoster', data: finalDataToSave })
-                        });
-
+                        await fetch(API_URL_ROSTER, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveRoster', data: finalDataToSave }) });
                     } catch (error) {
-                        swalCustom.fire('ข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
-                    } finally {
-                        btn.innerHTML = '<i class="fa-solid fa-save"></i> บันทึกตารางเวรลงระบบ';
-                        btn.disabled = false;
-                    }
+                        console.error(error); Swal.fire({ icon: 'error', title: 'ซิงค์ข้อมูลล้มเหลว', toast: true, position: 'top-end' });
+                    } finally { toast.classList.remove('show'); }
                 }
             });
         }
 
-        // ==========================================
-        // Utilities
-        // ==========================================
-        function formatDMY(dateObj) {
-            return `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
-        }
-        function formatThaiDate(dateObj) {
-            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            return `${dateObj.getDate()} ${thaiMonths[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
-        }
+        function formatDMY(dateObj) { return `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`; }
+        function formatThaiDate(dateObj) { const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]; return `${dateObj.getDate()} ${thaiMonths[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`; }
         
         function initDatepickers() {
             flatpickr(".datepicker", {
                 locale: "th", dateFormat: "j/n/Y", disableMobile: "true",
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (instance.element.id === 'loopStartDate' && selectedDates[0]) {
-                        loadReferenceData(selectedDates[0]);
-                    }
-                },
+                onChange: function(selectedDates, dateStr, instance) { if (instance.element.id === 'loopStartDate' && selectedDates[0]) loadReferenceData(selectedDates[0]); },
                 onReady: function(selectedDates, dateStr, fp) {
                     if (fp.currentYearElement && !fp.currentYearElement.hasAttribute('data-patched')) {
                         fp.currentYearElement.setAttribute('data-patched', 'true');
-                        const originalSet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-                        const originalGet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').get;
-                        Object.defineProperty(fp.currentYearElement, 'value', {
-                            set: function(val) {
-                                let year = parseInt(val, 10);
-                                if (!isNaN(year) && year < 2400) { year += 543; }
-                                originalSet.call(this, year);
-                            },
-                            get: function() { return originalGet.call(this); }
-                        });
+                        const originalSet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set, originalGet = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').get;
+                        Object.defineProperty(fp.currentYearElement, 'value', { set: function(val) { let year = parseInt(val, 10); if (!isNaN(year) && year < 2400) { year += 543; } originalSet.call(this, year); }, get: function() { return originalGet.call(this); } });
                         fp.currentYearElement.value = fp.currentYear;
                     }
                 },
-                onYearChange: function(selectedDates, dateStr, fp) {
-                    if (fp.currentYear > 2400) { fp.changeYear(fp.currentYear - 543); }
-                },
-                formatDate: (date, format, locale) => {
-                    const thaiYear = date.getFullYear() + 543;
-                    const d = date.getDate();
-                    const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-                    const m = thaiMonths[date.getMonth()];
-                    return `${d} ${m} ${thaiYear}`; 
-                }
+                onYearChange: function(selectedDates, dateStr, fp) { if (fp.currentYear > 2400) { fp.changeYear(fp.currentYear - 543); } },
+                formatDate: (date) => { const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]; return `${date.getDate()} ${thaiMonths[date.getMonth()]} ${date.getFullYear() + 543}`; }
             });
         }
     </script>
