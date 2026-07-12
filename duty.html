@@ -58,9 +58,9 @@
         /* --- Calendar Grid --- */
         .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 5px; overflow: hidden; touch-action: pan-y; }
         .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); margin-bottom: 8px; }
-        .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: #94a3b8; } /* Slate-400 */
-        .calendar-header:nth-child(6) { color: #a78bfa; } /* ม่วงอ่อน */
-        .calendar-header:nth-child(7) { color: #fca5a5; } /* แดงอ่อน */
+        .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: #94a3b8; } 
+        .calendar-header:nth-child(6) { color: #a78bfa; } 
+        .calendar-header:nth-child(7) { color: #fca5a5; } 
 
         .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 0 0 16px 16px; padding-bottom: 10px; }
         .carousel-container { display: flex; width: 100%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(calc(-100% - var(--grid-gap))); gap: var(--grid-gap); will-change: transform; }
@@ -101,6 +101,8 @@
         .today-cell-4 { border-color: #f97316 !important; box-shadow: 0 4px 12px rgba(249,115,22,0.15) !important; }
         .today-cell-5 { border-color: #3b82f6 !important; box-shadow: 0 4px 12px rgba(59,130,246,0.15) !important; }
         .today-cell-6 { border-color: #a855f7 !important; box-shadow: 0 4px 12px rgba(168,85,247,0.15) !important; }
+
+        .holiday-date-text:not(.today) { color: #ef4444 !important; }
 
         /* ชื่อคนเข้าเวร & จุดสีเขียว */
         .duty-name { font-size: 0.75rem; padding: 2px 4px 2px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 4px; color: #475569; border-radius: 4px; transition: 0.2s; line-height: 1.4; margin-bottom: 1px; }
@@ -177,9 +179,9 @@
         .ref-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth; }
         .ref-item { background: white; padding: 8px 12px; border-radius: 12px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; }
         
-        /* Toast Notification */
-        .sync-toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 10px 20px; border-radius: 50px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .sync-toast.show { transform: translateY(0); opacity: 1; }
+        /* Custom Minimal Toast */
+        .custom-toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; }
+        .custom-toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
@@ -331,9 +333,9 @@
         </div>
     </div>
 
-    <!-- Toast สำหรับ Background Sync -->
-    <div id="syncToast" class="sync-toast">
-        <i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> กำลังซิงค์ข้อมูล...
+    <!-- Custom Minimal Toast -->
+    <div id="customToast" class="custom-toast">
+        <i id="toastIcon" class="fa-solid fa-cloud-arrow-up fa-bounce"></i> <span id="toastMsg">กำลังซิงค์ข้อมูล...</span>
     </div>
 
     <script>
@@ -362,6 +364,26 @@
         let touchStartX = 0;
         let isSwiping = false;
 
+        // --- Custom Toast System ---
+        let toastTimeout;
+        function showToast(message, iconClass = 'fa-solid fa-circle-check', color = '#34d399', duration = 2000) {
+            const toast = document.getElementById('customToast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMsg');
+            
+            icon.className = iconClass;
+            icon.style.color = color;
+            msg.innerText = message;
+            
+            toast.classList.add('show');
+            
+            if (duration > 0) {
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, duration);
+            }
+        }
+        function hideToast() { document.getElementById('customToast').classList.remove('show'); }
+
         function toggleDropdown(e) { e.stopPropagation(); document.getElementById('addMenu').classList.toggle('show'); }
         window.onclick = function(event) {
             if (!event.target.matches('.btn-icon') && !event.target.closest('.btn-icon')) {
@@ -372,7 +394,7 @@
 
         function openModalAnim(id) {
             if (id === 'searchModal') buildFilterTree();
-            if (id === 'loopModal') resetLoopBuilder(true); // ล้างค่าทุกครั้งที่เปิด
+            if (id === 'loopModal') resetLoopBuilder(true); 
             const modal = document.getElementById(id);
             modal.style.display = 'flex';
             void modal.offsetWidth; 
@@ -442,14 +464,14 @@
         async function manualRefresh() {
             document.getElementById('addMenu').classList.remove('show');
             swalCustom.fire({ title: 'กำลังอัปเดตข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            await backgroundSync(true); Swal.close();
-            Swal.fire({ icon: 'success', title: 'อัปเดตข้อมูลล่าสุดแล้ว', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' });
+            await backgroundSync(true); 
+            Swal.close();
+            showToast('อัปเดตข้อมูลล่าสุดแล้ว', 'fa-solid fa-check-circle', '#34d399');
         }
 
         async function backgroundSync(isInitial = false) {
             if (isSyncing) return; isSyncing = true;
             try {
-                // โหลดข้อมูลล่วงหน้า 3 ปี (ปีที่แล้ว, ปีนี้, ปีหน้า)
                 const fetchStart = new Date(currentYear - 1, 0, 1); 
                 const fetchEnd = new Date(currentYear + 2, 11, 31); 
                 
@@ -545,6 +567,7 @@
                 const rawAsst = duty.swapAsst || duty.baseAsst;
                 const rawClerk = duty.swapClerk || duty.baseClerk;
 
+                // ในปฏิทินช่องเล็ก ใช้ชื่อย่อ (firstName)
                 const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
                 const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
                 const clerkName = rawClerk ? (officerMap[rawClerk]?.firstName || rawClerk) : '';
@@ -618,13 +641,12 @@
             updateSearchButtonState(); closeModalAnim('searchModal'); renderCalendar();
         }
 
+        // ฟังก์ชันจัดรูปแบบชื่อเต็มใน Modal
         function formatDutyText(base, swap) {
             if (swap && swap !== base) {
-                const swapName = officerMap[swap]?.firstName || swap;
-                const baseName = officerMap[base]?.firstName || base;
-                return `${swapName} <span style="font-size:0.85rem; color:#64748b; font-weight:400;">(แทน ${baseName})</span>`;
+                return `${swap} <span style="font-size:0.85rem; color:#64748b; font-weight:400;">(แทน ${base})</span>`;
             }
-            return base ? (officerMap[base]?.firstName || base) : '-';
+            return base ? base : '-';
         }
 
         function openDailyModal(dateKey) {
@@ -636,7 +658,7 @@
             if (holidayData[dateKey]) { document.getElementById('modalHolidayBanner').style.display = 'flex'; document.getElementById('modalHolidayText').innerText = holidayData[dateKey]; } 
             else { document.getElementById('modalHolidayBanner').style.display = 'none'; }
             
-            // แสดงผลชื่อคนเข้าเวร (พร้อมวงเล็บว่าแทนใคร)
+            // แสดงผลชื่อเต็ม (พร้อมวงเล็บว่าแทนใคร)
             document.getElementById('viewInvName').innerHTML = formatDutyText(currentEditDuty.baseInv, currentEditDuty.swapInv);
             document.getElementById('viewAsstName').innerHTML = formatDutyText(currentEditDuty.baseAsst, currentEditDuty.swapAsst);
             document.getElementById('viewClerkName').innerHTML = formatDutyText(currentEditDuty.baseClerk, currentEditDuty.swapClerk);
@@ -712,22 +734,20 @@
             renderCalendar();
             closeModalAnim('dailyModal');
             
-            // 2. แสดง Toast ว่าบันทึกแล้ว
-            Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' });
+            // 2. แสดง Custom Toast ว่าบันทึกแล้ว
+            showToast('บันทึกสำเร็จ', 'fa-solid fa-check-circle', '#34d399');
 
             // 3. แอบส่งข้อมูลไปหลังบ้าน
-            const toast = document.getElementById('syncToast');
-            toast.classList.add('show');
+            showToast('กำลังซิงค์ข้อมูล...', 'fa-solid fa-cloud-arrow-up fa-bounce', '#38bdf8', 0); // 0 = ไม่ซ่อนอัตโนมัติ
             try {
                 const res = await fetch(API_URL_ROSTER, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveRoster', data: [newData] }) });
                 const result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
+                hideToast(); // ซ่อนเมื่อเสร็จ
             } catch (e) {
                 console.error(e);
-                Swal.fire({ icon: 'error', title: 'ซิงค์ข้อมูลล้มเหลว', text: 'กรุณารีเฟรชหน้าจอ', toast: true, position: 'top-end' });
+                showToast('ซิงค์ข้อมูลล้มเหลว', 'fa-solid fa-circle-xmark', '#f87171');
                 backgroundSync(true); // Rollback
-            } finally {
-                toast.classList.remove('show');
             }
         }
 
@@ -737,13 +757,15 @@
             const parts = selectedDateAD.split('/'); const dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
             const thaiMonthsShort = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             const msg = `วันนี้ (${dateObj.getDate()} ${thaiMonthsShort[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}) ตั้งแต่เวลา 08.00 น. ถึง 08.00 น. ของวันรุ่งขึ้น\nงานสอบสวนมีผู้ปฏิบัติหน้าที่ ดังนี้\n\nพนักงานสอบสวนเวร\n${getLineText(duty.swapInv || duty.baseInv)}\n\nผู้ช่วยพนักงานสอบสวน\n${getLineText(duty.swapAsst || duty.baseAsst)}\n\nเสมียนประจำวัน\n${getLineText(duty.swapClerk || duty.baseClerk)}`;
-            navigator.clipboard.writeText(msg).then(() => Swal.fire({ icon: 'success', title: 'คัดลอกข้อความแล้ว', timer: 1500, showConfirmButton: false, toast: true, position: 'top-end' }));
+            
+            navigator.clipboard.writeText(msg).then(() => {
+                showToast('คัดลอกข้อความแล้ว', 'fa-solid fa-copy', '#34d399');
+            });
         }
 
         // --- Loop Builder ---
         function scrollToBottom(selector) { setTimeout(() => { const el = document.querySelector(selector); if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }, 50); }
         
-        // ฟังก์ชันล้างค่า Loop Builder ทุกครั้งที่เปิดหรือบันทึกเสร็จ
         function resetLoopBuilder(fullReset = false) { 
             if (fullReset) {
                 document.getElementById('loopRoleSelect').value = "";
@@ -831,15 +853,18 @@
                     finalDataToSave.forEach(d => rosterData[d.dateAD] = d);
                     localStorage.setItem('roster_db', JSON.stringify(rosterData));
                     renderCalendar(); closeModalAnim('loopModal');
-                    Swal.fire({ icon: 'success', title: 'บันทึกตารางเวรเรียบร้อยแล้ว', timer: 2000, showConfirmButton: false, toast: true, position: 'top-end' });
+                    
+                    showToast('บันทึกตารางเวรเรียบร้อยแล้ว', 'fa-solid fa-check-circle', '#34d399');
 
                     // Background Sync
-                    const toast = document.getElementById('syncToast'); toast.classList.add('show');
+                    showToast('กำลังซิงค์ข้อมูล...', 'fa-solid fa-cloud-arrow-up fa-bounce', '#38bdf8', 0);
                     try {
                         await fetch(API_URL_ROSTER, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'saveRoster', data: finalDataToSave }) });
+                        hideToast();
                     } catch (error) {
-                        console.error(error); Swal.fire({ icon: 'error', title: 'ซิงค์ข้อมูลล้มเหลว', toast: true, position: 'top-end' });
-                    } finally { toast.classList.remove('show'); }
+                        console.error(error); 
+                        showToast('ซิงค์ข้อมูลล้มเหลว', 'fa-solid fa-circle-xmark', '#f87171');
+                    }
                 }
             });
         }
