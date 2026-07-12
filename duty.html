@@ -16,29 +16,30 @@
     <link rel="stylesheet" href="theme.css">
 
     <style>
-        /* --- ตัวแปรสำหรับ Carousel --- */
         :root { --grid-gap: 8px; }
         @media (max-width: 768px) { :root { --grid-gap: 4px; } }
 
-        body { overflow-y: scroll; background-color: #f3f4f6; overflow-x: hidden; } 
+        body { overflow-y: scroll; background-color: #f8fafc; overflow-x: hidden; } 
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         .container { animation: fadeInScale 0.4s ease-out forwards; }
 
         /* --- Navbar --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 100; }
         .nav-left, .nav-right { display: flex; align-items: center; gap: 15px; }
-        .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); text-decoration: none; flex-shrink: 0; }
-        .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; height: auto; padding: 5px 15px 5px 0; box-shadow: none; }
+        .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: #64748b; cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; text-decoration: none; flex-shrink: 0; }
+        .btn-back { background: transparent !important; color: #334155; font-size: 1.3rem; width: auto; height: auto; padding: 5px 15px 5px 0; box-shadow: none; }
         .btn-back:hover { color: var(--navy-main); transform: translateX(-5px); }
         .page-title { font-weight: 600; font-size: 1.25rem; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         /* --- Calendar Toolbar --- */
         .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: nowrap; gap: 10px; }
-        .btn-icon { position: relative; background: white; border: 1px solid #cbd5e1; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 1.1rem; flex-shrink: 0; }
+        .btn-icon { position: relative; background: white; border: 1px solid #cbd5e1; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: #475569; box-shadow: 0 2px 8px rgba(0,0,0,0.04); font-size: 1.1rem; flex-shrink: 0; }
         .btn-icon:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: var(--navy-main); transform: translateY(-1px); }
-        .btn-icon.filter-active { color: var(--success); border-color: var(--success); background: #f0fdf4; }
-        .filter-badge { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background-color: #ef4444; border: 2px solid white; border-radius: 50%; display: none; }
-        .btn-icon.filter-active .filter-badge { display: block; animation: popUp 0.3s ease; }
+        
+        /* สถานะปุ่มค้นหา Active */
+        .btn-icon.search-active { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+        .search-badge { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background-color: #ef4444; border: 2px solid white; border-radius: 50%; display: none; }
+        .btn-icon.search-active .search-badge { display: block; animation: popUp 0.3s ease; }
 
         .month-nav { display: flex; align-items: center; gap: 8px; justify-content: center; flex: 1; }
         .month-nav button { background: white; border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; transition: 0.2s; color: var(--navy-main); font-size: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex-shrink: 0; }
@@ -51,15 +52,15 @@
         @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
         .dropdown-content { display: none; position: absolute; left: 0; top: 100%; background-color: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100; border-radius: 16px; overflow: hidden; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); transform-origin: top left; }
         .dropdown-content.show { display: block; animation: fadeDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; color: var(--text-main); cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
+        .dropdown-item { padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 12px; color: #334155; cursor: pointer; transition: 0.2s; font-size: 0.95rem; font-weight: 500; }
         .dropdown-item:hover { background-color: #f8fafc; color: var(--navy-main); }
 
         /* --- Calendar Grid --- */
         .calendar-card { background: transparent; box-shadow: none; border: none; padding: 0; margin-top: 5px; overflow: hidden; touch-action: pan-y; }
-        .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
-        .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-light); }
-        .calendar-header:nth-child(6) { color: #8b5cf6; } 
-        .calendar-header:nth-child(7) { color: #ef4444; } 
+        .calendar-header-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); margin-bottom: 8px; }
+        .calendar-header { text-align: right; padding: 5px 12px 5px 5px; font-weight: 600; font-size: 0.9rem; color: #94a3b8; } /* Slate-400 */
+        .calendar-header:nth-child(6) { color: #a78bfa; } /* ม่วงอ่อน */
+        .calendar-header:nth-child(7) { color: #fca5a5; } /* แดงอ่อน */
 
         .calendar-swipe-wrapper { width: 100%; overflow: hidden; position: relative; border-radius: 0 0 16px 16px; padding-bottom: 10px; }
         .carousel-container { display: flex; width: 100%; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); transform: translateX(calc(-100% - var(--grid-gap))); gap: var(--grid-gap); will-change: transform; }
@@ -69,13 +70,18 @@
 
         .calendar-grid { flex: 0 0 100%; width: 100%; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--grid-gap); }
 
-        .calendar-cell { position: relative; height: 95px; min-height: 95px; padding: 28px 4px 4px 4px; background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 2px; border: 2px solid transparent; }
+        .calendar-cell { position: relative; height: 95px; min-height: 95px; padding: 4px; background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 2px; border: 2px solid transparent; }
         .calendar-cell:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-3px); z-index: 10; }
         .calendar-cell.empty { background: transparent; box-shadow: none; border: none; cursor: default; }
         .calendar-cell.empty:hover { transform: none; box-shadow: none; z-index: 1; }
 
-        .holiday-label { position: absolute; top: 6px; left: 6px; font-size: 0.65rem; color: #ef4444; max-width: calc(100% - 34px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; font-weight: 500; }
-        .date-num { position: absolute; top: 4px; right: 4px; font-weight: 600; font-size: 0.95rem; color: var(--text-main); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        /* Layout วันสำคัญ & ตัวเลขวันที่ */
+        .cell-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 4px; min-height: 24px; }
+        .holiday-text-desktop { font-size: 0.7rem; color: #ef4444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%; margin-top: 4px; margin-left: 4px; font-weight: 500; }
+        .date-wrapper { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+        .holiday-icon-mobile { color: #ef4444; font-size: 0.55rem; display: none; }
+        
+        .date-num { font-weight: 600; font-size: 0.95rem; color: #334155; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .calendar-cell:nth-child(7n+6) .date-num:not(.today) { color: #8b5cf6; }
         .calendar-cell:nth-child(7n+7) .date-num:not(.today) { color: #ef4444; }
         
@@ -96,51 +102,53 @@
         .today-cell-5 { border-color: #3b82f6 !important; box-shadow: 0 4px 12px rgba(59,130,246,0.15) !important; }
         .today-cell-6 { border-color: #a855f7 !important; box-shadow: 0 4px 12px rgba(168,85,247,0.15) !important; }
 
-        .holiday-date-text:not(.today) { color: #ef4444 !important; }
-
-        .duty-name { font-size: 0.75rem; padding: 2px 4px 2px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; display: flex; align-items: flex-start; gap: 2px; color: var(--text-main); border-radius: 4px; transition: 0.2s; line-height: 1.4; margin-bottom: 1px; }
-        .duty-name::before { content: '*'; font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 0.9rem; opacity: 0; flex-shrink: 0; line-height: 1; transform: translateY(1px); width: 8px; text-align: center; margin-left: -2px; }
-        .duty-name.is-swap::before { opacity: 1; color: var(--danger); }
-        .duty-name.dimmed-text { color: #94a3b8 !important; font-weight: 400; }
-        .duty-name.dimmed-text.is-swap::before { color: #94a3b8 !important; }
+        /* ชื่อคนเข้าเวร & จุดสีเขียว */
+        .duty-name { font-size: 0.75rem; padding: 2px 4px 2px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; display: flex; align-items: center; gap: 4px; color: #475569; border-radius: 4px; transition: 0.2s; line-height: 1.4; margin-bottom: 1px; }
+        .duty-name.is-swap::before { content: ''; display: inline-block; width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; flex-shrink: 0; }
         
-        .duty-inv.highlight { background-color: #eff6ff; color: #1d4ed8; }
-        .duty-asst.highlight { background-color: #f0fdf4; color: #15803d; }
-        .duty-clerk.highlight { background-color: #fef9c3; color: #a16207; } 
+        /* ไฮไลท์ค้นหา (สีเหลืองอ่อน) */
+        .duty-name.highlight { background-color: #fef08a !important; color: #334155 !important; }
+        .duty-name.dimmed-text { opacity: 0.3; } 
 
         /* --- Responsive --- */
         @media (min-width: 1024px) {
             .container { max-width: 1400px; padding: 30px 40px; }
-            .calendar-cell { height: 105px; min-height: 105px; padding: 30px 8px 6px 8px; gap: 2px; }
-            .date-num { font-size: 1.05rem; width: 26px; height: 26px; top: 6px; right: 6px; }
-            .holiday-label { top: 8px; left: 8px; font-size: 0.75rem; }
-            .duty-name { font-size: 0.85rem; gap: 4px; padding: 2px 6px; }
+            .calendar-cell { height: 105px; min-height: 105px; padding: 6px 8px; gap: 2px; }
+            .date-num { font-size: 1.05rem; width: 26px; height: 26px; }
+            .duty-name { font-size: 0.85rem; padding: 2px 6px; }
         }
         @media (max-width: 768px) {
             .container { padding: 15px 4px; } 
             .calendar-grid { gap: 4px; }
-            .calendar-cell { height: 85px; min-height: 85px; padding: 24px 2px 2px 2px; border-radius: 10px; }
-            .date-num { font-size: 0.85rem; width: 18px; height: 18px; top: 2px; right: 2px; }
-            .holiday-label { font-size: 0.6rem; top: 4px; left: 4px; max-width: calc(100% - 24px); }
-            .duty-name { font-size: 0.65rem; gap: 1px; padding: 1px 2px; margin-left: -2px; }
+            .calendar-cell { height: 85px; min-height: 85px; padding: 4px 2px; border-radius: 10px; }
+            .date-num { font-size: 0.85rem; width: 18px; height: 18px; }
+            .duty-name { font-size: 0.65rem; gap: 3px; padding: 1px 2px; }
+            .duty-name.is-swap::before { width: 5px; height: 5px; }
             .current-month-label { font-size: 1.1rem; width: 140px; } 
+            
+            /* สลับการแสดงผลวันสำคัญบนมือถือ */
+            .holiday-text-desktop { display: none; }
+            .holiday-icon-mobile { display: block; }
         }
 
-        /* --- Modals --- */
+        /* --- Modals (Sticky Footer) --- */
         .modal-overlay { display: none; opacity: 0; transition: opacity 0.25s ease; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; }
         .modal-overlay.show { opacity: 1; }
+        
         .modal-card { transform: scale(0.9); opacity: 0; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: white; width: 95%; max-width: 800px; border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); display: flex; flex-direction: column; max-height: 90vh; position: relative; overflow: hidden; }
         .modal-overlay.show .modal-card { transform: scale(1); opacity: 1; }
-        .modal-body { padding: 25px; overflow-y: auto; max-height: 75vh; scroll-behavior: smooth; }
+        
+        .modal-body { padding: 25px; overflow-y: auto; flex: 1; scroll-behavior: smooth; }
+        .modal-footer { padding: 15px 25px; border-top: 1px solid #e2e8f0; background: #f8fafc; flex-shrink: 0; }
         
         .detail-row { margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; }
-        .detail-role { font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; }
+        .detail-role { font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; }
         .detail-name { font-size: 1.1rem; font-weight: 600; color: var(--navy-main); margin-bottom: 2px; }
         .detail-phone { font-size: 0.95rem; color: #64748b; }
         .detail-phone i { color: #10b981; margin-right: 5px; }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-group button { flex: 1; padding: 12px; font-size: 1rem; border-radius: 50px; font-family: 'Kanit'; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-group button { flex: 1; padding: 12px; font-size: 1rem; border-radius: 50px; font-family: 'Kanit'; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; flex-shrink: 0; }
         .btn-copy { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); }
         .btn-edit-daily { background: var(--warning); color: white; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2); }
 
@@ -149,20 +157,16 @@
         .swap-box label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
         .swap-box input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
 
-        /* Unified Filter Modal */
-        #filterModal .modal-body { padding: 0; display: flex; flex-direction: column; max-height: 70vh; }
+        /* Search Modal */
+        #searchModal .modal-body { padding: 0; display: flex; flex-direction: column; max-height: 70vh; }
         .filter-header-section { padding: 20px 25px 10px 25px; border-bottom: 1px solid #e2e8f0; }
         .filter-scroll-section { padding: 15px 25px; overflow-y: auto; flex: 1; }
-        .filter-footer-section { padding: 15px 25px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
-        .toggle-container-modal { display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px 15px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
-        .toggle-container-modal.active .toggle-switch { background: var(--success); } 
-        .toggle-container-modal.active .toggle-switch::after { transform: translateX(14px); }
         .filter-tree { display: flex; flex-direction: column; gap: 15px; }
         .filter-master { padding: 12px 15px; background: #f1f5f9; border-radius: 12px; font-weight: 600; color: var(--navy-main); display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .filter-group { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-        .filter-group-header { padding: 12px 15px; background: #f8fafc; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid #e2e8f0; }
+        .filter-group-header { padding: 12px 15px; background: #f8fafc; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid #e2e8f0; }
         .filter-items { padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
-        .filter-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: var(--text-main); cursor: pointer; }
+        .filter-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: #475569; cursor: pointer; }
 
         /* Loop Builder */
         .pattern-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--radius-lg); padding: 15px; margin-top: 10px; }
@@ -173,7 +177,7 @@
         .ref-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth; }
         .ref-item { background: white; padding: 8px 12px; border-radius: 12px; border: 1px solid #dcfce3; min-width: 100px; text-align: center; flex-shrink: 0; }
         
-        /* Toast Notification สำหรับ Background Sync */
+        /* Toast Notification */
         .sync-toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 10px 20px; border-radius: 50px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .sync-toast.show { transform: translateY(0); opacity: 1; }
     </style>
@@ -205,13 +209,14 @@
                 <button onclick="arrowChangeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
             
-            <button class="btn-icon" onclick="openModalAnim('filterModal')" id="btnFilterLabel">
-                <i class="fa-solid fa-filter"></i><span id="filterBadge" class="filter-badge"></span>
+            <!-- ปุ่มค้นหา (แว่นขยาย) -->
+            <button class="btn-icon" onclick="openModalAnim('searchModal')" id="btnSearchLabel">
+                <i class="fa-solid fa-magnifying-glass"></i><span id="searchBadge" class="search-badge"></span>
             </button>
         </div>
 
         <div class="calendar-card fade-wrapper" id="fadeWrapper">
-            <div class="calendar-header-grid" style="border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">
+            <div class="calendar-header-grid">
                 <div class="calendar-header">จ.</div><div class="calendar-header">อ.</div><div class="calendar-header">พ.</div>
                 <div class="calendar-header">พฤ.</div><div class="calendar-header">ศ.</div><div class="calendar-header">ส.</div><div class="calendar-header">อา.</div>
             </div>
@@ -225,13 +230,15 @@
         </div>
     </div>
 
-    <!-- Modals (Daily, Loop, Filter) -->
+    <!-- Modal: รายละเอียดรายวัน (Sticky Footer) -->
     <div id="dailyModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 500px;">
             <button class="close-modal-btn" onclick="closeModalAnim('dailyModal')"><i class="fa-solid fa-xmark"></i></button>
             <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;">
                 <h3 id="dailyModalTitle">รายละเอียดเวร</h3>
             </div>
+            
+            <!-- โหมดดูข้อมูล -->
             <div class="modal-body" id="dailyViewMode">
                 <div id="modalHolidayBanner" style="display: none; background: #fef2f2; color: #b91c1c; padding: 10px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 0.9rem; font-weight: 500; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-star"></i> <span id="modalHolidayText"></span>
@@ -239,12 +246,15 @@
                 <div class="detail-row"><div class="detail-role">พนักงานสอบสวนเวร</div><div class="detail-name" id="viewInvName">-</div><div class="detail-phone" id="viewInvPhone"></div></div>
                 <div class="detail-row"><div class="detail-role">ผู้ช่วยพนักงานสอบสวน</div><div class="detail-name" id="viewAsstName">-</div><div class="detail-phone" id="viewAsstPhone"></div></div>
                 <div class="detail-row"><div class="detail-role">เสมียนประจำวัน</div><div class="detail-name" id="viewClerkName">-</div><div class="detail-phone" id="viewClerkPhone"></div></div>
+            </div>
+            <div class="modal-footer" id="dailyViewFooter">
                 <div class="btn-group">
                     <button class="btn-edit-daily" onclick="toggleEditDailyMode(true)"><i class="fa-solid fa-pen"></i> แก้ไขเวร</button>
                     <button class="btn-copy" onclick="copyLineMessage()"><i class="fa-brands fa-line"></i> คัดลอกข้อความ</button>
                 </div>
             </div>
 
+            <!-- โหมดแก้ไขข้อมูล -->
             <div class="modal-body" id="dailyEditMode" style="display: none;">
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label class="form-label">พนักงานสอบสวนเวร</label>
@@ -261,7 +271,9 @@
                     <select class="form-input" id="editClerkSelect" onchange="handleSelectChange('clerk')"></select>
                     <div id="swap-box-clerk" class="swap-box" style="display: none;"><label><input type="checkbox" id="cb-swap-clerk" onchange="checkEditChanges()"> <span>แลกเวร / แทนเวร</span></label></div>
                 </div>
-                <div class="btn-group" style="margin-top: 25px;">
+            </div>
+            <div class="modal-footer" id="dailyEditFooter" style="display: none;">
+                <div class="btn-group">
                     <button class="btn-secondary" onclick="toggleEditDailyMode(false)">ยกเลิก</button>
                     <button class="btn-primary" onclick="saveDailyEdit()" id="btnSaveDaily" disabled><i class="fa-solid fa-save"></i> บันทึก</button>
                 </div>
@@ -269,6 +281,7 @@
         </div>
     </div>
 
+    <!-- Modal: จัดเวรวนลูป -->
     <div id="loopModal" class="modal-overlay">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeModalAnim('loopModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -277,7 +290,7 @@
                 <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group" style="grid-column: span 2;">
                         <label class="form-label">เลือกหน้าที่ที่ต้องการจัดเวร</label>
-                        <select class="form-input" id="loopRoleSelect" onchange="resetLoopBuilder()">
+                        <select class="form-input" id="loopRoleSelect" onchange="resetLoopBuilder(false)">
                             <option value="" disabled selected hidden>- กรุณาเลือกหน้าที่ -</option>
                             <option value="พนักงานสอบสวนเวร">พนักงานสอบสวนเวร</option>
                             <option value="ผู้ช่วยพนักงานสอบสวน">ผู้ช่วยพนักงานสอบสวน</option>
@@ -299,12 +312,12 @@
         </div>
     </div>
 
-    <div id="filterModal" class="modal-overlay">
+    <!-- Modal: ค้นหาเจ้าหน้าที่ -->
+    <div id="searchModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 400px;">
-            <button class="close-modal-btn" onclick="closeModalAnim('filterModal')"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;"><h3><i class="fa-solid fa-filter"></i> ตัวกรองการแสดงผล</h3></div>
+            <button class="close-modal-btn" onclick="closeModalAnim('searchModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header" style="padding: 25px 25px 0 25px; margin-bottom: 0; border: none;"><h3><i class="fa-solid fa-magnifying-glass"></i> ค้นหาเจ้าหน้าที่</h3></div>
             <div class="filter-header-section">
-                <div class="toggle-container-modal" id="toggleOriginalModalBtn" onclick="toggleOriginalView()" style="margin-bottom: 15px;"><span>ดูคำสั่งเดิม (ก่อนแลกเวร)</span><div class="toggle-switch"></div></div>
                 <div class="filter-tree"><label class="filter-master"><input type="checkbox" id="cb-filter-all" checked onchange="toggleFilterAll(this)"> <span>เลือกทุกคน</span></label></div>
             </div>
             <div class="filter-scroll-section">
@@ -314,7 +327,7 @@
                     <div class="filter-group"><label class="filter-group-header"><input type="checkbox" class="cb-filter-role" data-role="clerk" checked onchange="toggleFilterRole(this)"> <span>เสมียนประจำวัน</span></label><div class="filter-items" id="filter-list-clerk"></div></div>
                 </div>
             </div>
-            <div class="filter-footer-section"><button class="btn-primary" style="width: 100%;" onclick="applyFilter()">ตกลง</button></div>
+            <div class="modal-footer"><button class="btn-primary" style="width: 100%;" onclick="applyFilter()">ตกลง</button></div>
         </div>
     </div>
 
@@ -336,7 +349,6 @@
         let cachedRange = { start: null, end: null }; 
         let isSyncing = false; 
         
-        let isShowOriginal = false;
         let currentFilterNames = []; 
         let isFilterAll = true;
 
@@ -359,7 +371,8 @@
         }
 
         function openModalAnim(id) {
-            if (id === 'filterModal') buildFilterTree();
+            if (id === 'searchModal') buildFilterTree();
+            if (id === 'loopModal') resetLoopBuilder(true); // ล้างค่าทุกครั้งที่เปิด
             const modal = document.getElementById(id);
             modal.style.display = 'flex';
             void modal.offsetWidth; 
@@ -419,7 +432,7 @@
                 allOfficers = JSON.parse(cachedOfficers);
                 rosterData = JSON.parse(cachedRoster);
                 if (cachedHolidays) holidayData = JSON.parse(cachedHolidays);
-                buildOfficerMap(); renderCalendar(); updateFilterButtonState(); backgroundSync(); 
+                buildOfficerMap(); renderCalendar(); updateSearchButtonState(); backgroundSync(); 
             } else {
                 swalCustom.fire({ title: 'กำลังเตรียมระบบครั้งแรก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 await backgroundSync(true); Swal.close();
@@ -436,7 +449,7 @@
         async function backgroundSync(isInitial = false) {
             if (isSyncing) return; isSyncing = true;
             try {
-                // โหลดข้อมูลล่วงหน้า 3 ปี (ปีที่แล้ว, ปีนี้, ปีหน้า) เพื่อป้องกันวันหยุดโหลดช้า
+                // โหลดข้อมูลล่วงหน้า 3 ปี (ปีที่แล้ว, ปีนี้, ปีหน้า)
                 const fetchStart = new Date(currentYear - 1, 0, 1); 
                 const fetchEnd = new Date(currentYear + 2, 11, 31); 
                 
@@ -512,8 +525,7 @@
             }).then((result) => { if (result.isConfirmed) { const delta = (result.value.year - currentYear) * 12 + (result.value.month - currentMonth); if (delta !== 0) changeMonth(delta, false); } });
         }
 
-        function toggleOriginalView() { isShowOriginal = !isShowOriginal; document.getElementById('toggleOriginalModalBtn').classList.toggle('active', isShowOriginal); updateFilterButtonState(); renderCalendar(); }
-        function updateFilterButtonState() { document.getElementById('btnFilterLabel').classList.toggle('filter-active', !isFilterAll || isShowOriginal); }
+        function updateSearchButtonState() { document.getElementById('btnSearchLabel').classList.toggle('search-active', !isFilterAll); }
 
         function getMonthHTML(year, month) {
             const firstDay = new Date(year, month, 1); const lastDay = new Date(year, month + 1, 0);
@@ -529,9 +541,9 @@
                 if (dateKey === todayStr) { const dayOfWeek = cellDate.getDay(); isTodayClass = `today today-color-${dayOfWeek}`; isTodayCellClass = `today-cell-${dayOfWeek}`; }
                 
                 const duty = rosterData[dateKey] || { baseInv:'', baseAsst:'', baseClerk:'', swapInv:'', swapAsst:'', swapClerk:'' };
-                const rawInv = isShowOriginal ? duty.baseInv : (duty.swapInv || duty.baseInv);
-                const rawAsst = isShowOriginal ? duty.baseAsst : (duty.swapAsst || duty.baseAsst);
-                const rawClerk = isShowOriginal ? duty.baseClerk : (duty.swapClerk || duty.baseClerk);
+                const rawInv = duty.swapInv || duty.baseInv;
+                const rawAsst = duty.swapAsst || duty.baseAsst;
+                const rawClerk = duty.swapClerk || duty.baseClerk;
 
                 const invName = rawInv ? (officerMap[rawInv]?.firstName || rawInv) : '';
                 const asstName = rawAsst ? (officerMap[rawAsst]?.firstName || rawAsst) : '';
@@ -544,14 +556,21 @@
                     if (currentFilterNames.includes(rawClerk)) clerkH = true; else clerkD = true;
                 }
 
-                let holidayText = '', isHolidayClass = '';
-                if (holidayData[dateKey]) { holidayText = `<div class="holiday-label" title="${holidayData[dateKey]}"><i class="fa-solid fa-star"></i> ${holidayData[dateKey]}</div>`; isHolidayClass = 'holiday-date-text'; }
+                let holidayDesktop = '', holidayMobile = '', isHolidayClass = '';
+                if (holidayData[dateKey]) { 
+                    holidayDesktop = `<div class="holiday-text-desktop" title="${holidayData[dateKey]}">${holidayData[dateKey]}</div>`; 
+                    holidayMobile = `<i class="fa-solid fa-star holiday-icon-mobile"></i>`;
+                    isHolidayClass = 'holiday-date-text'; 
+                }
 
                 html += `<div class="calendar-cell ${isTodayCellClass}" onclick="openDailyModal('${dateKey}')">
-                            <div class="cell-header">${holidayText}<div class="date-num ${isTodayClass} ${isHolidayClass}">${day}</div></div>`;
-                html += invName ? `<div class="duty-name duty-inv ${!isShowOriginal && duty.swapInv ? 'is-swap' : ''} ${invH ? 'highlight' : ''} ${invD ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
-                html += asstName ? `<div class="duty-name duty-asst ${!isShowOriginal && duty.swapAsst ? 'is-swap' : ''} ${asstH ? 'highlight' : ''} ${asstD ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
-                html += clerkName ? `<div class="duty-name duty-clerk ${!isShowOriginal && duty.swapClerk ? 'is-swap' : ''} ${clerkH ? 'highlight' : ''} ${clerkD ? 'dimmed-text' : ''}">${clerkName}</div>` : `<div class="duty-name"></div>`;
+                            <div class="cell-header">
+                                ${holidayDesktop}
+                                <div class="date-wrapper">${holidayMobile}<div class="date-num ${isTodayClass} ${isHolidayClass}">${day}</div></div>
+                            </div>`;
+                html += invName ? `<div class="duty-name duty-inv ${duty.swapInv ? 'is-swap' : ''} ${invH ? 'highlight' : ''} ${invD ? 'dimmed-text' : ''}">${invName}</div>` : `<div class="duty-name"></div>`;
+                html += asstName ? `<div class="duty-name duty-asst ${duty.swapAsst ? 'is-swap' : ''} ${asstH ? 'highlight' : ''} ${asstD ? 'dimmed-text' : ''}">${asstName}</div>` : `<div class="duty-name"></div>`;
+                html += clerkName ? `<div class="duty-name duty-clerk ${duty.swapClerk ? 'is-swap' : ''} ${clerkH ? 'highlight' : ''} ${clerkD ? 'dimmed-text' : ''}">${clerkName}</div>` : `<div class="duty-name"></div>`;
                 html += `</div>`;
             }
             return html;
@@ -596,7 +615,16 @@
             if (allChecked.length === 0) return swalCustom.fire('แจ้งเตือน', 'กรุณาเลือกชื่ออย่างน้อย 1 คน', 'warning');
             isFilterAll = (document.querySelectorAll('.cb-person').length === allChecked.length);
             currentFilterNames = Array.from(allChecked).map(cb => cb.value);
-            updateFilterButtonState(); closeModalAnim('filterModal'); renderCalendar();
+            updateSearchButtonState(); closeModalAnim('searchModal'); renderCalendar();
+        }
+
+        function formatDutyText(base, swap) {
+            if (swap && swap !== base) {
+                const swapName = officerMap[swap]?.firstName || swap;
+                const baseName = officerMap[base]?.firstName || base;
+                return `${swapName} <span style="font-size:0.85rem; color:#64748b; font-weight:400;">(แทน ${baseName})</span>`;
+            }
+            return base ? (officerMap[base]?.firstName || base) : '-';
         }
 
         function openDailyModal(dateKey) {
@@ -608,8 +636,13 @@
             if (holidayData[dateKey]) { document.getElementById('modalHolidayBanner').style.display = 'flex'; document.getElementById('modalHolidayText').innerText = holidayData[dateKey]; } 
             else { document.getElementById('modalHolidayBanner').style.display = 'none'; }
             
+            // แสดงผลชื่อคนเข้าเวร (พร้อมวงเล็บว่าแทนใคร)
+            document.getElementById('viewInvName').innerHTML = formatDutyText(currentEditDuty.baseInv, currentEditDuty.swapInv);
+            document.getElementById('viewAsstName').innerHTML = formatDutyText(currentEditDuty.baseAsst, currentEditDuty.swapAsst);
+            document.getElementById('viewClerkName').innerHTML = formatDutyText(currentEditDuty.baseClerk, currentEditDuty.swapClerk);
+            
             const curInv = currentEditDuty.swapInv || currentEditDuty.baseInv, curAsst = currentEditDuty.swapAsst || currentEditDuty.baseAsst, curClerk = currentEditDuty.swapClerk || currentEditDuty.baseClerk;
-            updateViewField('viewInvName', 'viewInvPhone', curInv); updateViewField('viewAsstName', 'viewAsstPhone', curAsst); updateViewField('viewClerkName', 'viewClerkPhone', curClerk);
+            updatePhoneField('viewInvPhone', curInv); updatePhoneField('viewAsstPhone', curAsst); updatePhoneField('viewClerkPhone', curClerk);
 
             let invOptions = '<option value="" disabled selected hidden></option>', otherOptions = '<option value="" disabled selected hidden></option>';
             allOfficers.forEach(off => {
@@ -624,12 +657,17 @@
             document.getElementById('btnSaveDaily').disabled = true; toggleEditDailyMode(false); openModalAnim('dailyModal');
         }
 
-        function updateViewField(nameId, phoneId, fullName) {
-            if (fullName && officerMap[fullName]) { document.getElementById(nameId).innerText = fullName; document.getElementById(phoneId).innerHTML = `<i class="fa-solid fa-phone"></i> ${officerMap[fullName].phone}`; } 
-            else { document.getElementById(nameId).innerText = ''; document.getElementById(phoneId).innerHTML = ''; }
+        function updatePhoneField(phoneId, fullName) {
+            if (fullName && officerMap[fullName]) { document.getElementById(phoneId).innerHTML = `<i class="fa-solid fa-phone"></i> ${officerMap[fullName].phone}`; } 
+            else { document.getElementById(phoneId).innerHTML = ''; }
         }
 
-        function toggleEditDailyMode(isEdit) { document.getElementById('dailyViewMode').style.display = isEdit ? 'none' : 'block'; document.getElementById('dailyEditMode').style.display = isEdit ? 'block' : 'none'; }
+        function toggleEditDailyMode(isEdit) { 
+            document.getElementById('dailyViewMode').style.display = isEdit ? 'none' : 'block'; 
+            document.getElementById('dailyViewFooter').style.display = isEdit ? 'none' : 'block'; 
+            document.getElementById('dailyEditMode').style.display = isEdit ? 'block' : 'none'; 
+            document.getElementById('dailyEditFooter').style.display = isEdit ? 'block' : 'none'; 
+        }
 
         function handleSelectChange(role) {
             const curVal = document.getElementById(`edit${role.charAt(0).toUpperCase() + role.slice(1)}Select`).value;
@@ -704,7 +742,21 @@
 
         // --- Loop Builder ---
         function scrollToBottom(selector) { setTimeout(() => { const el = document.querySelector(selector); if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); }, 50); }
-        function resetLoopBuilder() { document.getElementById('patternContainer').innerHTML = ''; patternCount = 0; document.getElementById('previewSection').style.display = 'none'; document.getElementById('refViewBox').style.display = 'none'; addPatternRow(); }
+        
+        // ฟังก์ชันล้างค่า Loop Builder ทุกครั้งที่เปิดหรือบันทึกเสร็จ
+        function resetLoopBuilder(fullReset = false) { 
+            if (fullReset) {
+                document.getElementById('loopRoleSelect').value = "";
+                document.getElementById('loopStartDate')._flatpickr.clear();
+                document.getElementById('loopEndDate')._flatpickr.clear();
+            }
+            document.getElementById('patternContainer').innerHTML = ''; 
+            patternCount = 0; 
+            document.getElementById('previewSection').style.display = 'none'; 
+            document.getElementById('refViewBox').style.display = 'none'; 
+            addPatternRow(); 
+        }
+
         function getLoopOptionsHtml() {
             const role = document.getElementById('loopRoleSelect').value; let optionsHtml = '<option value="" disabled selected hidden>- เลือกเจ้าหน้าที่ -</option>';
             allOfficers.forEach(off => { if (off[4] && ((role === 'พนักงานสอบสวนเวร' && off[8] === 'พนักงานสอบสวน') || ((role === 'ผู้ช่วยพนักงานสอบสวน' || role === 'เสมียนประจำวัน') && (off[8] === 'ผู้ช่วยพนักงานสอบสวน' || off[8] === 'เสมียนประจำวัน')))) optionsHtml += `<option value="${off[4]}">${off[4]}</option>`; });
