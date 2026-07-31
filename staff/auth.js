@@ -3,17 +3,21 @@ function checkAuth() {
     const userRole = localStorage.getItem('userRole');
     const currentPage = window.location.pathname;
 
+    // ✨ พระเอกของเรา: หาที่อยู่จริงของ auth.js บนหน้าเว็บ
+    // เราจะใช้ข้อมูลนี้เพื่อเปลี่ยนเส้นทางไปยังหน้าอื่นๆ 
+    const scriptUrl = document.currentScript.src;
+
     // ถ้าอยู่หน้า login แล้วล็อกอินแล้ว ให้ข้ามไปหน้า staff
     if (currentPage.includes('login.html')) {
-        // ✨ ใช้ replace แทน href เพื่อไม่ให้พอกพูนประวัติการเข้าชม (History)
-        if (isLoggedIn) window.location.replace('staff.html');
+        // ✨ เปลี่ยนจากคำว่า auth.js เป็น staff.html เพื่อพุ่งตรงไปหน้า staff 
+        if (isLoggedIn) window.location.replace(scriptUrl.replace('auth.js', 'staff.html'));
         return;
     }
 
     // ถ้ายังไม่ได้ล็อกอิน ให้เด้งไปหน้า login
     if (!isLoggedIn) {
-        // ✨ ใช้ replace ป้องกันผู้ใช้กดปุ่มย้อนกลับ (Back) กลับมาหน้าเดิม
-        window.location.replace('login.html');
+        // ✨ เปลี่ยนจากคำว่า auth.js เป็น login.html เพื่อพุ่งตรงไปหน้า login
+        window.location.replace(scriptUrl.replace('auth.js', 'login.html'));
         return;
     }
 
@@ -41,7 +45,12 @@ function logout() {
             localStorage.removeItem('userEmail');
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
-            window.location.replace('../index.html'); // ใช้ replace เตะกลับหน้าหลักสภ.
+            
+            // ✨ นำ scriptUrl มาใช้กับปุ่มออกจากระบบด้วย เพื่อให้มันกลับไปหน้าแรกสุด (index.html) ได้อย่างแม่นยำ
+            const scriptUrl = document.currentScript ? document.currentScript.src : window.location.href; 
+            
+            // ใช้ replace เตะกลับหน้าหลักสภ.
+            window.location.replace(scriptUrl.replace('staff/auth.js', 'index.html')); 
         }
     });
 }
