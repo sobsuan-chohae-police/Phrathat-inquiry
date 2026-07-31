@@ -41,7 +41,7 @@ function logout() {
             localStorage.removeItem('userEmail');
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
-            window.location.replace('index.html'); // ใช้ replace เตะกลับหน้าหลักสภ.
+            window.location.replace('../index.html'); // ใช้ replace เตะกลับหน้าหลักสภ.
         }
     });
 }
