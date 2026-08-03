@@ -572,23 +572,6 @@
         $('#assistSelect').val(d[24] || '').trigger('change');
     }
 
-    function submitForm() {
-        const form = document.getElementById('caseForm');
-        const dataObj = Object.fromEntries(new FormData(form).entries());
-
-        Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-        fetch(API_URL, { method: 'POST', body: JSON.stringify(dataObj), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-        .then(res => res.json())
-        .then(res => {
-            if(res.status === 'success') {
-                Swal.fire('สำเร็จ!', res.message, 'success').then(() => { closeModal(); loadTableData(); });
-            } else {
-                Swal.fire('ข้อผิดพลาด', res.message, 'error');
-            }
-        }).catch(() => Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'));
-    }
-
     function deleteCase(rowIndex) {
         Swal.fire({
             title: 'ยืนยันการลบ?', text: "ข้อมูลนี้จะถูกลบออกจากระบบถาวร!", icon: 'warning',
@@ -656,6 +639,30 @@
         const opt = sel.options[sel.selectedIndex];
         document.getElementById('officerRank').value = opt ? (opt.getAttribute('data-pos') || '') : '';
         document.getElementById('officerPhone').value = opt ? (opt.getAttribute('data-phone') || '') : '';
+    }
+
+    function submitForm() {
+        const form = document.getElementById('caseForm');
+        const dataObj = Object.fromEntries(new FormData(form).entries());
+
+        // --- เพิ่มโค้ดส่วนนี้เข้าไป ---
+        // ถ้าเป็นการแก้ไข (update) ให้ส่งคำสั่งไปบอกหลังบ้านเพื่อล้างลิงก์เอกสาร
+        if (dataObj.action === 'update') {
+            dataObj.clearDocs = true; 
+        }
+        // ------------------------
+
+        Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(dataObj), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                Swal.fire('สำเร็จ!', res.message, 'success').then(() => { closeModal(); loadTableData(); });
+            } else {
+                Swal.fire('ข้อผิดพลาด', res.message, 'error');
+            }
+        }).catch(() => Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'));
     }
 
     window.onload = function() { loadTableData(); loadMasterData(); };
