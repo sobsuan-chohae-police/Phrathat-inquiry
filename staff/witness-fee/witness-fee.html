@@ -13,11 +13,13 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+    <!-- ✨ เปลี่ยน CDN เป็น jsdelivr เพื่อความเสถียร -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
 
     <!-- Core Scripts & Styles -->
     <script src="../auth.js"></script>
-    <link rel="stylesheet" href="../../theme.css"> <!-- ปรับ Path ตามโครงสร้างจริง -->
+    <link rel="stylesheet" href="../../theme.css">
+    <!-- ✨ แก้ไข Path ให้ถูกต้องตามโครงสร้าง Directory Tree -->
     <script src="../../datepicker.js"></script>
 
     <style>
@@ -386,7 +388,11 @@
 
         async function fetchInitialData() {
             try {
-                const response = await fetch(`${API_URL}?action=getInitialData`);
+                // ✨ เพิ่ม redirect: 'follow' เพื่อแก้ปัญหาการเด้งของ Google
+                const response = await fetch(`${API_URL}?action=getInitialData`, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
                 const result = await response.json();
                 
                 if (result.status === 'success') {
@@ -407,6 +413,9 @@
                     throw new Error(result.message);
                 }
             } catch (error) {
+                // ✨ พิมพ์ Error ลง Console เพื่อให้สืบหาสาเหตุได้ง่ายขึ้น
+                console.error("รายละเอียด Error ที่แท้จริง:", error);
+                
                 document.getElementById('loadingScreen').style.display = 'none';
                 Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง', 'error');
             }
@@ -797,9 +806,11 @@
             };
 
             try {
+                // ✨ เพิ่ม redirect: 'follow'
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    redirect: 'follow'
                 });
                 const result = await response.json();
                 
@@ -832,6 +843,7 @@
                     throw new Error(result.message);
                 }
             } catch (error) {
+                console.error("รายละเอียด Error ที่แท้จริง:", error);
                 hideLoading();
                 Swal.fire('เกิดข้อผิดพลาด', 'โปรดลองใหม่อีกครั้ง', 'error');
             }
@@ -902,9 +914,11 @@
                             docUrl: editOldDocUrl
                         };
                         
+                        // ✨ เพิ่ม redirect: 'follow'
                         const response = await fetch(API_URL, {
                             method: 'POST',
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify(payload),
+                            redirect: 'follow'
                         });
                         const resJson = await response.json();
                         
@@ -927,6 +941,7 @@
                             throw new Error(resJson.message);
                         }
                     } catch (error) {
+                        console.error("รายละเอียด Error ที่แท้จริง:", error);
                         hideLoading();
                         Swal.fire('เกิดข้อผิดพลาด', 'โปรดลองใหม่อีกครั้ง', 'error');
                     }
