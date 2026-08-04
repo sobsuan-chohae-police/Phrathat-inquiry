@@ -13,13 +13,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <!-- ✨ เปลี่ยน CDN เป็น jsdelivr เพื่อความเสถียร -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
 
     <!-- Core Scripts & Styles -->
     <script src="../auth.js"></script>
     <link rel="stylesheet" href="../../theme.css">
-    <!-- ✨ แก้ไข Path ให้ถูกต้องตามโครงสร้าง Directory Tree -->
     <script src="../../datepicker.js"></script>
 
     <style>
@@ -388,10 +386,11 @@
 
         async function fetchInitialData() {
             try {
-                // ✨ เพิ่ม redirect: 'follow' เพื่อแก้ปัญหาการเด้งของ Google
-                const response = await fetch(`${API_URL}?action=getInitialData`, {
-                    method: 'GET',
-                    redirect: 'follow'
+                // ✨ อัปเกรด: ใช้ POST + text/plain เพื่อหลบหลีก CORS และ Multi-login
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getInitialData' })
                 });
                 const result = await response.json();
                 
@@ -413,9 +412,7 @@
                     throw new Error(result.message);
                 }
             } catch (error) {
-                // ✨ พิมพ์ Error ลง Console เพื่อให้สืบหาสาเหตุได้ง่ายขึ้น
                 console.error("รายละเอียด Error ที่แท้จริง:", error);
-                
                 document.getElementById('loadingScreen').style.display = 'none';
                 Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง', 'error');
             }
@@ -806,11 +803,11 @@
             };
 
             try {
-                // ✨ เพิ่ม redirect: 'follow'
+                // ✨ อัปเกรด: ใช้ POST + text/plain
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify(payload),
-                    redirect: 'follow'
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 });
                 const result = await response.json();
                 
@@ -914,11 +911,11 @@
                             docUrl: editOldDocUrl
                         };
                         
-                        // ✨ เพิ่ม redirect: 'follow'
+                        // ✨ อัปเกรด: ใช้ POST + text/plain
                         const response = await fetch(API_URL, {
                             method: 'POST',
-                            body: JSON.stringify(payload),
-                            redirect: 'follow'
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify(payload)
                         });
                         const resJson = await response.json();
                         
