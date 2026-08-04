@@ -6,11 +6,8 @@
     <meta name="theme-color" content="#f8fafc">
     <title>ระบบจัดการคดียาเสพติด</title>
 
-    <!-- โหลด jQuery และ Select2 เพียงรอบเดียว -->
+    <!-- โหลด jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
     
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbx7QQmSpPxvqj6hx6q7CncUPuhJudZLo7fVShYZbqFyuu6ReSV9FKZ1KzQH3b15_mSa/exec';
@@ -29,36 +26,6 @@
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
 
     <style>
-        .select2-container {
-            width: 100% !important;
-        }
-
-        .select2-container .select2-selection--single {
-            height: 46px !important;
-            border: 1px solid #cbd5e1 !important;
-            border-radius: 8px !important;
-            display: flex !important;
-            align-items: center !important;
-            padding: 0 15px !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: var(--text-main) !important;
-            font-family: 'Kanit', sans-serif !important;
-            font-size: 1rem !important;
-            padding-left: 0 !important;
-            line-height: normal !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 46px !important;
-            right: 10px !important;
-        }
-        .select2-container--open .select2-selection--single,
-        .select2-container--default.select2-container--focus .select2-selection--single {
-            border-color: var(--navy-main) !important;
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1) !important;
-            outline: none !important;
-        }
-
         /* CSS Base & Theme */
         :root {
             --navy-main: #1e3a8a;
@@ -114,16 +81,46 @@
         .btn-next { background: var(--navy-gradient); color: white; }
         .btn-save { background: linear-gradient(135deg, #059669, #10b981); color: white; transition: 0.3s; }
         .btn-save:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
+
+        /* Custom Autocomplete Dropdown */
+        .custom-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            margin-top: 5px;
+        }
+        .custom-dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+        }
+        .custom-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .custom-dropdown-item:hover {
+            background: #f8fafc;
+            color: var(--navy-main);
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
 
     <nav style="display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center;">
-            <!-- ปุ่มย้อนกลับ (ใช้คำสั่งของเบราว์เซอร์ ไม่ต้องแก้ Path) -->
             <button onclick="window.location.href='../staff.html';" style="background: transparent; border: none; font-size: 1.3rem; cursor: pointer; margin-right: 15px; color: var(--text-main); transition: 0.3s;" onmouseover="this.style.color='var(--navy-main)'" onmouseout="this.style.color='var(--text-main)'">
-    <i class="fa-solid fa-chevron-left"></i>
-</button>
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
             <span class="page-title" style="margin-left: 0;"><i class="fa-solid fa-scale-balanced"></i> ระบบบันทึกคดียาเสพติด</span>
         </div>
     </nav>
@@ -214,13 +211,11 @@
                             <div class="col-6"><label class="form-label">วันที่เก็บปัสสาวะ</label><input type="text" class="form-input datepicker" name="urineDate"></div>
                             <div class="col-6"><label class="form-label">เวลาเก็บปัสสาวะ</label><input type="text" class="form-input timepicker" name="urineTime"></div>
                             <div class="col-6"><label class="form-label">จำนวนยาเสพติด</label><input type="number" class="form-input" name="drugAmount"></div>
-                            <div class="col-6"><label class="form-label">หน่วย</label><select class="form-input" name="drugUnit"><option value="เม็ด">เม็ด</option><option value="กรัม">ชิ้น</option><option value="กรัม">กรัม</option></select></div>
+                            <div class="col-6"><label class="form-label">หน่วย</label><select class="form-input" name="drugUnit"><option value="เม็ด">เม็ด</option><option value="ชิ้น">ชิ้น</option><option value="กรัม">กรัม</option></select></div>
                             <div class="col-6"><label class="form-label">สถานที่พบยาเสพติด</label><input type="text" class="form-input" name="drugFoundPlace"></div>
                             
-                            <!-- เพิ่ม ID wrap-asset เพื่อใช้ซ่อน/แสดง -->
                             <div class="col-6" id="wrap-asset"><label class="form-label">ยึดทรัพย์ที่</label><input type="text" class="form-input" name="assetSeizedAt"></div>
                             
-                            <!-- ข้อกล่าวหา (เพิ่ม ID wrap-charge) -->
                             <div class="col-12" id="wrap-charge">
                                 <label class="form-label">ข้อกล่าวหา</label>
                                 <div class="charge-presets" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; font-size: 0.95rem; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;">
@@ -236,7 +231,6 @@
                                 <textarea class="form-input" id="chargesText" name="chargesText" rows="3" placeholder="เลือกข้อกล่าวหาจากตัวเลือกด้านบน หรือพิมพ์เพิ่มเติมที่นี่..."></textarea>
                             </div>
 
-                            <!-- พฤติการณ์ (เพิ่ม ID wrap-behavior) -->
                             <div class="col-12" id="wrap-behavior">
                                 <label class="form-label">พฤติการณ์แห่งคดี</label>
                                 <div class="behavior-presets" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; font-size: 0.95rem; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;">
@@ -261,20 +255,41 @@
                     <!-- Step 4 -->
                     <div id="step4" class="step-content">
                         <div class="form-grid">
-                            <!-- เพิ่ม ID wrap-accuser -->
+                            <!-- ผู้กล่าวหา (Custom Autocomplete) -->
                             <div class="col-6" id="wrap-accuser">
                                 <label class="form-label">ผู้กล่าวหา</label>
-                                <select class="form-input" name="accuser" id="accuserSelect" style="width:100%;"></select>
+                                <div style="position: relative;">
+                                    <input type="text" class="form-input" name="accuser" id="accuserInput" placeholder="พิมพ์ชื่อ หรือเลือกจากรายการ" autocomplete="off">
+                                    <div id="accuserDropdown" class="custom-dropdown"></div>
+                                </div>
                             </div>
-                            <!-- เพิ่ม ID wrap-accuserPos -->
-                            <div class="col-6" id="wrap-accuserPos"><label class="form-label">ตำแหน่ง ผู้กล่าวหา</label><input type="text" class="form-input" name="accuserPos" id="accuserPos"></div>
                             
-                            <div class="col-6"><label class="form-label">พนักงานสอบสวน (พงส.)</label><select class="form-input" name="officer" id="officerSelect" onchange="updateOfficerInfo()"></select></div>
-                            <div class="col-6"><label class="form-label">ตำแหน่ง พงส.</label><input type="text" class="form-input" name="officerRank" id="officerRank" readonly style="background:#f1f5f9;"></div>
-                            <div class="col-6"><label class="form-label">เบอร์โทรศัพท์ พงส.</label><input type="text" class="form-input" name="officerPhone" id="officerPhone"></div>
+                            <div class="col-6" id="wrap-accuserPos">
+                                <label class="form-label">ตำแหน่ง ผู้กล่าวหา</label>
+                                <input type="text" class="form-input" name="accuserPos" id="accuserPos">
+                            </div>
+                            
+                            <!-- พนักงานสอบสวน (คงเดิมไว้ เพราะดึงจาก Master Data) -->
+                            <div class="col-6">
+                                <label class="form-label">พนักงานสอบสวน (พงส.)</label>
+                                <select class="form-input" name="officer" id="officerSelect" onchange="updateOfficerInfo()"></select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">ตำแหน่ง พงส.</label>
+                                <input type="text" class="form-input" name="officerRank" id="officerRank" readonly style="background:#f1f5f9;">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">เบอร์โทรศัพท์ พงส.</label>
+                                <input type="text" class="form-input" name="officerPhone" id="officerPhone">
+                            </div>
+                            
+                            <!-- ผู้ช่วย พงส. (Custom Autocomplete) -->
                             <div class="col-6">
                                 <label class="form-label">ผู้ช่วย พงส.</label>
-                                <select class="form-input" name="assistantOfficer" id="assistSelect" style="width:100%;"></select>
+                                <div style="position: relative;">
+                                    <input type="text" class="form-input" name="assistantOfficer" id="assistInput" placeholder="พิมพ์ชื่อ หรือเลือกจากรายการ" autocomplete="off">
+                                    <div id="assistDropdown" class="custom-dropdown"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -296,14 +311,16 @@
     let allCasesData = []; 
     let originalFormString = ""; 
     
-    // ตัวแปรเก็บสถานะก่อนเข้าฟอร์มหลัก
     let currentMode = '';
     let currentRowIndex = null;
+
+    // ตัวแปรเก็บรายชื่อสำหรับ Autocomplete
+    let globalAccuserList = [];
+    let globalAssistList = [];
 
     const panSubdistricts = { "เมืองแพร่": ["ช่อแฮ","ป่าแดง", "สวนเขื่อน"] };
     const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
 
-    // ฟังก์ชันรวมข้อความจาก Checkbox เข้า Textarea (ข้อกล่าวหา)
     function updateChargesText() {
         const checkboxes = document.querySelectorAll('.charge-option:checked');
         const selectedValues = Array.from(checkboxes).map(cb => cb.value);
@@ -311,7 +328,6 @@
         checkFormChanged();
     }
 
-    // ฟังก์ชันรวมข้อความจาก Checkbox เข้า Textarea (พฤติการณ์)
     function updateBehaviorText() {
         const checkboxes = document.querySelectorAll('.behavior-option:checked');
         const selectedValues = Array.from(checkboxes).map(cb => cb.value);
@@ -319,7 +335,6 @@
         checkFormChanged();
     }
     
-
     function initThaiDateTimePickers() {
         flatpickr(".datepicker", {
             locale: "th",
@@ -396,47 +411,41 @@
 
     let currentStep = 1;
     
-    // ฟังก์ชันเปิด Modal เลือกประเภทเอกสารก่อน
     function openModal(mode, rowIndex = null) {
         currentMode = mode;
         currentRowIndex = rowIndex;
         document.getElementById('preSelectModal').style.display = 'flex';
     }
 
-    // ฟังก์ชันปิด Modal เลือกประเภทเอกสาร
     function closePreSelectModal() {
         document.getElementById('preSelectModal').style.display = 'none';
     }
 
-    // ฟังก์ชันเมื่อผู้ใช้เลือกประเภทเอกสาร
     function selectDocType(docType) {
         closePreSelectModal();
         openMainModal(currentMode, currentRowIndex, docType);
     }
 
-    // ฟังก์ชันเปิด Modal ฟอร์มหลัก (ปรับปรุงจาก openModal เดิม)
     function openMainModal(mode, rowIndex = null, docType = 'both') {
         document.getElementById('caseModal').style.display = 'flex';
         const form = document.getElementById("caseForm");
         const btnSave = document.getElementById('btnSaveCase');
         
-        // ล้างช่องติ๊กทั้งหมดเมื่อเปิด Modal
         document.querySelectorAll('.charge-option').forEach(cb => cb.checked = false);
         document.querySelectorAll('.behavior-option').forEach(cb => cb.checked = false);
 
-        // --- จัดการซ่อน/แสดง ฟิลด์ตามประเภทเอกสารที่เลือก ---
         const isUrineOnly = (docType === 'urine');
         document.getElementById('wrap-asset').style.display = isUrineOnly ? 'none' : 'block';
         document.getElementById('wrap-charge').style.display = isUrineOnly ? 'none' : 'block';
         document.getElementById('wrap-behavior').style.display = isUrineOnly ? 'none' : 'block';
         document.getElementById('wrap-accuser').style.display = isUrineOnly ? 'none' : 'block';
         document.getElementById('wrap-accuserPos').style.display = isUrineOnly ? 'none' : 'block';
-        // ------------------------------------------------
 
         if (mode === 'create') {
             form.reset();
-            $('#accuserSelect').val('').trigger('change');
-            $('#assistSelect').val('').trigger('change');
+            form.accuser.value = '';
+            form.assistantOfficer.value = '';
+            
             document.getElementById('formAction').value = 'create';
             document.getElementById('formRowIndex').value = '';
             btnSave.textContent = "บันทึกข้อมูลใหม่";
@@ -505,7 +514,6 @@
                         ? `<a href="${item.docLink2}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> ยา</a>`
                         : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, 2, '${item.caseNo}')"><i class="fa-solid fa-plus"></i> ยา</button>`;
 
-                    // ตรวจสอบว่าเป็นคดีแบบ "ปัสสาวะอย่างเดียว" หรือไม่ (โดยดูจากข้อกล่าวหาว่าว่างหรือไม่)
                     let isUrineOnly = (!item.charge || item.charge.trim() === '');
                     let docsHtml = isUrineOnly ? doc1Btn : `${doc1Btn} ${doc2Btn}`;
 
@@ -527,36 +535,67 @@
                     if (item.assistantOfficer) assistSet.add(item.assistantOfficer.trim());
                 });
 
-                const accuserData = Array.from(accuserSet).map(n => ({id: n, text: n}));
-                const assistData = Array.from(assistSet).map(n => ({id: n, text: n}));
+                // เตรียมข้อมูลสำหรับ Autocomplete
+                globalAccuserList = Array.from(accuserSet).filter(Boolean);
+                globalAssistList = Array.from(assistSet).filter(Boolean);
 
-                if ($('#accuserSelect').hasClass("select2-hidden-accessible")) {
-                    $('#accuserSelect').select2('destroy').empty();
-                }
-                if ($('#assistSelect').hasClass("select2-hidden-accessible")) {
-                    $('#assistSelect').select2('destroy').empty();
-                }
-
-                $('#accuserSelect').select2({
-                    dropdownParent: $('#caseModal'),
-                    data: [{id: '', text: '- เลือกหรือพิมพ์ชื่อ -'}, ...accuserData],
-                    width: '100%',
-                    tags: true,
-                    createTag: function (params) { return { id: params.term, text: params.term }; }
-                }).on('change', updateAccuserPos);
-
-                $('#assistSelect').select2({
-                    dropdownParent: $('#caseModal'),
-                    data: [{id: '', text: '- เลือกหรือพิมพ์ชื่อ -'}, ...assistData],
-                    width: '100%',
-                    tags: true,
-                    createTag: function (params) { return { id: params.term, text: params.term }; }
-                });
+                // เรียกใช้ฟังก์ชันสร้าง Autocomplete
+                setupAutocomplete('accuserInput', 'accuserDropdown', globalAccuserList, updateAccuserPos);
+                setupAutocomplete('assistInput', 'assistDropdown', globalAssistList);
             });
     }
 
+    // ==========================================
+    // ฟังก์ชันสร้าง Custom Autocomplete
+    // ==========================================
+    function setupAutocomplete(inputId, dropdownId, dataList, callback) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+
+        // เมื่อมีการพิมพ์ข้อความ
+        input.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            dropdown.innerHTML = '';
+            
+            // กรองข้อมูลที่ตรงกับที่พิมพ์
+            const filtered = dataList.filter(item => item.toLowerCase().includes(val));
+            
+            if (filtered.length > 0) {
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'custom-dropdown-item';
+                    div.textContent = item;
+                    div.onclick = function() {
+                        input.value = item;
+                        dropdown.style.display = 'none';
+                        if(callback) callback(); // เรียกฟังก์ชันอัปเดตตำแหน่ง (ถ้ามี)
+                        checkFormChanged();
+                    };
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+            
+            if(callback) callback(); // อัปเดตตำแหน่งแบบ Real-time ตอนพิมพ์
+        });
+
+        // เมื่อคลิกที่ช่อง ให้แสดงรายชื่อทั้งหมดทันที
+        input.addEventListener('focus', function() {
+            input.dispatchEvent(new Event('input'));
+        });
+
+        // ซ่อน Dropdown เมื่อคลิกที่อื่น
+        document.addEventListener('click', function(e) {
+            if (e.target !== input && e.target !== dropdown) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
     function updateAccuserPos() {
-        const inputVal = $('#accuserSelect').val() || '';
+        const inputVal = document.getElementById('accuserInput').value.trim();
         const posInput = document.getElementById('accuserPos');
         
         if (!inputVal) { posInput.value = ''; return; }
@@ -605,26 +644,25 @@
         form.drugFoundPlace.value = d[15] || ""; 
         form.assetSeizedAt.value = d[16] || "";
         
-        // เติมข้อความข้อกล่าวหา และเช็คกล่องติ๊กเลือกอัตโนมัติ
         const currentCharges = d[17] || "";
         form.chargesText.value = currentCharges; 
         document.querySelectorAll('.charge-option').forEach(cb => {
             cb.checked = currentCharges.includes(cb.value);
         });
 
-        // เติมข้อความพฤติการณ์ และเช็คกล่องติ๊กเลือกอัตโนมัติ
         const currentBehavior = d[18] || ""; 
         form.behaviorText.value = currentBehavior; 
         document.querySelectorAll('.behavior-option').forEach(cb => {
             cb.checked = currentBehavior.includes(cb.value);
         });
 
-        $('#accuserSelect').val(d[19] || '').trigger('change');
+        // ดึงข้อมูลใส่ช่อง Input ธรรมดา
+        form.accuser.value = d[19] || '';
         form.accuserPos.value = d[20] || ""; 
         form.officer.value = d[21] || ""; 
         updateOfficerInfo();
         form.officerPhone.value = d[23] || ""; 
-        $('#assistSelect').val(d[24] || '').trigger('change');
+        form.assistantOfficer.value = d[24] || '';
     }
 
     function deleteCase(rowIndex) {
@@ -700,12 +738,10 @@
         const form = document.getElementById('caseForm');
         const dataObj = Object.fromEntries(new FormData(form).entries());
 
-        // ถ้าเป็นการแก้ไข (update) ให้ส่งคำสั่งไปบอกหลังบ้านเพื่อล้างลิงก์เอกสาร
         if (dataObj.action === 'update') {
             dataObj.clearDocs = true; 
         }
         
-        // ถ้าเลือกแบบ "ส่งปัสสาวะตรวจพิสูจน์" (ฟิลด์ถูกซ่อน) ให้เคลียร์ค่าทิ้ง เพื่อให้ระบบรู้ว่าเป็นแบบปัสสาวะอย่างเดียว
         if (document.getElementById('wrap-charge').style.display === 'none') {
             dataObj.assetSeizedAt = '';
             dataObj.chargesText = '';
