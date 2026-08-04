@@ -9,157 +9,156 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Dependencies -->
+    <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
 
-    <!-- Core System Files -->
+    <!-- Core Scripts & Styles -->
     <script src="../auth.js"></script>
-    <link rel="stylesheet" href="../../theme.css">
-    
+    <link rel="stylesheet" href="../../theme.css"> <!-- ปรับ Path ตามโครงสร้างจริง -->
+    <script src="../datepicker.js"></script>
+
     <style>
         /* ==========================================================================
-           [Specific Styles] ระบบเบิกค่าตอบแทนพยาน
+           ✨ Custom Styles สำหรับหน้าเบิกค่าตอบแทนพยาน
            ========================================================================== */
         
-        /* Navbar Override for Subpage */
-        .nav-btn { 
-            background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); 
-            cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: var(--transition); text-decoration: none; flex-shrink: 0; 
-        }
-        .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; height: auto; padding: 5px 15px 5px 0; }
-        .btn-back:hover { color: var(--navy-main); }
-        .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
+        /* --- Layout & Table --- */
+        body { overflow: hidden; } /* ป้องกัน Scrollbar นอกสุด */
+        .main-wrapper { height: calc(100vh - 75px); padding: 20px; display: flex; flex-direction: column; }
         
-        /* Loading Overlay (Full Screen Lock) */
-        #globalLoading {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.9); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-        }
-
-        /* Table Layout Options */
         .table-container {
+            flex: 1; display: flex; flex-direction: column;
             background: var(--card-bg); border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-soft); padding: 20px; margin-bottom: 20px;
-            display: flex; flex-direction: column; min-height: 65vh; /* Lock height */
-            position: relative; overflow: hidden;
+            box-shadow: var(--shadow-soft); overflow: hidden;
         }
-        .table-wrapper { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
-        .table-responsive { flex: 1; display: flex; flex-direction: column; }
-        table { flex: 1; display: flex; flex-direction: column; }
-        thead { flex-shrink: 0; }
-        tbody { flex: 1; display: flex; flex-direction: column; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s; will-change: transform, opacity; }
-        tr { display: table; table-layout: fixed; width: 100%; }
-        tbody tr { flex: 1; display: flex; align-items: center; border-bottom: 1px solid #f1f5f9;}
-        td { display: table-cell; flex: 1; padding: 12px 15px; } /* ข้อมูลตารางเฉลี่ยความสูงอัตโนมัติ */
         
-        .action-cell { width: 60px; text-align: center; }
-        .doc-cell { width: 70px; text-align: center; }
-
-        /* Pagination & Toolbar */
-        .table-toolbar {
+        .table-header-row {
+            display: grid; grid-template-columns: 50px 150px 100px 120px 1.5fr 1.5fr 1.5fr 80px;
+            background: #f8fafc; padding: 15px; font-weight: 600; color: var(--text-light);
+            border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.95rem;
+        }
+        
+        .table-body-wrapper {
+            flex: 1; position: relative; overflow: hidden; background: #fff;
+        }
+        
+        .table-page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.5s ease;
+            will-change: transform, opacity; /* Hardware Acceleration */
+        }
+        
+        .table-row {
+            flex: 1; /* แบ่งความสูงเท่าๆ กัน */
+            display: grid; grid-template-columns: 50px 150px 100px 120px 1.5fr 1.5fr 1.5fr 80px;
+            padding: 0 15px; align-items: center; border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem; color: var(--text-main); transition: background 0.2s;
+        }
+        .table-row:hover { background: #f8fafc; }
+        .table-row:last-child { border-bottom: none; }
+        
+        .col-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+        
+        /* --- Footer Controls --- */
+        .table-footer {
             display: flex; justify-content: space-between; align-items: center;
-            padding-top: 15px; border-top: 1px solid #e2e8f0; flex-shrink: 0; gap: 10px; flex-wrap: wrap;
+            padding: 15px 20px; background: #fff; border-top: 1px solid #e2e8f0;
         }
-        .toolbar-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 250px;}
-        .toolbar-right { display: flex; align-items: center; gap: 15px; }
         
-        .search-box {
-            display: flex; background: #f8fafc; border-radius: 50px; padding: 5px 15px;
-            align-items: center; flex: 1; max-width: 300px; border: 1px solid transparent;
-            transition: var(--transition);
+        .search-box { display: flex; align-items: center; background: #f1f5f9; border-radius: 50px; padding: 5px 15px; width: 250px; }
+        .search-box input { border: none; background: transparent; outline: none; font-family: 'Kanit'; width: 100%; padding: 5px; }
+        .search-btn { background: transparent; border: none; color: var(--text-light); cursor: pointer; font-size: 1.1rem; transition: 0.3s; }
+        .search-btn:hover { color: var(--navy-main); transform: scale(1.1); }
+        
+        .add-btn-center {
+            background: var(--navy-gradient); color: white; border: none;
+            width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+            transition: var(--transition); display: flex; align-items: center; justify-content: center;
         }
-        .search-box:focus-within { background: #fff; border-color: var(--gold-main); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        .search-box input { border: none; background: transparent; outline: none; padding: 5px; flex: 1; font-family: 'Kanit'; }
-        .btn-search { background: transparent; border: none; color: var(--text-light); cursor: pointer; transition: 0.2s; padding: 5px; }
-        .btn-search:hover { color: var(--navy-main); transform: scale(1.1); }
+        .add-btn-center:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--shadow-gold); }
         
-        .btn-add { background: var(--navy-gradient); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 10px rgba(30,58,138,0.2); }
-        .btn-add:hover { transform: translateY(-2px) rotate(90deg); box-shadow: var(--shadow-gold); }
+        .pagination-controls { display: flex; align-items: center; gap: 15px; color: var(--text-light); font-weight: 500; }
+        .page-btn {
+            background: #f1f5f9; border: none; width: 35px; height: 35px; border-radius: 50%;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .page-btn:hover:not(:disabled) { background: var(--navy-main); color: white; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .pagination-info { font-size: 0.95rem; font-weight: 500; color: var(--text-main); }
-        .pagination-btn { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .pagination-btn:hover:not(:disabled) { background: var(--gold-light); color: var(--gold-dark); transform: scale(1.1); }
-        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Document Icon Link */
-        .doc-link { color: #3b82f6; font-size: 1.4rem; transition: 0.2s; display: inline-block; }
-        .doc-link:hover { color: var(--navy-main); transform: scale(1.2); }
-
-        /* Custom Modal Layout */
-        .modal-card { max-width: 700px; height: 85vh; padding: 0; display: flex; flex-direction: column; overflow: hidden; }
-        .modal-header-fixed { padding: 25px 30px 0; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
-        .modal-header-fixed h3 { font-size: 1.3rem; background: var(--navy-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* --- Modal & Tabs --- */
+        .modal-card { height: 85vh; max-height: 700px; display: flex; flex-direction: column; }
+        .modal-header { padding: 20px 30px 0; border-bottom: 1px solid #e2e8f0; position: relative; }
+        .modal-title-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-title-area h3 { font-size: 1.3rem; color: var(--navy-main); margin: 0; }
         
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-        .btn-trash { background: transparent; border: none; color: var(--danger); font-size: 1.2rem; cursor: pointer; transition: 0.2s; padding: 8px; border-radius: 50%; display: none; }
-        .btn-trash:hover { background: #ffe4e6; transform: scale(1.1); }
-        .btn-close-form { background: #f1f5f9; border: none; color: var(--text-light); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
-        .btn-close-form:hover { background: var(--text-main); color: white; transform: rotate(90deg); }
-
-        /* Tabs System */
-        .tab-nav { display: flex; padding: 15px 30px 0; border-bottom: 2px solid #e2e8f0; position: relative; flex-shrink: 0; }
-        .tab-btn { background: none; border: none; padding: 12px 20px; font-family: 'Kanit'; font-size: 1.05rem; color: var(--text-light); cursor: pointer; transition: 0.3s; z-index: 1; font-weight: 500; }
-        .tab-btn.active { color: var(--navy-main); font-weight: 600; }
-        .tab-indicator { position: absolute; bottom: -2px; left: 0; height: 3px; background: var(--gold-main); transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 2; border-radius: 3px 3px 0 0; }
-
-        /* Scrollable Form Body */
-        .modal-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 25px 30px; position: relative; scroll-behavior: smooth; }
-        .tab-content { display: none; animation: fadeUp 0.3s ease-out forwards; will-change: transform, opacity; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-delete-record {
+            background: #fff1f2; color: var(--danger); border: none; width: 36px; height: 36px;
+            border-radius: 50%; cursor: pointer; transition: 0.3s; display: none;
+        }
+        .btn-delete-record:hover { background: var(--danger); color: white; transform: scale(1.1); }
+        
+        .tabs-container { display: flex; position: relative; gap: 20px; }
+        .tab-btn {
+            background: transparent; border: none; font-family: 'Kanit'; font-size: 1.05rem;
+            color: var(--text-light); padding: 10px 5px; cursor: pointer; transition: 0.3s; font-weight: 500;
+        }
+        .tab-btn.active { color: var(--navy-main); }
+        .tab-indicator {
+            position: absolute; bottom: -1px; left: 0; height: 3px; background: var(--gold-main);
+            border-radius: 3px 3px 0 0; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            will-change: left, width;
+        }
+        
+        .modal-body { flex: 1; overflow-y: auto; padding: 30px; background: #f8fafc; }
+        .tab-content { display: none; animation: fadeUp 0.4s ease; }
         .tab-content.active { display: block; }
-
-        /* Form Grid (Responsive) */
+        
+        .modal-footer { padding: 20px 30px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+        
+        /* --- Form Grid --- */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .form-group.full-width { grid-column: span 2; }
+        .form-group { display: flex; flex-direction: column; position: relative; }
+        
+        /* Responsive Grid */
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
-            .modal-card { height: 95vh; width: 100%; border-radius: 20px 20px 0 0; position: absolute; bottom: 0; animation: slideUp 0.4s ease-out forwards; }
-            @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            .form-grid { grid-template-columns: 1fr; gap: 15px; }
+            .table-header-row, .table-row {
+                grid-template-columns: 50px 120px 100px 120px 150px 150px 150px 60px;
+                width: max-content; /* บังคับให้ตารางเลื่อนแนวนอนได้ในมือถือ */
+            }
+            .table-body-wrapper { overflow-x: auto; }
+            .table-page { width: max-content; min-width: 100%; }
         }
 
-        /* Inputs & Previews */
-        .form-group { position: relative; display: flex; flex-direction: column; }
-        .preview-text { position: absolute; top: 40px; left: 16px; color: #94a3b8; pointer-events: none; transition: 0.2s; font-size: 0.95rem; }
-        .form-input:focus + .preview-text, .form-input:not(:placeholder-shown) + .preview-text { opacity: 0; visibility: hidden; }
-
-        /* Autocomplete Dropdown */
-        .autocomplete-wrapper { position: relative; }
-        .autocomplete-dropdown { 
-            position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; 
-            background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-modal); 
-            overflow-y: auto; z-index: 100; display: none; border: 1px solid #e2e8f0; margin-top: 5px;
+        /* --- Autocomplete Dropdown --- */
+        .autocomplete-list {
+            position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+            border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: var(--shadow-modal);
+            max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 5px;
         }
-        .autocomplete-item { padding: 10px 15px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f8fafc; font-size: 0.95rem; }
-        .autocomplete-item:hover { background: #f8fafc; color: var(--navy-main); padding-left: 20px; }
-
-        /* Special input layout */
-        .input-with-other { display: flex; gap: 10px; align-items: center; }
-        .input-with-other select { flex: 1; }
-        .input-other-box { flex: 1; display: none; animation: popUp 0.3s ease-out; }
-
-        /* Form Footer Fixed */
-        .modal-footer-fixed { padding: 20px 30px; border-top: 1px solid #f1f5f9; background: white; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .footer-left { flex: 1; }
-        .footer-right { display: flex; gap: 15px; flex: 1; justify-content: flex-end; }
+        .autocomplete-item { padding: 10px 15px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f1f5f9; }
+        .autocomplete-item:hover { background: #f8fafc; color: var(--navy-main); }
         
-        /* Empty State */
-        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-light); width: 100%; }
-        .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 15px; }
-        
+        /* --- Loading Overlay --- */
+        .full-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
     </style>
 </head>
 <body>
-    <!-- Global Loading Overlay -->
-    <div id="globalLoading">
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="full-loader">
         <div class="premium-loader"></div>
-        <p class="premium-loader-text" id="loadingText" style="margin-top: 20px;">กำลังโหลดข้อมูล...</p>
+        <div class="premium-loader-text" id="loadingText" style="margin-top: 15px;">กำลังโหลดข้อมูล...</div>
     </div>
 
     <!-- Navbar -->
@@ -170,823 +169,770 @@
             </a>
             <span class="page-title">เบิกค่าตอบแทนพยาน</span>
         </div>
-        <div class="nav-right">
-            <button class="nav-btn btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i></button>
-        </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container" style="padding-bottom: 100px;">
+    <div class="main-wrapper container">
         <div class="table-container">
-            <div class="table-wrapper">
-                <div class="table-responsive">
-                    <table id="dataTable">
-                        <thead>
-                            <tr>
-                                <th class="action-cell"></th>
-                                <th style="width: 140px;">วันที่สอบปากคำ</th>
-                                <th>คดี</th>
-                                <th>เลขคดี</th>
-                                <th>ชื่อพยาน</th>
-                                <th>ชื่อผู้ต้องหา</th>
-                                <th>พนักงานสอบสวน</th>
-                                <th class="doc-cell">เอกสาร</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- Rows will be injected here -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-header-row">
+                <div></div> <!-- Edit Icon -->
+                <div>วันที่สอบปากคำ</div>
+                <div>คดี</div>
+                <div>เลขคดี</div>
+                <div>ชื่อพยาน</div>
+                <div>ชื่อผู้ต้องหา</div>
+                <div>พนักงานสอบสวน</div>
+                <div style="text-align: center;">เอกสาร</div>
             </div>
-
-            <!-- Toolbar & Pagination -->
-            <div class="table-toolbar">
-                <div class="toolbar-left">
-                    <button class="btn-search" onclick="executeSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="ค้นหาข้อมูล..." onkeypress="if(event.key === 'Enter') executeSearch()">
-                    </div>
+            
+            <div class="table-body-wrapper" id="tableBodyWrapper">
+                <!-- Pages will be injected here -->
+            </div>
+            
+            <div class="table-footer">
+                <div class="search-box">
+                    <button class="search-btn" onclick="executeSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <input type="text" id="searchInput" placeholder="ค้นหาข้อมูล..." onkeypress="if(event.key === 'Enter') executeSearch()">
                 </div>
-                <button class="btn-add" onclick="openModal('add')" data-tooltip="เพิ่มรายการใหม่"><i class="fa-solid fa-plus"></i></button>
-                <div class="toolbar-right">
-                    <span class="pagination-info" id="pageInfo">1/1</span>
-                    <button class="pagination-btn" id="btnPrev" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="pagination-btn" id="btnNext" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                
+                <button class="add-btn-center" onclick="openModal()"><i class="fa-solid fa-plus"></i></button>
+                
+                <div class="pagination-controls">
+                    <span id="pageInfo">1/1</span>
+                    <button class="page-btn" id="prevBtn" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="page-btn" id="nextBtn" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Form (Add/Edit) -->
+    <!-- Form Modal -->
     <div id="formModal" class="modal-overlay">
         <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-area">
+                    <h3 id="modalTitle">เพิ่มข้อมูลใหม่</h3>
+                    <div class="header-actions">
+                        <button class="btn-delete-record" id="btnDelete" onclick="deleteRecord()" data-tooltip="ลบข้อมูล" class="tooltip-left"><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="close-modal-btn" onclick="closeModal()" style="position: static;"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchTab(1, this)">ข้อมูลคดี</button>
+                    <button class="tab-btn" onclick="switchTab(2, this)">ข้อมูลพยาน</button>
+                    <div class="tab-indicator" id="tabIndicator"></div>
+                </div>
+            </div>
             
-            <div class="modal-header-fixed">
-                <h3 id="modalTitle"><i class="fa-solid fa-file-signature"></i> ข้อมูลการเบิกค่าตอบแทน</h3>
-                <div class="header-actions">
-                    <button id="btnDelete" class="btn-trash" onclick="deleteData()" data-tooltip="ลบข้อมูล"><i class="fa-solid fa-trash-can"></i></button>
-                    <button class="btn-close-form" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-
-            <div class="tab-nav" id="tabNav">
-                <button class="tab-btn active" onclick="switchTab(0)" id="tabBtn0">ข้อมูลคดี</button>
-                <button class="tab-btn" onclick="switchTab(1)" id="tabBtn1">ข้อมูลพยาน</button>
-                <div class="tab-indicator" id="tabIndicator"></div>
-            </div>
-
             <div class="modal-body" id="modalBody">
-                <form id="witnessForm">
-                    <input type="hidden" id="editId" value="">
-                    <input type="hidden" id="editDocUrl" value="">
-                    
-                    <!-- TAB 1: ข้อมูลคดี -->
-                    <div class="tab-content active" id="tab0">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">ประเภทคดี</label>
-                                <select class="form-input form-monitor" id="caseType">
-                                    <option value="" disabled selected>เลือกประเภทคดี</option>
-                                    <option value="อาญา">อาญา</option>
-                                    <option value="จราจร">จราจร</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">เลขคดี</label>
-                                <input type="text" class="form-input form-monitor" id="caseNumber" placeholder=" ">
-                                <span class="preview-text">XX/25XX</span>
-                            </div>
-                            
-                            <div class="form-group full-width autocomplete-wrapper">
-                                <label class="form-label">ชื่อผู้กล่าวหา</label>
-                                <input type="text" class="form-input form-monitor" id="accuser" placeholder="พิมพ์เพื่อค้นหาหรือระบุชื่อใหม่" autocomplete="off">
-                                <div class="autocomplete-dropdown" id="accuserDropdown"></div>
-                            </div>
-                            
-                            <div class="form-group full-width autocomplete-wrapper">
-                                <label class="form-label">ชื่อผู้ต้องหา</label>
-                                <input type="text" class="form-input form-monitor" id="suspect" placeholder="พิมพ์เพื่อค้นหาหรือระบุชื่อใหม่" autocomplete="off">
-                                <div class="autocomplete-dropdown" id="suspectDropdown"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">พนักงานสอบสวน</label>
-                                <select class="form-input form-monitor" id="investigator">
-                                    <option value="" disabled selected>เลือกพนักงานสอบสวน</option>
-                                    <!-- Options injected via JS -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">วันที่สอบปากคำพยาน</label>
-                                <input type="text" class="form-input datepicker form-monitor" id="witnessDate" placeholder="เลือกวันที่">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">ประจำวันข้อ</label>
-                                <input type="number" class="form-input form-monitor" id="dailyReportNo" placeholder="ระบุตัวเลขเท่านั้น">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">เวลา</label>
-                                <input type="text" class="form-input form-monitor" id="time" placeholder=" ">
-                                <span class="preview-text">XX.XX</span>
-                            </div>
+                <!-- Tab 1: ข้อมูลคดี -->
+                <div class="tab-content active" id="tab1">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">ประเภทคดี</label>
+                            <select class="form-input" id="f_caseType" onchange="checkFormChanges()">
+                                <option value="" disabled selected>เลือกประเภทคดี</option>
+                                <option value="อาญา">อาญา</option>
+                                <option value="จราจร">จราจร</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เลขคดี</label>
+                            <input type="text" class="form-input" id="f_caseNo" placeholder="XX/25XX" oninput="checkFormChanges()">
                         </div>
                     </div>
-
-                    <!-- TAB 2: ข้อมูลพยาน -->
-                    <div class="tab-content" id="tab1">
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label class="form-label">ประเภทพยาน</label>
-                                <select class="form-input form-monitor" id="witnessType">
-                                    <option value="" disabled selected>เลือกประเภทพยาน</option>
-                                    <option value="ตำรวจ">ตำรวจ</option>
-                                    <option value="ประชาชน">ประชาชน</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label class="form-label">คำนำหน้าชื่อ</label>
-                                <div class="input-with-other">
-                                    <select class="form-input form-monitor" id="titleSelect" onchange="toggleOtherTitle()">
-                                        <option value="" disabled selected>เลือกคำนำหน้า</option>
-                                        <option value="นาย">นาย</option>
-                                        <option value="นาง">นาง</option>
-                                        <option value="นางสาว">นางสาว</option>
-                                        <option value="ระบุอื่นๆ">ระบุอื่นๆ</option>
-                                    </select>
-                                    <div class="input-other-box" id="titleOtherBox">
-                                        <input type="text" class="form-input form-monitor" id="titleOther" placeholder="ระบุคำนำหน้า">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">ชื่อ</label>
-                                <input type="text" class="form-input form-monitor" id="firstName" placeholder=" ">
-                                <span class="preview-text">เฉพาะชื่อเท่านั้น</span>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">นามสกุล</label>
-                                <input type="text" class="form-input form-monitor" id="lastName" placeholder=" ">
-                                <span class="preview-text">เฉพาะนามสกุลเท่านั้น</span>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">เลขประจำตัวประชาชน</label>
-                                <input type="text" class="form-input form-monitor" id="idCard" placeholder=" ">
-                                <span class="preview-text">ไม่ต้องใส่ขีดระหว่างตัวเลข</span>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">เขตที่พักอาศัย</label>
-                                <select class="form-input form-monitor" id="zone">
-                                    <option value="" disabled selected>เลือกเขตที่พักอาศัย</option>
-                                    <option value="ในเขตจังหวัด">ในเขตจังหวัด</option>
-                                    <option value="นอกเขตจังหวัด">นอกเขตจังหวัด</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">ที่อยู่พยาน</label>
-                                <input type="text" class="form-input form-monitor" id="address" placeholder="ระบุที่อยู่">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">หมายเลขโทรศัพท์</label>
-                                <input type="text" class="form-input form-monitor" id="phone" placeholder=" ">
-                                <span class="preview-text">ไม่ต้องใส่ขีดระหว่างตัวเลข</span>
-                            </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">ชื่อผู้กล่าวหา</label>
+                        <input type="text" class="form-input" id="f_accuser" placeholder="ระบุชื่อผู้กล่าวหา" autocomplete="off" oninput="handleAutocomplete(this, 'accuser'); checkFormChanges()" onfocus="handleAutocomplete(this, 'accuser')">
+                        <div class="autocomplete-list" id="list_accuser"></div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">ชื่อผู้ต้องหา</label>
+                        <input type="text" class="form-input" id="f_suspect" placeholder="ระบุชื่อผู้ต้องหา" autocomplete="off" oninput="handleAutocomplete(this, 'suspect'); checkFormChanges()" onfocus="handleAutocomplete(this, 'suspect')">
+                        <div class="autocomplete-list" id="list_suspect"></div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">พนักงานสอบสวน</label>
+                            <select class="form-input" id="f_investigator" onchange="checkFormChanges()">
+                                <option value="" disabled selected>เลือกพนักงานสอบสวน</option>
+                                <!-- Options injected via JS -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">วันที่สอบปากคำพยาน</label>
+                            <input type="text" class="form-input datepicker" id="f_date" placeholder="เลือกวันที่" onchange="checkFormChanges()">
                         </div>
                     </div>
-                </form>
-            </div>
-
-            <div class="modal-footer-fixed">
-                <div class="footer-left">
-                    <button type="button" class="btn-secondary" id="btnBackTab" onclick="switchTab(0)" disabled>กลับ</button>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">ประจำวันข้อ</label>
+                            <input type="number" class="form-input" id="f_dailyNo" placeholder="ระบุตัวเลข" oninput="checkFormChanges()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เวลา</label>
+                            <input type="text" class="form-input" id="f_time" placeholder="XX.XX" oninput="checkFormChanges()">
+                        </div>
+                    </div>
                 </div>
-                <div class="footer-right">
-                    <button type="button" class="btn-secondary" id="btnNextTab" onclick="switchTab(1)">ต่อไป</button>
-                    <button type="button" class="btn-primary" id="btnSave" onclick="saveData()" disabled>บันทึกข้อมูล</button>
+                
+                <!-- Tab 2: ข้อมูลพยาน -->
+                <div class="tab-content" id="tab2">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">ประเภทพยาน</label>
+                        <select class="form-input" id="f_witnessType" onchange="checkFormChanges()">
+                            <option value="" disabled selected>เลือกประเภทพยาน</option>
+                            <option value="ตำรวจ">ตำรวจ</option>
+                            <option value="ประชาชน">ประชาชน</option>
+                        </select>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">คำนำหน้าชื่อ</label>
+                            <select class="form-input" id="f_title" onchange="toggleOtherTitle(); checkFormChanges()">
+                                <option value="" disabled selected>เลือกคำนำหน้า</option>
+                                <option value="นาย">นาย</option>
+                                <option value="นาง">นาง</option>
+                                <option value="นางสาว">นางสาว</option>
+                                <option value="ระบุอื่นๆ">ระบุอื่นๆ</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="group_otherTitle" style="display: none;">
+                            <label class="form-label">ระบุคำนำหน้า</label>
+                            <input type="text" class="form-input" id="f_otherTitle" placeholder="พิมพ์คำนำหน้า" oninput="checkFormChanges()">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">ชื่อ</label>
+                            <input type="text" class="form-input" id="f_fname" placeholder="เฉพาะชื่อเท่านั้น" oninput="checkFormChanges()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">นามสกุล</label>
+                            <input type="text" class="form-input" id="f_lname" placeholder="เฉพาะนามสกุลเท่านั้น" oninput="checkFormChanges()">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">เลขประจำตัวประชาชน</label>
+                            <input type="text" class="form-input" id="f_idCard" placeholder="ไม่ต้องใส่ขีดระหว่างตัวเลข" oninput="checkFormChanges()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เขตที่พักอาศัย</label>
+                            <select class="form-input" id="f_zone" onchange="checkFormChanges()">
+                                <option value="" disabled selected>เลือกเขต</option>
+                                <option value="ในเขตจังหวัด">ในเขตจังหวัด</option>
+                                <option value="นอกเขตจังหวัด">นอกเขตจังหวัด</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">ที่อยู่พยาน</label>
+                            <input type="text" class="form-input" id="f_address" placeholder="ระบุที่อยู่" oninput="checkFormChanges()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">หมายเลขโทรศัพท์</label>
+                            <input type="text" class="form-input" id="f_phone" placeholder="ไม่ต้องใส่ขีดระหว่างตัวเลข" oninput="checkFormChanges()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-secondary" id="btnBack" onclick="navigateTab(-1)" disabled>กลับ</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-secondary" id="btnNext" onclick="navigateTab(1)">ต่อไป</button>
+                    <button class="btn-primary" id="btnSave" onclick="saveData()" disabled>บันทึก</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="../../datepicker.js"></script>
     <script>
-        // ==========================================================================
-        // Config & State
-        // ==========================================================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzoOPVy9E2P0QD1GTxvA7G7AKx2Ot8n4kbxfjzyeXuEyP28UMdusnjMIqGUtM_EfUQX/exec'; 
+        // ============================================================================
+        // การตั้งค่าและตัวแปร Global
+        // ============================================================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzpr36ybHzJ_DL5QBR7fGSqsmvwlsdbesy0LyQQq5BgfMqTtQNBQPLw5tDgJoCag-9d/exec';
         
-        let currentState = {
-            dataList: [],
-            filteredList: [],
-            centralOfficers: [],
-            currentPage: 1,
-            itemsPerPage: 10,
-            currentMode: 'add',
-            originalDataStr: '',
-            currentTab: 0,
-            searchQuery: ''
-        };
+        let allData = []; // ข้อมูลทั้งหมดจาก Sheet
+        let filteredData = []; // ข้อมูลที่ผ่านการค้นหา
+        let officersData = []; // ข้อมูลเจ้าหน้าที่
+        
+        const ITEMS_PER_PAGE = 10;
+        let currentPage = 1;
+        let totalPages = 1;
+        
+        let currentTab = 1;
+        let editModeId = null;
+        let initialFormState = ""; // ไว้เช็คว่ามีการแก้ไขฟอร์มหรือไม่
+        let editOldDocUrl = "";
 
-        const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-
-        // ==========================================================================
-        // Initialization
-        // ==========================================================================
-        document.addEventListener('DOMContentLoaded', async () => {
+        // ============================================================================
+        // 1. Initialization
+        // ============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
             ThaiDatePicker.init('.datepicker');
-            await initData();
-            setupAutocomplete('accuser', 'C'); // Index for ชื่อผู้กล่าวหา
-            setupAutocomplete('suspect', 'D'); // Index for ชื่อผู้ต้องหา
-            setupFormMonitors();
+            initTabIndicator();
+            fetchInitialData();
+            
+            // ปิด Autocomplete เมื่อคลิกที่อื่น
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.form-group')) {
+                    document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
+                }
+            });
         });
 
-        async function initData() {
+        async function fetchInitialData() {
             try {
-                // Fetch Data from GAS
-                const response = await fetch(`${API_URL}?action=getWitnessSystemData`);
+                const response = await fetch(`${API_URL}?action=getInitialData`);
                 const result = await response.json();
                 
-                if(result.status === 'success') {
-                    // Process Officers
-                    const headersOff = result.officers[0];
-                    currentState.centralOfficers = result.officers.slice(1).map(row => {
-                        let obj = {};
-                        headersOff.forEach((h, i) => obj[h] = row[i] || '');
-                        return obj;
-                    });
+                if (result.status === 'success') {
+                    officersData = result.officers;
+                    sessionStorage.setItem('officers', JSON.stringify(officersData));
                     
-                    // Process Witness Records (Reverse logic applied on render, keep raw here)
-                    const headersWit = result.witnessData[0];
-                    currentState.dataList = result.witnessData.slice(1).map(row => {
-                        let obj = {};
-                        headersWit.forEach((h, i) => obj[h] = row[i] || '');
-                        
-                        // Data Transformation on load
-                        obj['_fullName'] = `${obj['คำนำหน้าชื่อพยาน'] || ''}${obj['ชื่อพยาน'] || ''} ${obj['นามสกุลพยาน'] || ''}`.trim();
-                        obj['_thaiDate'] = convertIsoToThai(obj['วันที่สอบปากคำพยาน']);
-                        
-                        return obj;
-                    });
-
-                    // Store in sessionStorage
-                    sessionStorage.setItem('centralOfficers', JSON.stringify(currentState.centralOfficers));
-                    sessionStorage.setItem('witnessData', JSON.stringify(currentState.dataList));
-
+                    // ข้ามแถว Header (index 0) และกลับด้าน Array ให้ล่าสุดอยู่บน
+                    allData = result.witnessFees.slice(1).reverse(); 
+                    sessionStorage.setItem('witnessFees', JSON.stringify(allData));
+                    
                     populateInvestigatorDropdown();
-                    executeSearch(); // Also triggers render
+                    
+                    filteredData = [...allData];
+                    renderTable();
+                    
+                    document.getElementById('loadingScreen').style.display = 'none';
                 } else {
                     throw new Error(result.message);
                 }
             } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: 'ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง',
-                    confirmButtonText: 'ตกลง'
-                });
-            } finally {
-                hideLoading();
+                document.getElementById('loadingScreen').style.display = 'none';
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง', 'error');
             }
         }
 
-        // ==========================================================================
-        // UI & Render Logic
-        // ==========================================================================
-        function showLoading(text = 'กำลังโหลดข้อมูล...') {
-            document.getElementById('loadingText').innerText = text;
-            document.getElementById('globalLoading').style.display = 'flex';
-        }
-        function hideLoading() {
-            document.getElementById('globalLoading').style.display = 'none';
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            const totalItems = currentState.filteredList.length;
-            const totalPages = Math.ceil(totalItems / currentState.itemsPerPage) || 1;
+        // ============================================================================
+        // 2. Table & Pagination Logic
+        // ============================================================================
+        function renderTable(direction = 0) {
+            totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
             
-            // Validate Current Page
-            if(currentState.currentPage > totalPages) currentState.currentPage = totalPages;
-            if(currentState.currentPage < 1) currentState.currentPage = 1;
+            const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIdx = startIdx + ITEMS_PER_PAGE;
+            const pageData = filteredData.slice(startIdx, endIdx);
             
-            // Pagination Slice (Reversed - Newest first -> index length-1 to 0)
-            const reversedList = [...currentState.filteredList].reverse();
-            const start = (currentState.currentPage - 1) * currentState.itemsPerPage;
-            const end = start + currentState.itemsPerPage;
-            const pageData = reversedList.slice(start, end);
-
-            // Setup Transition (Sliding Effect)
-            tbody.style.opacity = '0';
-            tbody.style.transform = 'translateX(20px)';
+            const wrapper = document.getElementById('tableBodyWrapper');
             
-            setTimeout(() => {
-                tbody.innerHTML = '';
-                
-                if (pageData.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>ไม่พบข้อมูล</p></div></td></tr>`;
-                } else {
-                    pageData.forEach(row => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="action-cell">
-                                <button class="action-btn btn-edit" onclick="openModal('edit', '${row['ID']}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                            </td>
-                            <td style="width: 140px;">${row['_thaiDate']}</td>
-                            <td>${row['ประเภทคดี']}</td>
-                            <td>${row['เลขคดี']}</td>
-                            <td>${row['_fullName']}</td>
-                            <td>${row['ชื่อผู้ต้องหา']}</td>
-                            <td>${row['พนักงานสอบสวน']}</td>
-                            <td class="doc-cell">
-                                ${row['ไฟล์เอกสาร'] ? `<a href="${row['ไฟล์เอกสาร']}" target="_blank" class="doc-link" data-tooltip="เปิดเอกสาร"><i class="fa-solid fa-file-word"></i></a>` : '-'}
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
-                
-                // Update Pagination UI
-                document.getElementById('pageInfo').innerText = `${currentState.currentPage}/${totalPages}`;
-                document.getElementById('btnPrev').disabled = currentState.currentPage === 1;
-                document.getElementById('btnNext').disabled = currentState.currentPage === totalPages;
-                
-                // Animate In
-                requestAnimationFrame(() => {
-                    tbody.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s';
-                    tbody.style.opacity = '1';
-                    tbody.style.transform = 'translateX(0)';
+            // สร้าง Page Element ใหม่
+            const newPage = document.createElement('div');
+            newPage.className = 'table-page';
+            
+            // กำหนดตำแหน่งเริ่มต้นสำหรับ Animation
+            if (direction === 1) newPage.style.transform = 'translateX(100%)';
+            else if (direction === -1) newPage.style.transform = 'translateX(-100%)';
+            else newPage.style.transform = 'translateX(0)';
+            
+            if (pageData.length === 0) {
+                newPage.innerHTML = `<div style="padding: 30px; text-align: center; color: var(--text-light);">ไม่พบข้อมูล</div>`;
+            } else {
+                pageData.forEach(row => {
+                    // row structure: [0:ประเภทคดี, 1:เลขคดี, 2:ผู้กล่าวหา, 3:ผู้ต้องหา, 4:พงส, 5:วันที่, 6:ประจำวัน, 7:เวลา, 8:ประเภทพยาน, 9:คำนำหน้า, 10:ชื่อ, 11:สกุล, 12:เลขปชช, 13:เขต, 14:ที่อยู่, 15:โทร, 16:URL, 17:ID]
+                    const thaiDate = convertToThaiDate(row[5]);
+                    const witnessName = `${row[9]}${row[10]} ${row[11]}`;
+                    
+                    const tr = document.createElement('div');
+                    tr.className = 'table-row';
+                    tr.innerHTML = `
+                        <div><button class="action-btn btn-edit" onclick="editRecord('${row[17]}')"><i class="fa-solid fa-pen"></i></button></div>
+                        <div class="col-ellipsis">${thaiDate}</div>
+                        <div class="col-ellipsis">${row[0]}</div>
+                        <div class="col-ellipsis">${row[1]}</div>
+                        <div class="col-ellipsis" title="${witnessName}">${witnessName}</div>
+                        <div class="col-ellipsis" title="${row[3]}">${row[3]}</div>
+                        <div class="col-ellipsis" title="${row[4]}">${row[4]}</div>
+                        <div style="text-align: center;">
+                            ${row[16] ? `<a href="${row[16]}" target="_blank" style="color: var(--navy-main); font-size: 1.2rem;"><i class="fa-solid fa-file-lines"></i></a>` : '-'}
+                        </div>
+                    `;
+                    newPage.appendChild(tr);
                 });
-            }, 200); // Wait for fade out
+            }
+            
+            wrapper.appendChild(newPage);
+            
+            // Animate
+            setTimeout(() => {
+                const oldPages = wrapper.querySelectorAll('.table-page:not(:last-child)');
+                oldPages.forEach(p => {
+                    p.style.transform = direction === 1 ? 'translateX(-100%)' : 'translateX(100%)';
+                    p.style.opacity = '0';
+                });
+                newPage.style.transform = 'translateX(0)';
+                
+                setTimeout(() => {
+                    oldPages.forEach(p => p.remove());
+                }, 500); // รอ transition จบ
+            }, 10);
+            
+            // Update Footer
+            document.getElementById('pageInfo').innerText = `${currentPage}/${totalPages}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
         }
 
-        function changePage(direction) {
-            const tbody = document.getElementById('tableBody');
-            // Sliding direction based on Next/Prev
-            tbody.style.transform = `translateX(${direction > 0 ? '-20px' : '20px'})`;
-            tbody.style.opacity = '0';
-            
-            setTimeout(() => {
-                currentState.currentPage += direction;
-                renderTable();
-            }, 200);
+        function changePage(step) {
+            const newPage = currentPage + step;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderTable(step);
+            }
         }
 
         function executeSearch() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (query === '') {
-                currentState.filteredList = [...currentState.dataList];
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                filteredData = [...allData];
             } else {
-                currentState.filteredList = currentState.dataList.filter(row => {
-                    // Search through relevant fields including parsed Thai Date
-                    return Object.values(row).some(val => String(val).toLowerCase().includes(query));
+                filteredData = allData.filter(row => {
+                    const thaiDate = convertToThaiDate(row[5]);
+                    const witnessName = `${row[9]}${row[10]} ${row[11]}`;
+                    const searchStr = `${thaiDate} ${row[0]} ${row[1]} ${witnessName} ${row[3]} ${row[4]}`.toLowerCase();
+                    return searchStr.includes(query);
                 });
             }
-            currentState.currentPage = 1;
-            renderTable();
+            currentPage = 1;
+            renderTable(0);
         }
 
-        // ==========================================================================
-        // Modal & Form Handling
-        // ==========================================================================
-        function populateInvestigatorDropdown() {
-            const select = document.getElementById('investigator');
-            const officers = JSON.parse(sessionStorage.getItem('centralOfficers') || '[]');
-            
-            // Filter only Investigators
-            const investigators = officers.filter(o => o['หน้าที่1'] === 'พนักงานสอบสวน');
-            investigators.forEach(inv => {
-                const opt = document.createElement('option');
-                opt.value = inv['ยศ ชื่อ สกุล'];
-                opt.textContent = inv['ยศ ชื่อ สกุล'];
-                select.appendChild(opt);
-            });
+        // ============================================================================
+        // 3. Modal & Tab Logic
+        // ============================================================================
+        function initTabIndicator() {
+            const activeTab = document.querySelector('.tab-btn.active');
+            updateTabIndicator(activeTab);
         }
 
-        function switchTab(index) {
-            currentState.currentTab = index;
+        function updateTabIndicator(btn) {
+            const indicator = document.getElementById('tabIndicator');
+            indicator.style.width = `${btn.offsetWidth}px`;
+            indicator.style.left = `${btn.offsetLeft}px`;
+        }
+
+        function switchTab(tabIndex, btnElement) {
+            currentTab = tabIndex;
             
             // Update Buttons
-            document.getElementById('tabBtn0').classList.toggle('active', index === 0);
-            document.getElementById('tabBtn1').classList.toggle('active', index === 1);
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) {
+                btnElement.classList.add('active');
+                updateTabIndicator(btnElement);
+            } else {
+                const targetBtn = document.querySelectorAll('.tab-btn')[tabIndex - 1];
+                targetBtn.classList.add('active');
+                updateTabIndicator(targetBtn);
+            }
             
-            // Sliding Indicator
-            const indicator = document.getElementById('tabIndicator');
-            const activeBtn = document.getElementById(`tabBtn${index}`);
-            indicator.style.width = `${activeBtn.offsetWidth}px`;
-            indicator.style.left = `${activeBtn.offsetLeft}px`;
+            // Update Content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab${tabIndex}`).classList.add('active');
             
-            // Content Toggle
-            document.getElementById('tab0').classList.toggle('active', index === 0);
-            document.getElementById('tab1').classList.toggle('active', index === 1);
-            
-            // Footer Buttons state
-            document.getElementById('btnBackTab').disabled = (index === 0);
-            document.getElementById('btnNextTab').disabled = (index === 1);
-            
-            // Scroll to top
+            // Scroll to top of modal body
             document.getElementById('modalBody').scrollTop = 0;
+            
+            // Update Footer Buttons
+            document.getElementById('btnBack').disabled = (tabIndex === 1);
+            document.getElementById('btnNext').disabled = (tabIndex === 2);
         }
 
-        function openModal(mode, id = null) {
-            currentState.currentMode = mode;
-            document.getElementById('formModal').style.display = 'flex';
-            document.getElementById('witnessForm').reset();
-            ThaiDatePicker.clear('witnessDate');
-            toggleOtherTitle(); // Reset custom title field
-            
-            // Initialize Tabs layout accurately after display:flex
-            setTimeout(() => switchTab(0), 10);
-            
-            if(mode === 'add') {
-                document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-file-circle-plus"></i> เพิ่มข้อมูลเบิกค่าตอบแทน';
-                document.getElementById('btnDelete').style.display = 'none';
-                document.getElementById('editId').value = '';
-                document.getElementById('editDocUrl').value = '';
-                currentState.originalDataStr = ''; // Force change detection
-            } else {
-                document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> แก้ไขข้อมูลเบิกค่าตอบแทน';
-                document.getElementById('btnDelete').style.display = 'block';
-                
-                // Load Data
-                const rowData = currentState.dataList.find(r => String(r['ID']) === String(id));
-                if(rowData) {
-                    fillForm(rowData);
-                    // Snapshot for change detection
-                    setTimeout(() => {
-                        currentState.originalDataStr = getFormDataString();
-                        checkFormChanges();
-                    }, 100);
-                }
+        function navigateTab(step) {
+            const newTab = currentTab + step;
+            if (newTab >= 1 && newTab <= 2) {
+                switchTab(newTab);
             }
-            checkFormChanges(); // Initial validation
+        }
+
+        function openModal(id = null) {
+            editModeId = id;
+            clearForm();
+            switchTab(1);
+            
+            const modal = document.getElementById('formModal');
+            modal.style.display = 'flex';
+            
+            if (id) {
+                document.getElementById('modalTitle').innerText = 'แก้ไขข้อมูล';
+                document.getElementById('btnDelete').style.display = 'block';
+                preFillForm(id);
+            } else {
+                document.getElementById('modalTitle').innerText = 'เพิ่มข้อมูลใหม่';
+                document.getElementById('btnDelete').style.display = 'none';
+                document.getElementById('btnSave').disabled = true;
+            }
+            
+            // เก็บ State เริ่มต้นไว้เทียบ
+            setTimeout(() => { initialFormState = getFormStateString(); }, 100);
         }
 
         function closeModal() {
             document.getElementById('formModal').style.display = 'none';
         }
 
-        function fillForm(data) {
-            document.getElementById('editId').value = data['ID'];
-            document.getElementById('editDocUrl').value = data['ไฟล์เอกสาร'];
+        // ============================================================================
+        // 4. Form Logic & Autocomplete
+        // ============================================================================
+        function populateInvestigatorDropdown() {
+            const select = document.getElementById('f_investigator');
+            // กรองเฉพาะ I (index 8) == "พนักงานสอบสวน"
+            const investigators = officersData.slice(1).filter(row => row[8] === 'พนักงานสอบสวน');
             
-            document.getElementById('caseType').value = data['ประเภทคดี'];
-            document.getElementById('caseNumber').value = data['เลขคดี'];
-            document.getElementById('accuser').value = data['ชื่อผู้กล่าวหา'];
-            document.getElementById('suspect').value = data['ชื่อผู้ต้องหา'];
-            document.getElementById('investigator').value = data['พนักงานสอบสวน'];
-            
-            ThaiDatePicker.setISODate('witnessDate', data['วันที่สอบปากคำพยาน']);
-            
-            document.getElementById('dailyReportNo').value = data['ประจำวันข้อ'];
-            document.getElementById('time').value = data['เวลา'];
-            document.getElementById('witnessType').value = data['ประเภทพยาน'];
-            
-            // Handle Title Prefix
-            const titleVal = data['คำนำหน้าชื่อพยาน'];
-            const standardTitles = ['นาย', 'นาง', 'นางสาว'];
-            if(standardTitles.includes(titleVal)) {
-                document.getElementById('titleSelect').value = titleVal;
-            } else {
-                document.getElementById('titleSelect').value = 'ระบุอื่นๆ';
-                document.getElementById('titleOther').value = titleVal;
-            }
-            toggleOtherTitle();
-
-            document.getElementById('firstName').value = data['ชื่อพยาน'];
-            document.getElementById('lastName').value = data['นามสกุลพยาน'];
-            document.getElementById('idCard').value = data['เลขประจำตัวประชาชน'];
-            document.getElementById('zone').value = data['เขตที่พักอาศัย'];
-            document.getElementById('address').value = data['ที่อยู่พยาน'];
-            document.getElementById('phone').value = data['หมายเลขโทรศัพท์'];
+            investigators.forEach(inv => {
+                const option = document.createElement('option');
+                option.value = inv[4]; // E ยศ ชื่อ สกุล
+                option.text = inv[4];
+                select.appendChild(option);
+            });
         }
 
-        // ==========================================================================
-        // Form Logic & Validation
-        // ==========================================================================
+        function handleAutocomplete(inputEl, type) {
+            const listEl = document.getElementById(`list_${type}`);
+            const query = inputEl.value.toLowerCase();
+            
+            // ดึงประวัติที่ไม่ซ้ำจาก allData (ผู้กล่าวหา index 2, ผู้ต้องหา index 3)
+            const colIndex = type === 'accuser' ? 2 : 3;
+            const history = [...new Set(allData.map(row => row[colIndex]).filter(val => val))];
+            
+            const matches = history.filter(val => val.toLowerCase().includes(query));
+            
+            listEl.innerHTML = '';
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerText = match;
+                    div.onclick = () => {
+                        inputEl.value = match;
+                        listEl.style.display = 'none';
+                        checkFormChanges();
+                    };
+                    listEl.appendChild(div);
+                });
+                listEl.style.display = 'block';
+            } else {
+                listEl.style.display = 'none';
+            }
+        }
+
         function toggleOtherTitle() {
-            const select = document.getElementById('titleSelect');
-            const otherBox = document.getElementById('titleOtherBox');
-            if(select.value === 'ระบุอื่นๆ') {
-                otherBox.style.display = 'block';
+            const title = document.getElementById('f_title').value;
+            const otherGroup = document.getElementById('group_otherTitle');
+            if (title === 'ระบุอื่นๆ') {
+                otherGroup.style.display = 'flex';
             } else {
-                otherBox.style.display = 'none';
-                document.getElementById('titleOther').value = '';
+                otherGroup.style.display = 'none';
+                document.getElementById('f_otherTitle').value = '';
             }
-            checkFormChanges();
         }
 
-        function setupAutocomplete(inputId, colRef) {
-            const input = document.getElementById(inputId);
-            const dropdown = document.getElementById(`${inputId}Dropdown`);
-            
-            // Collect unique history from sessionStorage data
-            const getHistory = () => {
-                const key = colRef === 'C' ? 'ชื่อผู้กล่าวหา' : 'ชื่อผู้ต้องหา';
-                return [...new Set(currentState.dataList.map(r => r[key]).filter(v => v))];
-            };
-
-            input.addEventListener('focus', () => {
-                renderDropdown(getHistory(), dropdown, input);
+        function clearForm() {
+            document.querySelectorAll('.form-input').forEach(el => {
+                if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                else el.value = '';
             });
-
-            input.addEventListener('input', () => {
-                const val = input.value.trim().toLowerCase();
-                const filtered = getHistory().filter(item => item.toLowerCase().includes(val));
-                renderDropdown(filtered, dropdown, input);
-            });
-
-            // Close when click outside
-            document.addEventListener('click', (e) => {
-                if(!input.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.style.display = 'none';
-                }
-            });
+            ThaiDatePicker.clear('f_date');
+            toggleOtherTitle();
         }
 
-        function renderDropdown(items, dropdown, input) {
-            dropdown.innerHTML = '';
-            if(items.length === 0) {
-                dropdown.style.display = 'none';
-                return;
-            }
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'autocomplete-item';
-                div.textContent = item;
-                div.onclick = () => {
-                    input.value = item;
-                    dropdown.style.display = 'none';
-                    checkFormChanges(); // Trigger validation
-                };
-                dropdown.appendChild(div);
-            });
-            dropdown.style.display = 'block';
-        }
-
-        function setupFormMonitors() {
-            document.querySelectorAll('.form-monitor').forEach(el => {
-                el.addEventListener('input', checkFormChanges);
-                el.addEventListener('change', checkFormChanges);
-            });
-        }
-
-        function getFormDataString() {
-            // Helper to get string of all input values for comparison
-            const inputs = document.querySelectorAll('#witnessForm .form-monitor');
-            return Array.from(inputs).map(el => el.value).join('|');
+        function getFormStateString() {
+            const values = [];
+            document.querySelectorAll('.form-input').forEach(el => values.push(el.value));
+            return JSON.stringify(values);
         }
 
         function checkFormChanges() {
-            const btnSave = document.getElementById('btnSave');
-            const currentStr = getFormDataString();
-            
-            // 1. Check if all required fields are filled
+            // ตรวจสอบว่ากรอกครบไหม
+            const requiredIds = ['f_caseType', 'f_caseNo', 'f_accuser', 'f_suspect', 'f_investigator', 'f_date', 'f_dailyNo', 'f_time', 'f_witnessType', 'f_title', 'f_fname', 'f_lname', 'f_idCard', 'f_zone', 'f_address', 'f_phone'];
             let isComplete = true;
-            const requiredIds = ['caseType', 'caseNumber', 'accuser', 'suspect', 'investigator', 'witnessDate', 'dailyReportNo', 'time', 'witnessType', 'firstName', 'lastName', 'idCard', 'zone', 'address', 'phone'];
             
-            for(let id of requiredIds) {
-                if(!document.getElementById(id).value) {
+            for (let id of requiredIds) {
+                if (!document.getElementById(id).value) {
                     isComplete = false;
                     break;
                 }
             }
             
-            // Specific check for Title
-            const titleSel = document.getElementById('titleSelect').value;
-            if(!titleSel) isComplete = false;
-            if(titleSel === 'ระบุอื่นๆ' && !document.getElementById('titleOther').value.trim()) isComplete = false;
+            if (document.getElementById('f_title').value === 'ระบุอื่นๆ' && !document.getElementById('f_otherTitle').value) {
+                isComplete = false;
+            }
 
-            // 2. Change Detection (Only for Edit Mode)
-            let isChanged = currentState.currentMode === 'add' ? true : (currentStr !== currentState.originalDataStr);
+            const btnSave = document.getElementById('btnSave');
+            
+            if (!isComplete) {
+                btnSave.disabled = true;
+                return;
+            }
 
-            btnSave.disabled = !(isComplete && isChanged);
+            // ถ้าเป็นโหมดแก้ไข ต้องเช็คว่าค่าเปลี่ยนไปจากเดิมไหม
+            if (editModeId) {
+                const currentState = getFormStateString();
+                btnSave.disabled = (currentState === initialFormState);
+            } else {
+                btnSave.disabled = false;
+            }
         }
 
-        // ==========================================================================
-        // Data Preparation & GAS Communication
-        // ==========================================================================
-        function getCentralValue(duty2, field) {
-            const officers = JSON.parse(sessionStorage.getItem('centralOfficers') || '[]');
-            const officer = officers.find(o => o['หน้าที่2'] === duty2);
-            return officer ? (officer[field] || '') : '';
+        // ============================================================================
+        // 5. Data Preparation & API Calls
+        // ============================================================================
+        function showLoading(text) {
+            document.getElementById('loadingText').innerText = text;
+            document.getElementById('loadingScreen').style.display = 'flex';
         }
 
-        function preparePayload() {
-            // Parse title
-            let prefix = document.getElementById('titleSelect').value;
-            if(prefix === 'ระบุอื่นๆ') prefix = document.getElementById('titleOther').value.trim();
-            
-            const investigatorName = document.getElementById('investigator').value;
-            const officers = JSON.parse(sessionStorage.getItem('centralOfficers') || '[]');
-            const invObj = officers.find(o => o['ยศ ชื่อ สกุล'] === investigatorName) || {};
+        function hideLoading() {
+            document.getElementById('loadingScreen').style.display = 'none';
+        }
 
-            const zoneVal = document.getElementById('zone').value;
-            const isoDate = ThaiDatePicker.getISODate('witnessDate');
+        function convertToThaiDate(isoString) {
+            if (!isoString) return "";
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return isoString; // Fallback
             
-            // Compile Payload based on Master Plan EXACTLY
-            const payload = {
-                "action": currentState.currentMode === 'add' ? 'saveWitness' : 'updateWitness',
-                "ID": currentState.currentMode === 'add' ? Date.now().toString() : document.getElementById('editId').value,
-                "oldDocUrl": document.getElementById('editDocUrl').value, // Used for delete/update
-                
-                // Template Replacement Data
-                "data": {
-                    "<<ประเภทคดี>>": document.getElementById('caseType').value,
-                    "<<เลขคดี>>": document.getElementById('caseNumber').value,
-                    "<<ชื่อผู้กล่าวหา>>": document.getElementById('accuser').value,
-                    "<<ชื่อผู้ต้องหา>>": document.getElementById('suspect').value,
-                    "<<วันที่ไทย>>": convertIsoToThai(isoDate),
-                    "<<ประจำวันข้อ>>": document.getElementById('dailyReportNo').value,
-                    "<<เวลา>>": document.getElementById('time').value,
-                    "<<คำนำหน้า>>": prefix,
-                    "<<ชื่อสกุลพยาน>>": `${document.getElementById('firstName').value.trim()} ${document.getElementById('lastName').value.trim()}`,
-                    "<<เลขประจำตัวประชาชน>>": document.getElementById('idCard').value,
-                    "<<ที่อยู่พยาน>>": document.getElementById('address').value,
-                    "<<ใน>>": zoneVal === 'ในเขตจังหวัด' ? '(✓)' : '(   )',
-                    "<<นอก>>": zoneVal === 'ในเขตจังหวัด' ? '(   )' : '(✓)',
-                    "<<ค่าตอบแทน>>": zoneVal === 'ในเขตจังหวัด' ? '300' : '600',
-                    "<<ตัวหนังสือค่าตอบแทน>>": zoneVal === 'ในเขตจังหวัด' ? 'สามร้อยบาทถ้วน' : 'หกร้อยบาทถ้วน',
-                    
-                    // Central Data Loopups
-                    "<<ยศ พงส>>": invObj['ยศ'] || '',
-                    "<<ชื่อสกุล พงส>>": `${invObj['ชื่อ'] || ''} ${invObj['สกุล'] || ''}`.trim(),
-                    "<<ตำแหน่ง พงส>>": invObj['ตำแหน่งย่อ'] || '',
-                    
-                    "<<ยศหัวหน้างาน>>": getCentralValue('หัวหน้างานสอบสวน', 'ยศ'),
-                    "<<ชื่อสกุลหัวหน้างาน>>": `${getCentralValue('หัวหน้างานสอบสวน', 'ชื่อ')} ${getCentralValue('หัวหน้างานสอบสวน', 'สกุล')}`.trim(),
-                    "<<ตำแหน่งหัวหน้างาน>>": getCentralValue('หัวหน้างานสอบสวน', 'ตำแหน่งย่อ'),
-                    
-                    "<<ยศผู้ตรวจสอบ>>": getCentralValue('หัวหน้างานอำนวยการ', 'ยศ'),
-                    "<<ชื่อสกุลผู้ตรวจสอบ>>": `${getCentralValue('หัวหน้างานอำนวยการ', 'ชื่อ')} ${getCentralValue('หัวหน้างานอำนวยการ', 'สกุล')}`.trim(),
-                    "<<ตำแหน่งผู้ตรวจสอบ>>": getCentralValue('หัวหน้างานอำนวยการ', 'ตำแหน่งย่อ'),
-                    
-                    "<<ยศผู้อนุมัติ>>": getCentralValue('หัวหน้าสถานี', 'ยศ'),
-                    "<<ชื่อสกุลผู้อนุมัติ>>": `${getCentralValue('หัวหน้าสถานี', 'ชื่อ')} ${getCentralValue('หัวหน้าสถานี', 'สกุล')}`.trim(),
-                    "<<ตำแหน่งผู้อนุมัติ>>": getCentralValue('หัวหน้าสถานี', 'ตำแหน่งย่อ'),
-                    
-                    "<<ยศผู้จ่ายเงิน>>": getCentralValue('เจ้าหน้าที่การเงิน', 'ยศ'),
-                    "<<ชื่อสกุลผู้จ่ายเงิน>>": `${getCentralValue('เจ้าหน้าที่การเงิน', 'ชื่อ')} ${getCentralValue('เจ้าหน้าที่การเงิน', 'สกุล')}`.trim()
-                },
-                
-                // Raw form data to append to sheet (16 items)
-                "sheetData": {
-                    "ประเภทคดี": document.getElementById('caseType').value,
-                    "เลขคดี": document.getElementById('caseNumber').value,
-                    "ชื่อผู้กล่าวหา": document.getElementById('accuser').value,
-                    "ชื่อผู้ต้องหา": document.getElementById('suspect').value,
-                    "พนักงานสอบสวน": document.getElementById('investigator').value,
-                    "วันที่สอบปากคำพยาน": isoDate,
-                    "ประจำวันข้อ": document.getElementById('dailyReportNo').value,
-                    "เวลา": document.getElementById('time').value,
-                    "ประเภทพยาน": document.getElementById('witnessType').value,
-                    "คำนำหน้าชื่อพยาน": prefix,
-                    "ชื่อพยาน": document.getElementById('firstName').value.trim(),
-                    "นามสกุลพยาน": document.getElementById('lastName').value.trim(),
-                    "เลขประจำตัวประชาชน": document.getElementById('idCard').value,
-                    "เขตที่พักอาศัย": document.getElementById('zone').value,
-                    "ที่อยู่พยาน": document.getElementById('address').value,
-                    "หมายเลขโทรศัพท์": document.getElementById('phone').value
-                }
-            };
-            return payload;
+            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            return `${date.getDate()} ${thaiMonths[date.getMonth()]} ${date.getFullYear() + 543}`;
+        }
+
+        function getOfficerLookup(duty2) {
+            const row = officersData.find(r => r[9] === duty2); // J หน้าที่2
+            if (!row) return { rank: '', name: '', pos: '' };
+            return { rank: row[0], name: `${row[2]} ${row[3]}`, pos: row[6] };
         }
 
         async function saveData() {
-            const payload = preparePayload();
-            showLoading(currentState.currentMode === 'add' ? 'กำลังบันทึกข้อมูลและสร้างเอกสาร...' : 'กำลังบันทึกและสร้างเอกสารใหม่...');
+            showLoading('กำลังบันทึกข้อมูลและสร้างเอกสาร...');
             
+            // 1. ดึงค่าจากฟอร์ม
+            const titleSelect = document.getElementById('f_title').value;
+            const finalTitle = titleSelect === 'ระบุอื่นๆ' ? document.getElementById('f_otherTitle').value : titleSelect;
+            const zone = document.getElementById('f_zone').value;
+            const invName = document.getElementById('f_investigator').value;
+            const isoDate = ThaiDatePicker.getISODate('f_date');
+            
+            // 2. Lookup ข้อมูลเจ้าหน้าที่
+            const invRow = officersData.find(r => r[4] === invName);
+            const invRank = invRow ? invRow[0] : '';
+            const invFullName = invRow ? `${invRow[2]} ${invRow[3]}` : '';
+            const invPos = invRow ? invRow[6] : '';
+            
+            const headInv = getOfficerLookup('หัวหน้างานสอบสวน');
+            const headAdmin = getOfficerLookup('หัวหน้างานอำนวยการ');
+            const headStation = getOfficerLookup('หัวหน้าสถานี');
+            const finance = getOfficerLookup('เจ้าหน้าที่การเงิน');
+
+            // 3. เตรียม Object สำหรับแทนที่คำในเอกสาร
+            const docData = {
+                '<<ประเภทคดี>>': document.getElementById('f_caseType').value,
+                '<<เลขคดี>>': document.getElementById('f_caseNo').value,
+                '<<ชื่อผู้กล่าวหา>>': document.getElementById('f_accuser').value,
+                '<<ชื่อผู้ต้องหา>>': document.getElementById('f_suspect').value,
+                '<<วันที่ไทย>>': convertToThaiDate(isoDate),
+                '<<ประจำวันข้อ>>': document.getElementById('f_dailyNo').value,
+                '<<เวลา>>': document.getElementById('f_time').value,
+                '<<คำนำหน้า>>': finalTitle,
+                '<<ชื่อสกุลพยาน>>': `${document.getElementById('f_fname').value} ${document.getElementById('f_lname').value}`,
+                '<<เลขประจำตัวประชาชน>>': document.getElementById('f_idCard').value,
+                '<<ที่อยู่พยาน>>': document.getElementById('f_address').value,
+                '<<ใน>>': zone === 'ในเขตจังหวัด' ? '(✓)' : '(   )',
+                '<<นอก>>': zone === 'นอกเขตจังหวัด' ? '(✓)' : '(   )',
+                '<<ค่าตอบแทน>>': zone === 'ในเขตจังหวัด' ? '300' : '600',
+                '<<ตัวหนังสือค่าตอบแทน>>': zone === 'ในเขตจังหวัด' ? 'สามร้อยบาทถ้วน' : 'หกร้อยบาทถ้วน',
+                
+                '<<ยศ พงส>>': invRank,
+                '<<ชื่อสกุล พงส>>': invFullName,
+                '<<ตำแหน่ง พงส>>': invPos,
+                '<<ยศหัวหน้างาน>>': headInv.rank,
+                '<<ชื่อสกุลหัวหน้างาน>>': headInv.name,
+                '<<ตำแหน่งหัวหน้างาน>>': headInv.pos,
+                '<<ยศผู้ตรวจสอบ>>': headAdmin.rank,
+                '<<ชื่อสกุลผู้ตรวจสอบ>>': headAdmin.name,
+                '<<ตำแหน่งผู้ตรวจสอบ>>': headAdmin.pos,
+                '<<ยศผู้อนุมัติ>>': headStation.rank,
+                '<<ชื่อสกุลผู้อนุมัติ>>': headStation.name,
+                '<<ตำแหน่งผู้อนุมัติ>>': headStation.pos,
+                '<<ยศผู้จ่ายเงิน>>': finance.rank,
+                '<<ชื่อสกุลผู้จ่ายเงิน>>': finance.name
+            };
+
+            // 4. เตรียม Array สำหรับลง Sheet (A-R)
+            const id = editModeId || Date.now().toString();
+            const rowData = [
+                document.getElementById('f_caseType').value,
+                document.getElementById('f_caseNo').value,
+                document.getElementById('f_accuser').value,
+                document.getElementById('f_suspect').value,
+                invName,
+                isoDate,
+                document.getElementById('f_dailyNo').value,
+                document.getElementById('f_time').value,
+                document.getElementById('f_witnessType').value,
+                finalTitle,
+                document.getElementById('f_fname').value,
+                document.getElementById('f_lname').value,
+                document.getElementById('f_idCard').value,
+                zone,
+                document.getElementById('f_address').value,
+                document.getElementById('f_phone').value,
+                editOldDocUrl, // จะถูกแทนที่ใน GAS
+                id
+            ];
+
+            const payload = {
+                action: editModeId ? 'updateRecord' : 'createRecord',
+                id: id,
+                oldDocUrl: editOldDocUrl,
+                docData: docData,
+                rowData: rowData
+            };
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
-                
                 const result = await response.json();
                 
-                if(result.status === 'success') {
-                    // Update Local SessionStorage
-                    const newRow = { 
-                        ...payload.sheetData, 
-                        'ไฟล์เอกสาร': result.docUrl, 
-                        'ID': result.id,
-                        '_fullName': `${payload.sheetData['คำนำหน้าชื่อพยาน']}${payload.sheetData['ชื่อพยาน']} ${payload.sheetData['นามสกุลพยาน']}`,
-                        '_thaiDate': payload.data['<<วันที่ไทย>>']
-                    };
-
-                    if(currentState.currentMode === 'add') {
-                        currentState.dataList.push(newRow); // Added to end (will reverse on render)
+                if (result.status === 'success') {
+                    // อัปเดต URL ที่ได้กลับมา
+                    rowData[16] = result.docUrl;
+                    
+                    // อัปเดต sessionStorage
+                    if (editModeId) {
+                        const index = allData.findIndex(r => r[17] == id);
+                        if (index > -1) allData[index] = rowData;
                     } else {
-                        const index = currentState.dataList.findIndex(r => String(r.ID) === String(payload.ID));
-                        if(index > -1) currentState.dataList[index] = newRow;
+                        allData.unshift(rowData); // เพิ่มบนสุด
                     }
                     
-                    sessionStorage.setItem('witnessData', JSON.stringify(currentState.dataList));
+                    sessionStorage.setItem('witnessFees', JSON.stringify(allData));
+                    
+                    // รีเฟรชหน้าจอ
+                    executeSearch(); 
+                    closeModal();
+                    hideLoading();
                     
                     Swal.fire({
+                        title: editModeId ? 'อัพเดทข้อมูลสำเร็จ' : 'การดำเนินการเสร็จสมบูรณ์',
                         icon: 'success',
-                        title: currentState.currentMode === 'add' ? 'บันทึกข้อมูลสำเร็จ' : 'อัพเดทข้อมูลและสร้างเอกสารสำเร็จ',
-                        showConfirmButton: false,
-                        timer: 1500
+                        timer: 1500,
+                        showConfirmButton: false
                     });
-                    
-                    closeModal();
-                    executeSearch(); // Refresh Table
                 } else {
                     throw new Error(result.message);
                 }
             } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: 'การสื่อสารขัดข้อง โปรดลองใหม่อีกครั้ง'
-                });
-            } finally {
                 hideLoading();
+                Swal.fire('เกิดข้อผิดพลาด', 'โปรดลองใหม่อีกครั้ง', 'error');
             }
         }
 
-        function deleteData() {
+        // ============================================================================
+        // 6. Edit & Delete Logic
+        // ============================================================================
+        function editRecord(id) {
+            openModal(id);
+        }
+
+        function preFillForm(id) {
+            const row = allData.find(r => r[17] == id);
+            if (!row) return;
+            
+            editOldDocUrl = row[16];
+            
+            document.getElementById('f_caseType').value = row[0];
+            document.getElementById('f_caseNo').value = row[1];
+            document.getElementById('f_accuser').value = row[2];
+            document.getElementById('f_suspect').value = row[3];
+            document.getElementById('f_investigator').value = row[4];
+            ThaiDatePicker.setISODate('f_date', row[5]);
+            document.getElementById('f_dailyNo').value = row[6];
+            document.getElementById('f_time').value = row[7];
+            
+            document.getElementById('f_witnessType').value = row[8];
+            
+            // จัดการคำนำหน้า
+            const title = row[9];
+            if (['นาย', 'นาง', 'นางสาว'].includes(title)) {
+                document.getElementById('f_title').value = title;
+            } else {
+                document.getElementById('f_title').value = 'ระบุอื่นๆ';
+                document.getElementById('f_otherTitle').value = title;
+            }
+            toggleOtherTitle();
+            
+            document.getElementById('f_fname').value = row[10];
+            document.getElementById('f_lname').value = row[11];
+            document.getElementById('f_idCard').value = row[12];
+            document.getElementById('f_zone').value = row[13];
+            document.getElementById('f_address').value = row[14];
+            document.getElementById('f_phone').value = row[15];
+            
+            checkFormChanges();
+        }
+
+        function deleteRecord() {
             Swal.fire({
-                title: 'คุณต้องการลบข้อมูลนี้ใช่หรือไม่?',
-                text: "ข้อมูลและไฟล์เอกสารจะถูกลบอย่างถาวร",
+                title: 'ยืนยันการลบข้อมูล',
+                text: 'คุณต้องการลบข้อมูลนี้ใช่หรือไม่?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#e11d48',
-                cancelButtonColor: '#f1f5f9',
                 confirmButtonText: 'ลบข้อมูล',
-                cancelButtonText: '<span style="color:#0f172a">ยกเลิก</span>',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: 'var(--danger)',
                 reverseButtons: true
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     showLoading('กำลังลบข้อมูล...');
-                    const id = document.getElementById('editId').value;
-                    const docUrl = document.getElementById('editDocUrl').value;
                     
                     try {
+                        const payload = {
+                            action: 'deleteRecord',
+                            id: editModeId,
+                            docUrl: editOldDocUrl
+                        };
+                        
                         const response = await fetch(API_URL, {
                             method: 'POST',
-                            body: JSON.stringify({
-                                action: 'deleteWitness',
-                                ID: id,
-                                docUrl: docUrl
-                            })
+                            body: JSON.stringify(payload)
                         });
+                        const resJson = await response.json();
                         
-                        const res = await response.json();
-                        
-                        if(res.status === 'success') {
-                            // Remove from local array
-                            currentState.dataList = currentState.dataList.filter(r => String(r.ID) !== String(id));
-                            sessionStorage.setItem('witnessData', JSON.stringify(currentState.dataList));
+                        if (resJson.status === 'success') {
+                            // ลบออกจาก sessionStorage
+                            allData = allData.filter(r => r[17] != editModeId);
+                            sessionStorage.setItem('witnessFees', JSON.stringify(allData));
+                            
+                            executeSearch();
+                            closeModal();
+                            hideLoading();
                             
                             Swal.fire({
-                                icon: 'success',
                                 title: 'ลบข้อมูลสำเร็จ',
-                                showConfirmButton: false,
-                                timer: 1500
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false
                             });
-                            
-                            closeModal();
-                            executeSearch(); // Refresh Table
                         } else {
-                            throw new Error(res.message);
+                            throw new Error(resJson.message);
                         }
-                    } catch(error) {
-                        console.error(error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'เกิดข้อผิดพลาด',
-                            text: 'ไม่สามารถลบข้อมูลได้ โปรดลองใหม่อีกครั้ง'
-                        });
-                    } finally {
+                    } catch (error) {
                         hideLoading();
+                        Swal.fire('เกิดข้อผิดพลาด', 'โปรดลองใหม่อีกครั้ง', 'error');
                     }
                 }
             });
         }
-
-        // ==========================================================================
-        // Utility Functions
-        // ==========================================================================
-        function convertIsoToThai(isoDateStr) {
-            if(!isoDateStr) return '-';
-            // input like 2024-05-20
-            const parts = isoDateStr.split('-');
-            if(parts.length !== 3) return isoDateStr;
-            const year = parseInt(parts[0]) + 543;
-            const month = thaiMonths[parseInt(parts[1]) - 1];
-            const day = parseInt(parts[2]);
-            return `${day} ${month} ${year}`;
-        }
-
     </script>
 </body>
 </html>
