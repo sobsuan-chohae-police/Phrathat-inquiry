@@ -530,7 +530,6 @@
     }
 
 
-    // ฟังก์ชันนี้ถูกแก้ใหม่ เพื่อดึงข้อมูลเก่าแนบไปกับฟอร์มด้วย 100%
     function submitSuspendForm() {
         const form = document.getElementById('suspendForm');
         const dataObj = Object.fromEntries(new FormData(form).entries());
