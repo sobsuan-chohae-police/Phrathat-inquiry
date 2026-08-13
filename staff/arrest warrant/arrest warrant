@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f8fafc">
+    <title>ระบบจัดการข้อมูลหมายจับและส่งเอกสารตำหนิรูปพรรณ</title>
+
+
+    <!-- โหลด jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+    <!-- ใส่ URL ของ Google Apps Script ตัวใหม่ -->
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyfqHPo0xC0jhfDFK3t33Ajh2gp88E0jrS6tn6FLHV3j3_0odXPcmHHP8WCdhBbRMm3Yg/exec';
+    </script>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   
+    <!-- ไฟล์ความปลอดภัย -->
+    <script src="../auth.js"></script>
+   
+    <!-- Flatpickr CSS & JS (ปฏิทินภาษาไทย) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+
+
+    <style>
+        /* CSS Base & Theme */
+        :root {
+            --navy-main: #1e3a8a;
+            --navy-gradient: linear-gradient(135deg, #1e40af, #1e3a8a);
+            --text-main: #334155;
+            --text-light: #64748b;
+            --transition: all 0.3s ease;
+            --radius-xl: 20px;
+        }
+        body { font-family: 'Kanit', sans-serif; background: #f8fafc; color: var(--text-main); margin: 0; padding: 0; }
+        nav { background: white; padding: 15px 30px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .page-title { font-size: 1.25rem; font-weight: 600; margin-left: 10px; }
+       
+        /* Table */
+        .container { padding: 30px; max-width: 1400px; margin: auto; }
+        .table-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #f8fafc; padding: 15px; text-align: left; font-weight: 500; color: var(--text-light); white-space: nowrap; }
+        td { padding: 15px; border-top: 1px solid #f1f5f9; vertical-align: middle; }
+       
+        /* Action Buttons */
+        .btn-action { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-family: 'Kanit'; font-size: 0.85rem; margin-right: 5px; transition: 0.2s; margin-bottom: 5px;}
+        .btn-edit { background: #e0f2fe; color: #0284c7; }
+        .btn-edit:hover { background: #bae6fd; }
+        .btn-delete { background: #fee2e2; color: #dc2626; }
+        .btn-delete:hover { background: #fecaca; }
+        .btn-doc { background: #f1f5f9; color: var(--navy-main); border: 1px solid #cbd5e1; }
+        .btn-doc:hover { background: var(--navy-main); color: white; }
+        .btn-suspend { background: #fdf4ff; color: #a21caf; border: 1px solid #f0abfc; }
+        .btn-suspend:hover { background: #a21caf; color: white; }
+
+
+        /* FAB & Modal */
+        .fab { position: fixed; bottom: 30px; right: 30px; background: var(--navy-gradient); color: white; padding: 15px 25px; border-radius: 50px; border: none; font-family: 'Kanit'; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3); cursor: pointer; z-index: 99; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-card { background: white; width: 95%; max-width: 800px; max-height: 90vh; border-radius: var(--radius-xl); display: flex; flex-direction: column; position: relative; }
+        .close-modal-btn { position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; z-index: 10; }
+       
+        /* Tabs & Form */
+        .modal-tabs { display: flex; border-bottom: 1px solid #f1f5f9; padding-right: 50px; }
+        .tab-item { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: var(--text-light); font-weight: 500; border-bottom: 2px solid transparent; }
+        .tab-item.active { color: var(--navy-main); border-bottom-color: var(--navy-main); font-weight: 600; }
+        .modal-body { padding: 30px; overflow-y: auto; flex-grow: 1; }
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+        .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; }
+        .col-12 { grid-column: span 12; } .col-8 { grid-column: span 8; } .col-6 { grid-column: span 6; } .col-4 { grid-column: span 4; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; }
+        .form-input { width: 100%; padding: 10px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Kanit'; font-size: 1rem; box-sizing: border-box; outline: none; }
+        .form-input:focus { border-color: var(--navy-main); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
+       
+        /* Footer Buttons */
+        .modal-footer { padding: 20px 30px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; }
+        .btn-step { padding: 10px 25px; border-radius: 50px; border: none; cursor: pointer; font-family: 'Kanit'; font-weight: 500; }
+        .btn-prev { background: #f1f5f9; color: var(--text-main); }
+        .btn-next { background: var(--navy-gradient); color: white; }
+        .btn-save { background: linear-gradient(135deg, #059669, #10b981); color: white; transition: 0.3s; }
+        .btn-save:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
+       
+        .input-group { display: flex; align-items: center; }
+        .input-group-text { background: #f1f5f9; padding: 10px 15px; border: 1px solid #cbd5e1; border-right: none; border-radius: 8px 0 0 8px; font-weight: 500; white-space: nowrap; }
+        .input-group .form-input { border-radius: 0 8px 8px 0; }
+    </style>
+</head>
+<body>
+
+
+    <nav style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+            <button onclick="window.location.href='../staff.html';" style="background: transparent; border: none; font-size: 1.3rem; cursor: pointer; margin-right: 15px; color: var(--text-main); transition: 0.3s;" onmouseover="this.style.color='var(--navy-main)'" onmouseout="this.style.color='var(--text-main)'">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span class="page-title" style="margin-left: 0;"><i class="fa-solid fa-file-signature"></i> ระบบจัดการข้อมูลหมายจับและส่งเอกสาร</span>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">จัดการ</th>
+                        <th>คดีอาญาที่</th>
+                        <th>หมายจับที่</th>
+                        <th>ชื่อ-สกุล ผู้ต้องหา</th>
+                        <th style="text-align: center;">ส่งตำหนิรูปพรรณ</th>
+                        <th style="text-align: center;">งดสืบจับและรายงานศาล</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="6" style="text-align:center; padding:30px;">รอโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <button class="fab" onclick="openModal('create')"><i class="fa-solid fa-plus"></i> เพิ่มข้อมูลใหม่</button>
+
+
+    <!-- Modal Form หลัก (กรอกข้อมูลคดี) -->
+    <div id="caseModal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="close-modal-btn" onclick="closeModal('caseModal')"><i class="fa-solid fa-xmark"></i></button>
+           
+            <div class="modal-tabs">
+                <div class="tab-item active" onclick="showStep(1)">1. ข้อมูลคดี/หมายจับ</div>
+                <div class="tab-item" onclick="showStep(2)">2. ข้อมูลผู้ต้องหา</div>
+                <div class="tab-item" onclick="showStep(3)">3. ข้อมูลการส่งหนังสือ</div>
+            </div>
+
+
+            <div class="modal-body">
+                <form id="caseForm">
+                    <input type="hidden" name="action" id="formAction" value="create">
+                    <input type="hidden" name="rowIndex" id="formRowIndex" value="">
+
+
+                    <!-- Step 1: ข้อมูลคดีและหมายจับ -->
+                    <div id="step1" class="step-content active">
+                        <div class="form-grid">
+                            <div class="col-6"><label class="form-label">คดีอาญาที่</label><input type="text" class="form-input" name="caseNo" placeholder="เช่น 123/2569"></div>
+                            <div class="col-6"><label class="form-label">หมายจับที่</label><input type="text" class="form-input" name="warrantNo" placeholder="เช่น จ.456/2569"></div>
+                            <div class="col-6"><label class="form-label">ลงวันที่ (หมายจับ)</label><input type="text" class="form-input datepicker" name="warrantDate" placeholder="เลือกวันที่"></div>
+                            <div class="col-6"><label class="form-label">ศาลจังหวัด</label><input type="text" class="form-input" name="court" placeholder="เช่น แพร่"></div>
+                            <div class="col-12"><label class="form-label">ข้อกล่าวหา</label><textarea class="form-input" name="charge" rows="4" placeholder="ระบุข้อกล่าวหา..."></textarea></div>
+                        </div>
+                    </div>
+
+
+                    <!-- Step 2: ข้อมูลผู้ต้องหา -->
+                    <div id="step2" class="step-content">
+                        <div class="form-grid">
+                            <div class="col-12"><label class="form-label">ชื่อ-สกุล ผู้ต้องหา</label><input type="text" class="form-input" name="suspectName" placeholder="นาย/นาง/นางสาว ..."></div>
+                            <div class="col-6"><label class="form-label">เลขบัตรประจำตัวประชาชน</label><input type="text" class="form-input" name="suspectIdCard" maxlength="13"></div>
+                            <div class="col-6"><label class="form-label">อายุ (ปี)</label><input type="number" class="form-input" name="suspectAge"></div>
+                            <div class="col-8"><label class="form-label">ที่อยู่ (บ้านเลขที่/ซอย/ถนน)</label><input type="text" class="form-input" name="address"></div>
+                            <div class="col-4"><label class="form-label">หมู่ที่</label><input type="text" class="form-input" name="moo"></div>
+                            <div class="col-4"><label class="form-label">ตำบล</label><input type="text" class="form-input" name="subdistrict"></div>
+                            <div class="col-4"><label class="form-label">อำเภอ</label><input type="text" class="form-input" name="district"></div>
+                            <div class="col-4"><label class="form-label">จังหวัด</label><input type="text" class="form-input" name="province"></div>
+                        </div>
+                    </div>
+
+
+                    <!-- Step 3: ข้อมูลการส่งหนังสือ -->
+                    <div id="step3" class="step-content">
+                        <div class="form-grid">
+                            <div class="col-6"><label class="form-label">วันที่หนังสือส่ง</label><input type="text" class="form-input datepicker" name="sendDate" placeholder="เลือกวันที่"></div>
+                            <div class="col-6"><label class="form-label">จำนวนเอกสาร (แผ่น)</label><input type="number" class="form-input" name="docCount" placeholder="ระบุจำนวนแผ่น"></div>
+                            <div class="col-12"><label class="form-label">ส่งไปยัง</label><input type="text" class="form-input" name="sendTo" placeholder="ระบุหน่วยงานหรือบุคคลปลายทาง"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn-step btn-prev" id="btnPrevStep" onclick="changeStep(-1)" style="display:none;">ย้อนกลับ</button>
+                <div style="flex-grow:1;"></div>
+                <button type="button" class="btn-step btn-next" id="btnNextStep" onclick="changeStep(1)">ถัดไป</button>
+                <button type="button" class="btn-step btn-save" id="btnSaveCase" onclick="submitForm()" style="display:none;">บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Form งดสืบจับ -->
+    <div id="suspendModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 600px;">
+            <button class="close-modal-btn" onclick="closeModal('suspendModal')"><i class="fa-solid fa-xmark"></i></button>
+           
+            <div style="padding: 20px 30px; border-bottom: 1px solid #f1f5f9;">
+                <h3 style="margin: 0; color: var(--navy-main);"><i class="fa-solid fa-gavel"></i> สร้างเอกสารงดสืบจับ และรายงานศาล</h3>
+            </div>
+
+
+            <div class="modal-body">
+                <form id="suspendForm">
+                    <input type="hidden" name="action" value="generateSuspendDoc">
+                    <input type="hidden" name="rowIndex" id="suspendRowIndex" value="">
+                   
+                    <div class="form-grid">
+                        <div class="col-12">
+                            <label class="form-label">เลขหนังสือเดิม 1</label>
+                            <div class="input-group">
+                                <span class="input-group-text">ผบก.</span>
+                                <input type="text" class="form-input" name="bookNo1" placeholder="ระบุเลขหนังสือ...">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">เลขหนังสือเดิม 2</label>
+                            <div class="input-group">
+                                <span class="input-group-text">สภ.</span>
+                                <input type="text" class="form-input" name="bookNo2" placeholder="ระบุเลขหนังสือ...">
+                            </div>
+                        </div>
+                       
+                        <div class="col-12">
+                            <label class="form-label">สาเหตุการงดสืบจับ</label>
+                            <textarea class="form-input" name="suspendReason" rows="3">ได้ถูกเจ้าหน้าที่ตำรวจจับกุมตัวส่งพนักงานสอบสวนแล้ว</textarea>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">เอกสารประจำวัน (แผ่น) </label>
+                            <input type="text" class="form-input" name="dailyReportNo" placeholder="ระบุจำนวนแผ่น...">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">ประจำวัน (วันเดือนปี)</label>
+                            <input type="text" class="form-input datepicker" name="dailyReportDate" placeholder="เลือกวันที่">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">ลงวันที่ (หนังสือออก)</label>
+                            <input type="text" class="form-input datepicker" name="suspendDate" placeholder="เลือกวันที่">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="modal-footer" style="justify-content: flex-end;">
+                <button type="button" class="btn-step btn-save" onclick="submitSuspendForm()"><i class="fa-solid fa-print"></i> สร้างเอกสารงดสืบจับและรายงานศาล</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    let allCasesData = [];
+    let originalFormString = "";
+    const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+   
+    let fpInstances = [];
+
+
+    // ฟังก์ชันปฏิทินที่แก้บัคปี พ.ศ. 100%
+    function initThaiDateTimePickers() {
+        if (fpInstances.length > 0) {
+            fpInstances.forEach(fp => fp.destroy());
+            fpInstances = [];
+        }
+
+
+        fpInstances = flatpickr(".datepicker", {
+            locale: "th",
+            dateFormat: "j F Y",
+            disableMobile: true,
+            allowInput: true,
+            formatDate: function(date, formatStr, locale) {
+                const day = date.getDate();
+                const month = thaiMonths[date.getMonth()];
+                const yearBE = date.getFullYear() + 543;
+                return `${day} ${month} ${yearBE}`;
+            },
+            parseDate: function(datestr, format) {
+                if (!datestr) return undefined;
+                const parts = datestr.split(' ');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0]);
+                    const month = thaiMonths.indexOf(parts[1]);
+                    let year = parseInt(parts[2]);
+                    if (year > 2400) year -= 543; // แปลง พ.ศ. กลับเป็น ค.ศ. ให้ระบบเข้าใจ
+                    if (month !== -1 && !isNaN(day) && !isNaN(year)) {
+                        return new Date(year, month, day);
+                    }
+                }
+                return new Date(datestr);
+            },
+            onReady: function(selectedDates, dateStr, instance) {
+                const yearInput = instance.currentYearElement;
+                const parent = yearInput.parentNode;
+                let thaiYearSpan = parent.querySelector('.thai-year-display');
+                if (!thaiYearSpan) {
+                    thaiYearSpan = document.createElement('span');
+                    thaiYearSpan.className = 'thai-year-display';
+                    thaiYearSpan.style.cssText = 'font-weight: bold; margin-left: 5px; font-size: 1.1em; color: #334155;';
+                    parent.insertBefore(thaiYearSpan, yearInput.nextSibling);
+                    yearInput.style.display = 'none';
+                }
+                const updateThaiYear = () => {
+                    thaiYearSpan.textContent = instance.currentYear + 543;
+                };
+                updateThaiYear();
+                instance.config.onMonthChange.push(updateThaiYear);
+                instance.config.onYearChange.push(updateThaiYear);
+            }
+        });
+    }
+
+
+    let currentStep = 1;
+   
+    function openModal(mode, rowIndex = null) {
+        document.getElementById('caseModal').style.display = 'flex';
+        const form = document.getElementById("caseForm");
+        const btnSave = document.getElementById('btnSaveCase');
+
+
+        if (mode === 'create') {
+            form.reset();
+            document.getElementById('formAction').value = 'create';
+            document.getElementById('formRowIndex').value = '';
+            btnSave.textContent = "บันทึกข้อมูลใหม่";
+            btnSave.disabled = false;
+        } else if (mode === 'edit') {
+            document.getElementById('formAction').value = 'update';
+            document.getElementById('formRowIndex').value = rowIndex;
+            btnSave.textContent = "บันทึกการแก้ไข";
+            btnSave.disabled = true;
+            fillFormData(rowIndex);
+        }
+
+
+        showStep(1);
+        initThaiDateTimePickers();
+        setTimeout(() => { originalFormString = new URLSearchParams(new FormData(form)).toString(); }, 100);
+    }
+
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+   
+    function changeStep(n) { showStep(currentStep + n); }
+   
+    function showStep(step) {
+        currentStep = step;
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(`step${step}`).classList.add('active');
+        document.querySelectorAll('.tab-item').forEach((el, index) => el.classList.toggle('active', index + 1 === step));
+       
+        document.getElementById('btnPrevStep').style.display = step === 1 ? 'none' : 'block';
+        document.getElementById('btnNextStep').style.display = step === 3 ? 'none' : 'block';
+        document.getElementById('btnSaveCase').style.display = step === 3 ? 'block' : 'none';
+    }
+
+
+    document.getElementById('caseForm').addEventListener('input', checkFormChanged);
+    document.getElementById('caseForm').addEventListener('change', checkFormChanged);
+
+
+    function checkFormChanged() {
+        if (document.getElementById('formAction').value === 'create') return;
+        const currentFormString = new URLSearchParams(new FormData(document.getElementById('caseForm'))).toString();
+        document.getElementById('btnSaveCase').disabled = (currentFormString === originalFormString);
+    }
+
+
+    function loadTableData() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">กำลังโหลดข้อมูล...</td></tr>';
+       
+        fetch(API_URL + '?action=getData')
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = '';
+                allCasesData = data;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">ยังไม่มีข้อมูล</td></tr>';
+                    return;
+                }
+
+
+                data.forEach(item => {
+                    let docBtn = item.docLink && item.docLink.includes('http')
+                        ? `<a href="${item.docLink}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารส่งฯ</a>`
+                        : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, '${item.caseNo}')"><i class="fa-solid fa-print"></i> ส่งหมายจับ</button>`;
+
+
+                    let suspendBtn = item.suspendDocLink1 && item.suspendDocLink1.includes('http')
+                        ? `<button class="btn-action btn-suspend" onclick="showSuspendLinks('${item.suspendDocLink1}', '${item.suspendDocLink2}')" style="background:#a21caf; color:white;"><i class="fa-solid fa-folder-open"></i> เปิดเอกสารงดสืบฯ</button>`
+                        : `<button class="btn-action btn-suspend" onclick="openSuspendModal(${item.rowIndex})"><i class="fa-solid fa-gavel"></i> งดสืบจับ</button>`;
+
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <button class="btn-action btn-edit" onclick="openModal('edit', ${item.rowIndex})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn-action btn-delete" onclick="deleteCase(${item.rowIndex})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                            <td style="font-weight:bold;">${item.caseNo || "-"}</td>
+                            <td>${item.warrantNo || "-"}</td>
+                            <td>${item.suspectName || "-"}</td>
+                            <td style="text-align:center; white-space:nowrap;">${docBtn}</td>
+                            <td style="text-align:center; white-space:nowrap;">${suspendBtn}</td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(() => {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">ไม่สามารถโหลดข้อมูลได้ โปรดตรวจสอบ URL ของ API</td></tr>';
+            });
+    }
+
+
+    function showSuspendLinks(url1, url2) {
+        let htmlContent = `<div style="text-align:left; margin-top:15px; font-family:'Kanit';">`;
+        if(url1 && url1 !== 'undefined') {
+            htmlContent += `<a href="${url1}" target="_blank" style="display:block; padding:10px; background:#fdf4ff; color:#a21caf; border:1px solid #f0abfc; border-radius:8px; margin-bottom:10px; text-decoration:none;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารงดสืบจับ</a>`;
+        }
+        if(url2 && url2 !== 'undefined') {
+            htmlContent += `<a href="${url2}" target="_blank" style="display:block; padding:10px; background:#fdf4ff; color:#a21caf; border:1px solid #f0abfc; border-radius:8px; text-decoration:none;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารรายงานศาล</a>`;
+        }
+        htmlContent += `</div>`;
+
+
+        Swal.fire({
+            title: 'เอกสารงดสืบจับ',
+            html: htmlContent,
+            showConfirmButton: true,
+            confirmButtonText: 'ปิดหน้าต่าง',
+            confirmButtonColor: '#64748b'
+        });
+    }
+
+
+    function fillFormData(rowIndex) {
+        const caseData = allCasesData.find(c => c.rowIndex === rowIndex);
+        if (!caseData) return;
+        const d = caseData.fullData;
+        const form = document.getElementById('caseForm');
+       
+        form.caseNo.value = d[1] || "";
+        form.warrantNo.value = d[2] || "";
+        form.warrantDate.value = d[3] || "";
+        form.charge.value = d[4] || "";
+        form.court.value = d[5] || "";
+        form.suspectName.value = d[6] || "";
+        form.suspectAge.value = d[7] || "";
+        form.suspectIdCard.value = d[8] || "";
+        form.address.value = d[9] || "";
+        form.moo.value = d[10] || "";
+        form.subdistrict.value = d[11] || "";
+        form.district.value = d[12] || "";
+        form.province.value = d[13] || "";
+        form.sendDate.value = d[14] || "";
+        form.sendTo.value = d[15] || "";
+        form.docCount.value = d[16] || "";
+    }
+
+
+    function deleteCase(rowIndex) {
+        Swal.fire({
+            title: 'ยืนยันการลบ?', text: "ข้อมูลนี้จะถูกลบออกจากระบบถาวร!", icon: 'warning',
+            showCancelButton: true, confirmButtonColor: '#dc2626', cancelButtonColor: '#64748b', confirmButtonText: 'ใช่, ลบเลย!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'กำลังลบข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'delete', rowIndex: rowIndex }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+                .then(res => res.json())
+                .then(res => {
+                    if(res.status === 'success') { Swal.fire('ลบสำเร็จ!', '', 'success'); loadTableData(); }
+                });
+            }
+        });
+    }
+
+
+    function generateDoc(rowIndex, caseNo) {
+        Swal.fire({ title: `กำลังสร้างเอกสารตำหนิรูปพรรณ...`, text: 'กรุณารอสักครู่', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'generateDoc', rowIndex: rowIndex }), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                Swal.fire('สร้างเอกสารสำเร็จ!', `<a href="${res.url}" target="_blank" style="color:blue; text-decoration:underline;">คลิกที่นี่เพื่อเปิดเอกสาร</a>`, 'success');
+                loadTableData();
+            } else { Swal.fire('เกิดข้อผิดพลาด', res.message, 'error'); }
+        });
+    }
+
+
+    function submitForm() {
+        const form = document.getElementById('caseForm');
+        const dataObj = Object.fromEntries(new FormData(form).entries());
+
+
+        if (dataObj.action === 'update') { dataObj.clearDocs = true; }
+
+
+        Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(dataObj), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                Swal.fire('สำเร็จ!', res.message, 'success').then(() => { closeModal('caseModal'); loadTableData(); });
+            } else { Swal.fire('ข้อผิดพลาด', res.message, 'error'); }
+        }).catch(() => Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'));
+    }
+
+
+    function openSuspendModal(rowIndex) {
+        document.getElementById('suspendForm').reset();
+        document.getElementById('suspendRowIndex').value = rowIndex;
+        document.getElementById('suspendModal').style.display = 'flex';
+        initThaiDateTimePickers();
+    }
+
+
+    // ฟังก์ชันนี้ถูกแก้ใหม่ เพื่อดึงข้อมูลเก่าแนบไปกับฟอร์มด้วย 100%
+    function submitSuspendForm() {
+        const form = document.getElementById('suspendForm');
+        const dataObj = Object.fromEntries(new FormData(form).entries());
+
+
+        if(!dataObj.suspendDate) {
+            Swal.fire('แจ้งเตือน', 'กรุณาเลือกวันที่ก่อน', 'warning');
+            return;
+        }
+
+
+        // ดึงข้อมูลเก่าจากตารางหน้าบ้าน ยัดใส่ dataObj ส่งไปให้หลังบ้านเลย
+        const rowIndex = parseInt(dataObj.rowIndex);
+        const caseData = allCasesData.find(c => c.rowIndex === rowIndex);
+        if (caseData) {
+            const d = caseData.fullData;
+            dataObj.caseNo = d[1];
+            dataObj.warrantNo = d[2];
+            dataObj.warrantDate = d[3];
+            dataObj.charge = d[4];
+            dataObj.court = d[5];
+            dataObj.suspectName = d[6];
+        }
+
+
+        Swal.fire({ title: 'กำลังสร้างเอกสารงดสืบจับและรายงานศาล...', text: 'กรุณารอสักครู่ อาจใช้เวลาประมาณ 5-15 วินาที', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(dataObj), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === 'success') {
+                let htmlContent = `
+                    <div style="text-align:left; margin-top:15px; font-family:'Kanit';">
+                        <a href="${res.url1}" target="_blank" style="display:block; padding:10px; background:#fdf4ff; color:#a21caf; border:1px solid #f0abfc; border-radius:8px; margin-bottom:10px; text-decoration:none;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารงดสืบจับ</a>
+                        <a href="${res.url2}" target="_blank" style="display:block; padding:10px; background:#fdf4ff; color:#a21caf; border:1px solid #f0abfc; border-radius:8px; text-decoration:none;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารรายงานศาล</a>
+                    </div>
+                `;
+                Swal.fire({
+                    title: 'สร้างเอกสารสำเร็จ!',
+                    html: htmlContent,
+                    icon: 'success',
+                    confirmButtonText: 'ตกลง'
+                }).then(() => {
+                    closeModal('suspendModal');
+                    loadTableData();
+                });
+            } else {
+                Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+            }
+        }).catch(() => Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'));
+    }
+
+
+    window.onload = function() { loadTableData(); };
+</script>
+</body>
+</html>
+
