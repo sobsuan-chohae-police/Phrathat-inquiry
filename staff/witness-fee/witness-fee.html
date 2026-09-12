@@ -37,8 +37,11 @@
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th { position: sticky; top: 0; background: #f8fafc; z-index: 10; box-shadow: 0 1px 0 #e2e8f0; }
         td { padding: 16px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        .doc-link { color: var(--navy-main); font-size: 1.2rem; transition: var(--transition); }
-        .doc-link:hover { color: var(--gold-main); transform: scale(1.1); }
+        
+        /* เพิ่ม display: inline-block และปรับ animation เอฟเฟกต์ให้ซูมดูมีชีวิตชีวา */
+        .doc-link { color: var(--navy-main); font-size: 1.2rem; transition: var(--transition); display: inline-block; }
+        .doc-link:hover { color: var(--gold-main); transform: scale(1.2) translateY(-2px); drop-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
         .table-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .btn-add { background: var(--navy-gradient); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); display: flex; align-items: center; justify-content: center; }
         .btn-add:hover { transform: translateY(-2px) rotate(90deg); box-shadow: var(--shadow-gold); }
@@ -124,8 +127,8 @@
 
             <!-- Footer -->
             <div class="table-footer">
-                <!-- เพิ่มปุ่ม Refresh ไว้ให้ผู้ใช้กดอัปเดตข้อมูลได้เมื่อมีการทำงานหลายคน -->
-                <button class="btn-page" onclick="fetchData()" data-tooltip="โหลดข้อมูลใหม่" style="width: 45px; height: 45px; background: #f1f5f9; border-radius: 50%;">
+                <!-- เปลี่ยน data-tooltip เป็น title มาตรฐาน เพื่อไม่ให้มุดตาราง -->
+                <button class="btn-page" onclick="fetchData()" title="โหลดข้อมูลใหม่" style="width: 45px; height: 45px; background: #f1f5f9; border-radius: 50%;">
                     <i class="fa-solid fa-rotate-right"></i>
                 </button>
 
@@ -135,7 +138,8 @@
                     <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
                 
-                <button class="btn-add" onclick="openModal()" data-tooltip="เพิ่มข้อมูลใหม่">
+                <!-- เปลี่ยน data-tooltip เป็น title มาตรฐาน เพื่อไม่ให้หมุนตีลังกา -->
+                <button class="btn-add" onclick="openModal()" title="เพิ่มข้อมูลใหม่">
                     <i class="fa-solid fa-plus"></i>
                 </button>
             </div>
@@ -149,7 +153,7 @@
                 <div class="modal-title-row">
                     <h3 id="modalTitle">เพิ่มข้อมูลใหม่</h3>
                     <div class="modal-actions">
-                        <button class="btn-delete-modal" id="btnDelete" onclick="deleteData()"><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="btn-delete-modal" id="btnDelete" onclick="deleteData()" title="ลบข้อมูล"><i class="fa-solid fa-trash-can"></i></button>
                         <button class="btn-close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
@@ -304,7 +308,7 @@
             fetchData();
         });
 
-        // 🚀 จุดเปลี่ยนสำคัญ: ใช้ POST (text/plain) ตอนโหลดหน้าเว็บครั้งแรก ป้องกันการ Timeout แบบ 100%
+        // ใช้ POST (text/plain) ตอนโหลดหน้าเว็บครั้งแรก ป้องกันการ Timeout
         async function fetchData() {
             document.getElementById('mainLoader').style.display = 'flex';
             try {
@@ -586,8 +590,8 @@
 
         function deleteData() {
             Swal.fire({
-                title: 'ยืนยันการลบข้อมูล',
-                text: 'คุณต้องการลบข้อมูลและเอกสารนี้ใช่หรือไม่? (ไม่สามารถกู้คืนได้)',
+                title: 'ยืนยันการลบ',
+                text: 'ต้องการลบข้อมูลนี้ใช่หรือไม่?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ลบข้อมูล',
@@ -602,7 +606,7 @@
         async function processDelete() {
             showLoading('กำลังลบข้อมูล...');
             try {
-                // 🚀 ใช้ POST แบบ text/plain เสมอ
+                // ใช้ POST แบบ text/plain
                 const payload = { action: 'delete', id: currentEditId, oldFileUrl: currentEditUrl };
                 const res = await fetch(API_URL, { 
                     method: 'POST', 
@@ -628,6 +632,23 @@
         }
 
         async function saveData() {
+            // แยกส่วนยืนยันการบันทึกออกมาให้ชัดเจน
+            Swal.fire({
+                title: 'ยืนยันการบันทึก?',
+                text: editMode ? 'ต้องการอัปเดตข้อมูลนี้ใช่หรือไม่?' : 'ระบบจะทำการบันทึกและสร้างเอกสารอัตโนมัติ',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'บันทึก',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await processSaveData();
+                }
+            });
+        }
+
+        async function processSaveData() {
             const data = getFormData();
             const id = editMode ? currentEditId : Date.now().toString();
             
@@ -639,7 +660,7 @@
             
             const placeholders = buildPlaceholders(data);
             
-            // 🚀 ใช้ POST แบบ text/plain เสมอ
+            // ใช้ POST แบบ text/plain
             const payload = {
                 action: editMode ? 'update' : 'create',
                 id: id,
