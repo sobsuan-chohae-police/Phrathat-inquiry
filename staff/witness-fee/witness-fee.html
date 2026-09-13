@@ -22,72 +22,194 @@
 
     <style>
         /* ==========================================================================
-           UI/UX & Animations (คงความสวยงามเดิมไว้ทั้งหมด)
+           UI/UX & Animations
            ========================================================================== */
-        body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; background-color: var(--bg-color); }
-        .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: var(--transition); text-decoration: none; flex-shrink: 0; }
+        body {
+            height: 100vh;
+            overflow: hidden; /* ป้องกันการเลื่อนทั้งหน้าจอ */
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+
+        /* Navbar */
+        .nav-btn { 
+            background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); 
+            cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: var(--transition); text-decoration: none; flex-shrink: 0; 
+        }
         .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; padding: 5px 15px 5px 0; }
         .btn-back:hover { color: var(--navy-main); transform: translateX(-5px); }
         .nav-left { flex: 1; display: flex; align-items: center; }
         .nav-right-invisible { width: 42px; height: 42px; visibility: hidden; pointer-events: none; }
-        .main-wrapper { flex: 1; position: relative; padding: 20px; display: flex; flex-direction: column; max-width: 1200px; margin: 0 auto; width: 100%; animation: softScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: transform, opacity; }
-        @keyframes softScale { 0% { opacity: 0; transform: scale(0.97) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .table-container { background: var(--card-bg); border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
-        .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Main Content Area */
+        .main-wrapper {
+            flex: 1;
+            position: relative;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            animation: softScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            will-change: transform, opacity;
+        }
+
+        @keyframes softScale {
+            0% { opacity: 0; transform: scale(0.97) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Sticky Table Container */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .table-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; 
+        }
+
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th { position: sticky; top: 0; background: #f8fafc; z-index: 10; box-shadow: 0 1px 0 #e2e8f0; }
         td { padding: 16px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         
-        /* เพิ่ม display: inline-block และปรับ animation เอฟเฟกต์ให้ซูมดูมีชีวิตชีวา */
-        .doc-link { color: var(--navy-main); font-size: 1.2rem; transition: var(--transition); display: inline-block; }
-        .doc-link:hover { color: var(--gold-main); transform: scale(1.2) translateY(-2px); drop-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        .table-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .btn-add { background: var(--navy-gradient); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); display: flex; align-items: center; justify-content: center; }
+        /* เพิ่ม display: inline-block และปรับ animation เอฟเฟกต์เอกสารให้ซูมเด้ง */
+        .doc-link { 
+            color: var(--navy-main); font-size: 1.2rem; transition: var(--transition); 
+            display: inline-block; 
+        }
+        .doc-link:hover { 
+            color: var(--gold-main); transform: scale(1.2) translateY(-2px); 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); 
+        }
+
+        /* Table Footer */
+        .table-footer {
+            padding: 15px 20px;
+            background: #fff;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .btn-add {
+            background: var(--navy-gradient); color: white; border: none;
+            width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem;
+            cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+            display: flex; align-items: center; justify-content: center;
+        }
         .btn-add:hover { transform: translateY(-2px) rotate(90deg); box-shadow: var(--shadow-gold); }
+
         .pagination-controls { display: flex; align-items: center; gap: 15px; }
         .page-info { font-size: 0.95rem; color: var(--text-light); font-weight: 500; }
-        .btn-page { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; color: var(--text-main); cursor: pointer; transition: var(--transition); }
+        .btn-page {
+            background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%;
+            color: var(--text-main); cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; justify-content: center;
+        }
         .btn-page:hover:not(:disabled) { background: var(--navy-main); color: white; }
         .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Slide Animations */
         .slide-left { animation: slideLeft 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
         .slide-right { animation: slideRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
         @keyframes slideLeft { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideRight { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-        .content-loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: var(--radius-xl); backdrop-filter: blur(4px); }
+
+        /* Loading Overlay */
+        .content-loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); z-index: 50;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: var(--radius-xl); backdrop-filter: blur(4px);
+        }
+
+        /* ==========================================================================
+           Modal & Form
+           ========================================================================== */
         .modal-card { max-width: 700px; height: 85vh; max-height: 800px; padding: 0; }
         .modal-header-area { padding: 25px 30px 0; border-bottom: 1px solid #e2e8f0; }
         .modal-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-title-row h3 { font-size: 1.3rem; font-weight: 600; color: var(--navy-main); margin: 0; }
+        
         .modal-actions { display: flex; gap: 10px; }
         .btn-delete-modal { background: #fff1f2; color: var(--danger); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--transition); display: none; }
         .btn-delete-modal:hover { background: var(--danger); color: white; transform: scale(1.1); }
         .btn-close-modal { background: #f1f5f9; color: var(--text-light); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--transition); }
         .btn-close-modal:hover { background: var(--text-main); color: white; transform: rotate(90deg); }
+
+        /* Tabs */
         .tabs-container { display: flex; position: relative; gap: 30px; }
-        .tab-btn { background: none; border: none; font-family: 'Kanit'; font-size: 1.05rem; font-weight: 500; color: var(--text-light); padding: 10px 5px; cursor: pointer; transition: color 0.3s; }
+        .tab-btn {
+            background: none; border: none; font-family: 'Kanit'; font-size: 1.05rem; font-weight: 500;
+            color: var(--text-light); padding: 10px 5px; cursor: pointer; transition: color 0.3s;
+        }
         .tab-btn.active { color: var(--navy-main); }
-        .tab-indicator { position: absolute; bottom: -1px; left: 0; height: 3px; background: var(--gold-main); border-radius: 3px 3px 0 0; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); will-change: left, width; }
+        .tab-indicator {
+            position: absolute; bottom: -1px; left: 0; height: 3px; background: var(--gold-main);
+            border-radius: 3px 3px 0 0; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            will-change: left, width;
+        }
+
+        /* Form Body */
         .modal-body { padding: 25px 30px; overflow-y: auto; flex: 1; }
         .tab-content { display: none; animation: fadeUp 0.4s ease; }
         .tab-content.active { display: block; }
+
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .form-group.full-width { grid-column: 1 / -1; }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; gap: 15px; } .modal-card { height: 95vh; width: 100%; border-radius: 20px 20px 0 0; margin-top: auto; } .modal-header-area, .modal-body { padding: 20px; } }
+        
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; gap: 15px; }
+            .modal-card { height: 95vh; width: 100%; border-radius: 20px 20px 0 0; margin-top: auto; }
+            .modal-header-area, .modal-body { padding: 20px; }
+        }
+
+        /* Form Inputs */
         .form-input { background: #f8fafc; border: 1px solid #e2e8f0; }
         .form-input:focus { background: #fff; border-color: var(--navy-main); box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1); }
         .form-input::placeholder { color: #cbd5e1; font-weight: 300; }
+        
+        /* Dropdown History */
         .autocomplete-wrapper { position: relative; }
-        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 5px; box-shadow: var(--shadow-modal); max-height: 200px; overflow-y: auto; z-index: 100; display: none; }
+        .autocomplete-list {
+            position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+            border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 5px;
+            box-shadow: var(--shadow-modal); max-height: 200px; overflow-y: auto;
+            z-index: 100; display: none;
+        }
         .autocomplete-item { padding: 12px 16px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #f1f5f9; }
         .autocomplete-item:hover { background: #f8fafc; color: var(--navy-main); }
-        .modal-footer { padding: 20px 30px; border-top: 1px solid #e2e8f0; background: #fff; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
+
+        /* Modal Footer */
+        .modal-footer {
+            padding: 20px 30px; border-top: 1px solid #e2e8f0; background: #fff;
+            display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+        }
         .footer-left { display: flex; gap: 10px; }
+        
+        /* Disabled Button Styling */
         button:disabled { opacity: 0.5 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; background: #e2e8f0 !important; color: #94a3b8 !important; }
     </style>
 </head>
 <body>
 
+    <!-- Navbar -->
     <nav>
         <div class="nav-left">
             <a href="../staff.html" class="nav-btn btn-back"><i class="fa-solid fa-chevron-left"></i></a>
@@ -96,8 +218,10 @@
         <div class="nav-right-invisible"></div>
     </nav>
 
+    <!-- Main Content -->
     <div class="main-wrapper">
         <div class="table-container">
+            
             <!-- Loading Overlay -->
             <div id="mainLoader" class="content-loader">
                 <div class="premium-loader"></div>
@@ -120,25 +244,24 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- Data inserted by JS -->
+                        <!-- ข้อมูลจะถูกเติมด้วย JS -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Footer -->
+            <!-- Footer Controls -->
             <div class="table-footer">
-                <!-- เปลี่ยน data-tooltip เป็น title มาตรฐาน เพื่อไม่ให้มุดตาราง -->
-                <button class="btn-page" onclick="fetchData()" title="โหลดข้อมูลใหม่" style="width: 45px; height: 45px; background: #f1f5f9; border-radius: 50%;">
+                <!-- เปลี่ยนกลับมาใช้คุณสมบัติ title มาตรฐาน เพื่อแก้ปัญหาปุ่มโดนบัง -->
+                <button class="btn-page" onclick="fetchData()" title="รีเฟรชข้อมูลล่าสุด" style="width: 45px; height: 45px; background: #f1f5f9; border-radius: 50%;">
                     <i class="fa-solid fa-rotate-right"></i>
                 </button>
-
+                
                 <div class="pagination-controls">
                     <button class="btn-page" id="btnPrevPage" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
                     <span class="page-info" id="pageInfo">1 / 1</span>
                     <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
                 
-                <!-- เปลี่ยน data-tooltip เป็น title มาตรฐาน เพื่อไม่ให้หมุนตีลังกา -->
                 <button class="btn-add" onclick="openModal()" title="เพิ่มข้อมูลใหม่">
                     <i class="fa-solid fa-plus"></i>
                 </button>
@@ -146,17 +269,22 @@
         </div>
     </div>
 
-    <!-- Modal Form (ใช้โค้ด HTML เดิมทุกประการ) -->
+    <!-- Modal Form -->
     <div id="formModal" class="modal-overlay">
         <div class="modal-card">
+            
+            <!-- Modal Header -->
             <div class="modal-header-area">
                 <div class="modal-title-row">
                     <h3 id="modalTitle">เพิ่มข้อมูลใหม่</h3>
                     <div class="modal-actions">
+                        <!-- เปลี่ยนกลับมาใช้คุณสมบัติ title มาตรฐาน -->
                         <button class="btn-delete-modal" id="btnDelete" onclick="deleteData()" title="ลบข้อมูล"><i class="fa-solid fa-trash-can"></i></button>
                         <button class="btn-close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
+                
+                <!-- Tabs -->
                 <div class="tabs-container">
                     <button class="tab-btn active" onclick="switchTab(1)" id="tabBtn1">ข้อมูลคดี</button>
                     <button class="tab-btn" onclick="switchTab(2)" id="tabBtn2">ข้อมูลพยาน</button>
@@ -164,8 +292,11 @@
                 </div>
             </div>
 
+            <!-- Modal Body -->
             <div class="modal-body">
                 <form id="mainForm">
+                    
+                    <!-- Tab 1: ข้อมูลคดี -->
                     <div class="tab-content active" id="tab1">
                         <div class="form-grid">
                             <div class="form-group">
@@ -180,26 +311,32 @@
                                 <label class="form-label">เลขคดี</label>
                                 <input type="text" class="form-input" id="caseNo" placeholder="XX/25XX" required>
                             </div>
+                            
                             <div class="form-group full-width autocomplete-wrapper">
                                 <label class="form-label">ชื่อผู้กล่าวหา</label>
                                 <input type="text" class="form-input" id="accuser" placeholder="พิมพ์เพื่อค้นหาหรือเพิ่มใหม่" required autocomplete="off">
                                 <div class="autocomplete-list" id="accuserList"></div>
                             </div>
+                            
                             <div class="form-group full-width autocomplete-wrapper">
                                 <label class="form-label">ชื่อผู้ต้องหา</label>
                                 <input type="text" class="form-input" id="suspect" placeholder="พิมพ์เพื่อค้นหาหรือเพิ่มใหม่" required autocomplete="off">
                                 <div class="autocomplete-list" id="suspectList"></div>
                             </div>
+
                             <div class="form-group full-width">
                                 <label class="form-label">พนักงานสอบสวน</label>
                                 <select class="form-input" id="investigator" required>
                                     <option value="" disabled selected>เลือกพนักงานสอบสวน</option>
+                                    <!-- เติมด้วย JS -->
                                 </select>
                             </div>
+
                             <div class="form-group full-width">
                                 <label class="form-label">วันที่สอบปากคำพยาน</label>
                                 <input type="text" class="form-input" id="witnessDate" placeholder="เลือกวันที่" required>
                             </div>
+
                             <div class="form-group">
                                 <label class="form-label">ประจำวันข้อ</label>
                                 <input type="number" class="form-input" id="dailyNo" placeholder="ระบุตัวเลข" required>
@@ -211,6 +348,7 @@
                         </div>
                     </div>
 
+                    <!-- Tab 2: ข้อมูลพยาน -->
                     <div class="tab-content" id="tab2">
                         <div class="form-grid">
                             <div class="form-group full-width">
@@ -221,6 +359,7 @@
                                     <option value="ประชาชน">ประชาชน</option>
                                 </select>
                             </div>
+
                             <div class="form-group full-width" style="display: flex; gap: 15px;">
                                 <div style="flex: 1;">
                                     <label class="form-label">คำนำหน้าชื่อ</label>
@@ -237,6 +376,7 @@
                                     <input type="text" class="form-input" id="otherTitle" placeholder="พิมพ์คำนำหน้า">
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label class="form-label">ชื่อ</label>
                                 <input type="text" class="form-input" id="firstName" placeholder="เฉพาะชื่อเท่านั้น" required>
@@ -245,6 +385,7 @@
                                 <label class="form-label">นามสกุล</label>
                                 <input type="text" class="form-input" id="lastName" placeholder="เฉพาะนามสกุลเท่านั้น" required>
                             </div>
+
                             <div class="form-group">
                                 <label class="form-label">เลขประจำตัวประชาชน</label>
                                 <input type="text" class="form-input" id="idCard" placeholder="ไม่ต้องใส่ขีดระหว่างตัวเลข" required>
@@ -257,6 +398,7 @@
                                     <option value="นอกเขตจังหวัด">นอกเขตจังหวัด</option>
                                 </select>
                             </div>
+
                             <div class="form-group">
                                 <label class="form-label">ที่อยู่พยาน</label>
                                 <input type="text" class="form-input" id="address" placeholder="ระบุที่อยู่" required>
@@ -270,6 +412,7 @@
                 </form>
             </div>
 
+            <!-- Modal Footer -->
             <div class="modal-footer">
                 <div class="footer-left">
                     <button type="button" class="btn-secondary" id="btnBack" onclick="switchTab(1)" disabled>กลับ</button>
@@ -281,6 +424,9 @@
     </div>
 
     <script>
+        // ==========================================================================
+        // CONFIG & STATE
+        // ==========================================================================
         const API_URL = 'https://script.google.com/macros/s/AKfycbwQgE82l4gmYJ3PtAutWa34Xv2bGREB2EbjSr51Y6gPS5eJoaoG6NQytyppi0PMcwMr/exec';
         
         let allData = [];
@@ -293,6 +439,9 @@
         let originalDataStr = ""; 
         let currentTab = 1;
 
+        // ==========================================================================
+        // INITIALIZATION
+        // ==========================================================================
         document.addEventListener('DOMContentLoaded', () => {
             ThaiDatePicker.init('#witnessDate');
             
@@ -302,32 +451,44 @@
                 input.addEventListener('change', checkFormChanges);
             });
 
-            setupAutocomplete('accuser', 'accuserList', 2);
-            setupAutocomplete('suspect', 'suspectList', 3);
+            setupAutocomplete('accuser', 'accuserList', 2); 
+            setupAutocomplete('suspect', 'suspectList', 3); 
 
             fetchData();
         });
 
-        // ใช้ POST (text/plain) ตอนโหลดหน้าเว็บครั้งแรก ป้องกันการ Timeout
+        // ระบบโหลดข้อมูลแบบ "แยกสาย (Parallel Fetching)" + "POST"
         async function fetchData() {
             document.getElementById('mainLoader').style.display = 'flex';
+            
             try {
-                const res = await fetch(API_URL, {
-                    method: 'POST', 
+                // ยิงคำขอสายที่ 1: ดึงเฉพาะข้อมูลคดี
+                const witnessReq = fetch(API_URL, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getInitialData' })
+                    body: JSON.stringify({ action: 'getWitnessData' })
+                }).then(res => res.json()).then(json => {
+                    if (json.status === 'success') {
+                        sessionStorage.setItem('witnessData', JSON.stringify(json.data));
+                        renderTable(); // ตารางพร้อม โชว์ตารางเลย ไม่ต้องรอพนักงาน
+                    }
                 });
-                const json = await res.json();
+
+                // ยิงคำขอสายที่ 2: ดึงเฉพาะข้อมูลพนักงานสอบสวน
+                const officerReq = fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getOfficerData' })
+                }).then(res => res.json()).then(json => {
+                    if (json.status === 'success') {
+                        sessionStorage.setItem('officerData', JSON.stringify(json.data));
+                        populateInvestigatorDropdown(); // พนักงานพร้อม เอาไปยัดใส่ฟอร์มรอเลย
+                    }
+                });
+
+                // ปิด Loader เมื่อทั้ง 2 สายทำงานเสร็จสิ้น (ไม่ว่าจะสำเร็จหรือล้มเหลว)
+                await Promise.allSettled([witnessReq, officerReq]);
                 
-                if (json.status === 'success') {
-                    sessionStorage.setItem('witnessData', JSON.stringify(json.witnessData));
-                    sessionStorage.setItem('officerData', JSON.stringify(json.officerData));
-                    
-                    populateInvestigatorDropdown();
-                    renderTable();
-                } else {
-                    throw new Error(json.message);
-                }
             } catch (error) {
                 Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลได้ โปรดลองใหม่อีกครั้ง', 'error');
             } finally {
@@ -335,6 +496,9 @@
             }
         }
 
+        // ==========================================================================
+        // TABLE & PAGINATION
+        // ==========================================================================
         function renderTable(direction = '') {
             const rawData = JSON.parse(sessionStorage.getItem('witnessData') || '[]');
             allData = rawData.slice(1).reverse(); 
@@ -350,7 +514,7 @@
             
             if (direction) {
                 tbody.className = '';
-                void tbody.offsetWidth;
+                void tbody.offsetWidth; 
                 tbody.className = direction === 'next' ? 'slide-left' : 'slide-right';
             }
 
@@ -363,7 +527,7 @@
                     const id = row[17];
                     const docUrl = row[16];
                     const thaiDate = formatThaiDate(row[5]);
-                    const fullName = `${row[9]}${row[10]} ${row[11]}`;
+                    const fullName = `${row[9]}${row[10]} ${row[11]}`; 
                     
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -398,6 +562,9 @@
             }
         }
 
+        // ==========================================================================
+        // MODAL & TABS LOGIC
+        // ==========================================================================
         function openModal() {
             editMode = false;
             currentEditId = null;
@@ -420,6 +587,7 @@
 
         function switchTab(tabIndex) {
             currentTab = tabIndex;
+            
             document.getElementById('tab1').classList.toggle('active', tabIndex === 1);
             document.getElementById('tab2').classList.toggle('active', tabIndex === 2);
             
@@ -435,9 +603,13 @@
             
             document.getElementById('btnBack').disabled = (tabIndex === 1);
             document.getElementById('btnNext').disabled = (tabIndex === 2);
+            
             document.querySelector('.modal-body').scrollTop = 0;
         }
 
+        // ==========================================================================
+        // FORM LOGIC & CHANGE DETECTION
+        // ==========================================================================
         function toggleOtherTitle() {
             const title = document.getElementById('titleName').value;
             const otherDiv = document.getElementById('otherTitleDiv');
@@ -495,10 +667,15 @@
             }
         }
 
+        // ==========================================================================
+        // AUTOCOMPLETE & DROPDOWNS
+        // ==========================================================================
         function populateInvestigatorDropdown() {
             const officers = JSON.parse(sessionStorage.getItem('officerData') || '[]');
             const select = document.getElementById('investigator');
+            // ล้างข้อมูลเก่าออกก่อนเผื่อกดปุ่มรีเฟรช
             select.innerHTML = '<option value="" disabled selected>เลือกพนักงานสอบสวน</option>';
+            
             for (let i = 1; i < officers.length; i++) {
                 const off = officers[i];
                 if (off[8] === 'พนักงานสอบสวน') { 
@@ -516,11 +693,13 @@
             
             input.addEventListener('focus', () => showList(input.value));
             input.addEventListener('input', () => showList(input.value));
+            
             input.addEventListener('blur', () => setTimeout(() => list.style.display = 'none', 200));
             
             function showList(query) {
                 const rawData = JSON.parse(sessionStorage.getItem('witnessData') || '[]');
                 const uniqueValues = [...new Set(rawData.slice(1).map(row => row[colIndex]).filter(val => val))];
+                
                 const filtered = uniqueValues.filter(val => val.toLowerCase().includes(query.toLowerCase()));
                 
                 list.innerHTML = '';
@@ -543,6 +722,9 @@
             }
         }
 
+        // ==========================================================================
+        // EDIT & DELETE
+        // ==========================================================================
         function editData(id) {
             const rawData = JSON.parse(sessionStorage.getItem('witnessData') || '[]');
             const row = rawData.find(r => String(r[17]) === String(id));
@@ -588,6 +770,7 @@
             checkFormChanges();
         }
 
+        // แก้ไขข้อความลบข้อมูลให้สั้นกระชับ
         function deleteData() {
             Swal.fire({
                 title: 'ยืนยันการลบ',
@@ -606,13 +789,15 @@
         async function processDelete() {
             showLoading('กำลังลบข้อมูล...');
             try {
-                // ใช้ POST แบบ text/plain
                 const payload = { action: 'delete', id: currentEditId, oldFileUrl: currentEditUrl };
-                const res = await fetch(API_URL, { 
-                    method: 'POST', 
+                
+                // ใช้ POST แบบ text/plain เสมอ
+                const res = await fetch(API_URL, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload) 
+                    body: JSON.stringify(payload)
                 });
+                
                 const json = await res.json();
                 
                 if (json.status === 'success') {
@@ -631,11 +816,15 @@
             }
         }
 
+        // ==========================================================================
+        // SAVE & DATA PREPARATION
+        // ==========================================================================
+        
+        // เพิ่มระบบกดยืนยันก่อนบันทึก
         async function saveData() {
-            // แยกส่วนยืนยันการบันทึกออกมาให้ชัดเจน
             Swal.fire({
                 title: 'ยืนยันการบันทึก?',
-                text: editMode ? 'ต้องการอัปเดตข้อมูลนี้ใช่หรือไม่?' : 'ระบบจะทำการบันทึกและสร้างเอกสารอัตโนมัติ',
+                text: editMode ? 'ต้องการอัปเดตข้อมูลและสร้างเอกสารใหม่ใช่หรือไม่?' : 'ระบบจะทำการบันทึกและสร้างเอกสารอัตโนมัติ',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'บันทึก',
@@ -660,7 +849,6 @@
             
             const placeholders = buildPlaceholders(data);
             
-            // ใช้ POST แบบ text/plain
             const payload = {
                 action: editMode ? 'update' : 'create',
                 id: id,
@@ -672,10 +860,11 @@
             showLoading('กำลังบันทึกข้อมูลและสร้างเอกสาร...');
             
             try {
-                const res = await fetch(API_URL, { 
-                    method: 'POST', 
+                // ใช้ POST แบบ text/plain เสมอ
+                const res = await fetch(API_URL, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload) 
+                    body: JSON.stringify(payload)
                 });
                 const json = await res.json();
                 
@@ -754,6 +943,9 @@
             return p;
         }
 
+        // ==========================================================================
+        // UTILITIES
+        // ==========================================================================
         function formatThaiDate(isoString) {
             if (!isoString) return "";
             const date = new Date(isoString);
