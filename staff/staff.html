@@ -78,8 +78,8 @@
             <h3><i class="fa-solid fa-bars-staggered"></i> เมนูตัวเลือก</h3>
             <button class="sidebar-close" onclick="toggleSidebar(false)"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="sidebar-content">
-            <!-- ✨ เติมคำว่า "ตั้งค่า" ให้ชัดเจน -->
+        <!-- ✨ เติม style flex ให้ sidebar-content เพื่อให้ดันชื่อไปอยู่ล่างสุดได้ -->
+        <div class="sidebar-content" style="display: flex; flex-direction: column;">
             <a href="setting/station-info.html" class="sidebar-link" id="adminMenuStation" style="display: none;">
                 <i class="fa-solid fa-building-shield"></i> <span>ตั้งค่าข้อมูลสถานีตำรวจ</span>
             </a>
@@ -90,6 +90,12 @@
             <a href="#" class="sidebar-link text-danger" onclick="logout()">
                 <i class="fa-solid fa-power-off"></i> <span>ออกจากระบบ</span>
             </a>
+
+            <!-- ✨ เพิ่มส่วนแสดงชื่อผู้ใช้งานไว้ด้านล่างสุด -->
+            <div style="margin-top: auto; padding-top: 20px; text-align: center;">
+                <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 2px;">เข้าสู่ระบบโดย</p>
+                <p id="sidebarUserName" style="font-size: 0.95rem; font-weight: 500; color: var(--navy-main); margin: 0;">กำลังโหลด...</p>
+            </div>
         </div>
     </div>
 
@@ -103,6 +109,7 @@
         </div>
 
         <div id="toolsContainer">
+            <!-- ใช้สีเดิมตามต้นฉบับ เพิ่มแค่ hover-zoom-card -->
             <a href="duty/duty.html" class="menu-card theme-green hover-zoom-card" tabindex="0">
                 <div class="menu-icon"><i class="fa-solid fa-calendar-days"></i></div>
                 <div class="menu-info">
