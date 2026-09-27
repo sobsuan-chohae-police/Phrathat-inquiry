@@ -1,4 +1,107 @@
-<script>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - สภ.พระธาตุช่อแฮ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
+    
+    <script>
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            window.location.replace('staff.html');
+        }
+    </script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="../theme.css">
+
+    <style>
+        body { justify-content: center; align-items: center; }
+        
+        /* ✨ 1. ปรับขนาดการ์ดให้ใหญ่และสมส่วนขึ้น */
+        .login-card { 
+            padding: 60px 40px; /* เพิ่มพื้นที่ด้านบน/ล่างให้ดูโปร่งขึ้น */
+            width: 90%; 
+            max-width: 480px; /* ขยายความกว้างสูงสุดเป็น 480px */
+            text-align: center; 
+            cursor: default !important; 
+        }
+        
+        .login-card:hover {
+            transform: none !important;
+            box-shadow: var(--shadow-soft) !important;
+        }
+        
+        .login-card h2 { 
+            color: var(--text-main); 
+            margin-bottom: 15px; 
+            font-weight: 600; 
+            font-size: 2.2rem; /* ขยายตัวอักษรหัวข้อให้รับกับขนาดการ์ด */
+        }
+        
+        .login-card p {
+            font-size: 1.05rem; /* ขยายตัวอักษรคำอธิบาย */
+        }
+        
+        .back-link { display: inline-block; margin-top: 35px; color: var(--text-light); font-size: 1rem; transition: var(--transition); cursor: pointer; }
+        .back-link:hover { color: var(--navy-main); transform: translateX(-5px); } 
+        
+        /* ✨ 2. ล็อกพื้นที่และซ่อนการกระพริบของปุ่ม Google */
+        .google-btn-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            margin-top: 35px; 
+            height: 44px; /* ล็อกความสูงให้พอดีกับปุ่ม Google เสมอ ป้องกันการกระตุกแนวตั้ง */
+            width: 100%;
+            /* ใช้ Animation หน่วงเวลาซ่อนปุ่มไว้เสี้ยววินาที ให้ Google สลับข้อความให้เสร็จก่อนโชว์ */
+            animation: smoothRender 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes smoothRender {
+            0% { opacity: 0; }
+            40% { opacity: 0; } /* ซ่อนไว้ช่วงที่ Google กำลังโหลดดึงข้อมูลบัญชี */
+            100% { opacity: 1; } /* เฟดอินขึ้นมาอย่างนุ่มนวล */
+        }
+    </style>
+</head>
+<body>
+    <div class="card login-card">
+        <h2>เข้าสู่ระบบ</h2>
+        <p style="color: var(--text-light); margin-bottom: 10px;">สงวนสิทธิ์เฉพาะเจ้าหน้าที่ที่ได้รับอนุญาต</p>
+        
+        <div id="g_id_onload"
+             data-client_id="298931412406-s91ak2nnd6hng8a225r1mkajq37m6hal.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <div class="google-btn-wrapper" id="googleBtnWrapper">
+            <div class="g_id_signin" 
+                 data-type="standard" 
+                 data-shape="pill" 
+                 data-theme="outline" 
+                 data-text="signin_with" 
+                 data-size="large" 
+                 data-logo_alignment="left"
+                 data-width="300">
+            </div>
+        </div>
+
+        <div id="loadingText" class="premium-loader-container" style="display: none; margin-top: 20px;">
+            <div class="premium-loader"></div>
+            <div class="premium-loader-text">กำลังตรวจสอบสิทธิ์...</div>
+        </div>
+
+        <a href="../index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> กลับหน้าหลัก</a>
+    </div>
+
+    <script>
         const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
 
         async function handleCredentialResponse(response) {
@@ -37,3 +140,5 @@
             }
         }
     </script>
+</body>
+</html>
