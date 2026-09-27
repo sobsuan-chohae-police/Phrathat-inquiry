@@ -10,7 +10,7 @@
     
     <script>
         if (localStorage.getItem('isLoggedIn') === 'true') {
-            window.location.replace('staff.html');
+            window.location.href = 'staff.html';
         }
     </script>
 
@@ -123,11 +123,12 @@
                     localStorage.setItem('userRole', result.role);
                     localStorage.setItem('userName', result.name); // ✨ บันทึกชื่อลงเครื่อง
                     
-                    // ✨ เปลี่ยนข้อความต้อนรับให้มีชื่อ
-                    Swal.fire({ icon: 'success', title: `ยินดีต้อนรับ, ${result.name}`, timer: 1500, showConfirmButton: false })
-                    .then(() => { 
-                        window.location.replace('staff.html'); 
-                    });
+                    // ✨ เปลี่ยนข้อความต้อนรับให้มีชื่อ และหน่วงเวลาให้ LocalStorage บันทึกเสร็จสมบูรณ์ก่อนเปลี่ยนหน้า
+                    Swal.fire({ icon: 'success', title: `ยินดีต้อนรับ, ${result.name}`, timer: 1500, showConfirmButton: false });
+                    
+                    setTimeout(() => {
+                        window.location.href = 'staff.html';
+                    }, 1500);
                 } else {
                     Swal.fire('ปฏิเสธการเข้าถึง', result.message, 'error');
                     document.getElementById('googleBtnWrapper').style.display = 'flex';
