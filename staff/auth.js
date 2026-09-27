@@ -21,11 +21,19 @@ function checkAuth() {
         return;
     }
 
-    // จัดการการแสดงผลปุ่มตั้งค่า (เฉพาะแอดมิน)
+    // จัดการการแสดงผลเมนูตั้งค่าใน Sidebar (เฉพาะแอดมิน)
     document.addEventListener("DOMContentLoaded", () => {
-        const settingsBtn = document.getElementById('settingsBtn');
-        if (settingsBtn) {
-            settingsBtn.style.display = (userRole === 'admin') ? 'block' : 'none';
+        const adminMenuStation = document.getElementById('adminMenuStation');
+        const adminMenuOfficer = document.getElementById('adminMenuOfficer');
+        
+        if (userRole === 'admin') {
+            // ถ้าเป็นแอดมิน ให้แสดงเมนู (ใช้ flex เพื่อให้ไอคอนกับข้อความเรียงกันสวยงาม)
+            if (adminMenuStation) adminMenuStation.style.display = 'flex';
+            if (adminMenuOfficer) adminMenuOfficer.style.display = 'flex';
+        } else {
+            // ถ้าไม่ใช่แอดมิน ให้ซ่อนเมนู
+            if (adminMenuStation) adminMenuStation.style.display = 'none';
+            if (adminMenuOfficer) adminMenuOfficer.style.display = 'none';
         }
     });
 }
