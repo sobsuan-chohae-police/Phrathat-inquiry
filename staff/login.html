@@ -20,11 +20,10 @@
     <style>
         body { justify-content: center; align-items: center; }
         
-        /* ✨ 1. ปรับขนาดการ์ดให้ใหญ่และสมส่วนขึ้น */
         .login-card { 
-            padding: 60px 40px; /* เพิ่มพื้นที่ด้านบน/ล่างให้ดูโปร่งขึ้น */
+            padding: 60px 40px; 
             width: 90%; 
-            max-width: 480px; /* ขยายความกว้างสูงสุดเป็น 480px */
+            max-width: 480px; 
             text-align: center; 
             cursor: default !important; 
         }
@@ -38,33 +37,31 @@
             color: var(--text-main); 
             margin-bottom: 15px; 
             font-weight: 600; 
-            font-size: 2.2rem; /* ขยายตัวอักษรหัวข้อให้รับกับขนาดการ์ด */
+            font-size: 2.2rem; 
         }
         
         .login-card p {
-            font-size: 1.05rem; /* ขยายตัวอักษรคำอธิบาย */
+            font-size: 1.05rem; 
         }
         
         .back-link { display: inline-block; margin-top: 35px; color: var(--text-light); font-size: 1rem; transition: var(--transition); cursor: pointer; }
         .back-link:hover { color: var(--navy-main); transform: translateX(-5px); } 
         
-        /* ✨ 2. ล็อกพื้นที่และซ่อนการกระพริบของปุ่ม Google */
         .google-btn-wrapper { 
             display: flex; 
             justify-content: center; 
             align-items: center;
             margin-top: 35px; 
-            height: 44px; /* ล็อกความสูงให้พอดีกับปุ่ม Google เสมอ ป้องกันการกระตุกแนวตั้ง */
+            height: 44px; 
             width: 100%;
-            /* ใช้ Animation หน่วงเวลาซ่อนปุ่มไว้เสี้ยววินาที ให้ Google สลับข้อความให้เสร็จก่อนโชว์ */
             animation: smoothRender 0.8s ease-in-out forwards;
             opacity: 0;
         }
 
         @keyframes smoothRender {
             0% { opacity: 0; }
-            40% { opacity: 0; } /* ซ่อนไว้ช่วงที่ Google กำลังโหลดดึงข้อมูลบัญชี */
-            100% { opacity: 1; } /* เฟดอินขึ้นมาอย่างนุ่มนวล */
+            40% { opacity: 0; } 
+            100% { opacity: 1; } 
         }
     </style>
 </head>
@@ -121,9 +118,9 @@
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmail', result.email);
                     localStorage.setItem('userRole', result.role);
-                    localStorage.setItem('userName', result.name); // ✨ บันทึกชื่อลงเครื่อง
+                    localStorage.setItem('userName', result.name); 
                     
-                    // ✨ เปลี่ยนข้อความต้อนรับให้มีชื่อ และหน่วงเวลาให้ LocalStorage บันทึกเสร็จสมบูรณ์ก่อนเปลี่ยนหน้า
+                    // ✨ หน่วงเวลาให้ LocalStorage บันทึกเสร็จสมบูรณ์ก่อนเปลี่ยนหน้า
                     Swal.fire({ icon: 'success', title: `ยินดีต้อนรับ, ${result.name}`, timer: 1500, showConfirmButton: false });
                     
                     setTimeout(() => {
