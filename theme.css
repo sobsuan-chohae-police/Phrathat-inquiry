@@ -225,7 +225,8 @@ tr:hover td { background-color: #f8fafc; }
     color: var(--text-light); cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; transition: var(--transition); z-index: 10;
 }
-.close-modal-btn:hover { background: var(--danger); color: white; transform: rotate(90deg); }
+/* ✨ แก้ไขเอฟเฟคปุ่มปิด Modal ให้เป็นแบบซูม */
+.close-modal-btn:hover { background: var(--danger); color: white; transform: scale(1.15); }
 
 /* --- Loading & Empty States --- */
 .premium-loader-container { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; }
@@ -356,7 +357,8 @@ button.card { border: none; outline: none; font-family: inherit; color: var(--te
     background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%;
     color: var(--text-light); cursor: pointer; transition: var(--transition);
 }
-.sidebar-close:hover { background: var(--danger); color: white; transform: rotate(90deg); }
+/* ✨ แก้ไขเอฟเฟคปุ่มปิด Sidebar ให้เป็นแบบซูม */
+.sidebar-close:hover { background: var(--danger); color: white; transform: scale(1.15); }
 
 .sidebar-content { padding: 20px; flex: 1; overflow-y: auto; }
 .sidebar-link {
