@@ -9,6 +9,7 @@
     <script src="auth.js"></script>
     
     <script>
+        // ป้องกันคนล็อกอินแล้วเข้ามาหน้านี้ซ้ำ
         if (localStorage.getItem('isLoggedIn') === 'true') {
             window.location.href = 'staff.html';
         }
@@ -115,14 +116,21 @@
                 const result = await res.json();
                 
                 if (result.status === 'success') {
+                    // บันทึกข้อมูลลงเครื่อง
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userEmail', result.email);
                     localStorage.setItem('userRole', result.role);
                     localStorage.setItem('userName', result.name); 
                     
-                    // ✨ หน่วงเวลาให้ LocalStorage บันทึกเสร็จสมบูรณ์ก่อนเปลี่ยนหน้า
-                    Swal.fire({ icon: 'success', title: `ยินดีต้อนรับ, ${result.name}`, timer: 1500, showConfirmButton: false });
+                    // แสดงข้อความต้อนรับ
+                    Swal.fire({ 
+                        icon: 'success', 
+                        title: `ยินดีต้อนรับ, ${result.name}`, 
+                        timer: 1500, 
+                        showConfirmButton: false 
+                    });
                     
+                    // หน่วงเวลา 1.5 วินาทีให้ข้อความแสดงเสร็จก่อน แล้วค่อยเปลี่ยนหน้า
                     setTimeout(() => {
                         window.location.href = 'staff.html';
                     }, 1500);
