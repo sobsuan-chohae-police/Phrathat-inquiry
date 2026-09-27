@@ -1,41 +1,96 @@
-// ✨ จับ URL ของไฟล์ auth.js ไว้ตั้งแต่ตอนโหลดไฟล์ เพื่อให้ฟังก์ชันอื่นเรียกใช้ได้ถูกต้องเสมอ
 const AUTH_SCRIPT_URL = document.currentScript.src;
+// ✨ เพิ่ม URL ของ GAS เพื่อให้ auth.js ใช้ยิงเช็คสิทธิ์ได้
+const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
 
 function checkAuth() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const userRole = localStorage.getItem('userRole');
+    const userEmail = localStorage.getItem('userEmail');
+    const userName = localStorage.getItem('userName');
     const currentPage = window.location.pathname;
 
-    // ถ้าอยู่หน้า login แล้วล็อกอินแล้ว ให้ข้ามไปหน้า staff
     if (currentPage.includes('login.html')) {
         if (isLoggedIn) window.location.replace(AUTH_SCRIPT_URL.replace('auth.js', 'staff.html'));
         return;
     }
 
-    // ถ้ายังไม่ได้ล็อกอิน ให้เด้งไปหน้า login
     if (!isLoggedIn) {
         window.location.replace(AUTH_SCRIPT_URL.replace('auth.js', 'login.html'));
         return;
     }
 
-    // จัดการการแสดงผลเมนูตั้งค่าใน Sidebar (เฉพาะแอดมิน)
+    // 1. โหลดหน้าเว็บทันที (Instant Load)
     document.addEventListener("DOMContentLoaded", () => {
         const adminMenuStation = document.getElementById('adminMenuStation');
         const adminMenuOfficer = document.getElementById('adminMenuOfficer');
+        const sidebarUserName = document.getElementById('sidebarUserName'); // จุดแสดงชื่อ
         
         if (userRole === 'admin') {
-            // ถ้าเป็นแอดมิน ให้แสดงเมนู (ใช้ flex เพื่อให้ไอคอนกับข้อความเรียงกันสวยงาม)
             if (adminMenuStation) adminMenuStation.style.display = 'flex';
             if (adminMenuOfficer) adminMenuOfficer.style.display = 'flex';
         } else {
-            // ถ้าไม่ใช่แอดมิน ให้ซ่อนเมนู
             if (adminMenuStation) adminMenuStation.style.display = 'none';
             if (adminMenuOfficer) adminMenuOfficer.style.display = 'none';
         }
+
+        // แสดงชื่อผู้ใช้งานใน Sidebar
+        if (sidebarUserName && userName) {
+            sidebarUserName.innerText = userName;
+        }
     });
+
+    // 2. ✨ แอบเช็คสิทธิ์หลังบ้าน (Silent Check)
+    if (userEmail) {
+        fetch(AUTH_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'checkAuthStatus', email: userEmail })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === 'error') {
+                // กรณีโดนลบชื่อออก -> ล้างข้อมูลและเตะออกทันที
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userName');
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'สิทธิ์การเข้าถึงถูกเพิกถอน',
+                    text: 'บัญชีของคุณไม่มีสิทธิ์เข้าใช้งานระบบแล้ว',
+                    confirmButtonText: 'ตกลง'
+                }).then(() => {
+                    window.location.replace(AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html'));
+                });
+            } else if (result.status === 'success') {
+                // กรณีโดนเปลี่ยนสิทธิ์ (เช่น จาก Admin เป็น User) -> อัปเดต UI ทันทีโดยไม่ต้องรีเฟรช
+                if (result.role !== userRole || result.name !== userName) {
+                    localStorage.setItem('userRole', result.role);
+                    localStorage.setItem('userName', result.name);
+                    
+                    const adminMenuStation = document.getElementById('adminMenuStation');
+                    const adminMenuOfficer = document.getElementById('adminMenuOfficer');
+                    const sidebarUserName = document.getElementById('sidebarUserName');
+
+                    if (result.role === 'admin') {
+                        if (adminMenuStation) adminMenuStation.style.display = 'flex';
+                        if (adminMenuOfficer) adminMenuOfficer.style.display = 'flex';
+                    } else {
+                        if (adminMenuStation) adminMenuStation.style.display = 'none';
+                        if (adminMenuOfficer) adminMenuOfficer.style.display = 'none';
+                    }
+                    
+                    if (sidebarUserName) {
+                        sidebarUserName.innerText = result.name;
+                    }
+                }
+            }
+        })
+        .catch(err => console.error('Silent check failed:', err));
+    }
 }
 
-// ✨ อัปเกรด: รวม UI การออกจากระบบแบบมินิมอลมาไว้ที่นี่ที่เดียว (เรียกใช้ได้ทุกหน้าเว็บ)
 function logout() {
     Swal.fire({
         title: 'ยืนยันการออกจากระบบ',
@@ -44,18 +99,17 @@ function logout() {
         showCancelButton: true,
         confirmButtonText: 'ออกจากระบบ',
         cancelButtonText: 'ยกเลิก',
-        reverseButtons: true // สลับปุ่มให้ถูกหลัก UX (ยกเลิกอยู่ซ้าย)
+        reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
             localStorage.removeItem('userEmail');
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('userRole');
+            localStorage.removeItem('userName'); // ลบชื่อทิ้งด้วย
             
-            // ✨ ใช้ AUTH_SCRIPT_URL ที่จับไว้ตอนแรก เตะกลับไปหน้า index.html (หน้าหลักของ สภ.)
             window.location.replace(AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html')); 
         }
     });
 }
 
-// รันเช็คทันทีที่โหลดไฟล์นี้
 checkAuth();
