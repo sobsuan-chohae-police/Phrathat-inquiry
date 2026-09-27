@@ -58,16 +58,13 @@
                 <i class="fa-solid fa-chevron-left"></i>
             </a>
             <span class="page-title" id="pageTitle">สำหรับเจ้าหน้าที่งานสอบสวน</span>
-            <!-- ช่องค้นหา (ซ่อนไว้ก่อน) -->
             <input type="text" id="searchInput" class="nav-search-input" placeholder="ค้นหาเครื่องมือ..." autocomplete="off">
         </div>
         
         <div class="nav-right">
-            <!-- ปุ่มค้นหา (แสดงให้ทุกคนเห็น) -->
             <button class="nav-btn btn-action hover-zoom-btn" id="searchBtn" onclick="toggleSearch()">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
-            <!-- ปุ่มแฮมเบอร์เกอร์ -->
             <button class="nav-btn btn-action hover-zoom-btn" onclick="toggleSidebar(true)">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -82,7 +79,6 @@
             <button class="sidebar-close" onclick="toggleSidebar(false)"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="sidebar-content">
-            <!-- เมนูตั้งค่า (ซ่อนไว้ก่อน รอ auth.js มาเปิด) -->
             <a href="setting/station-info.html" class="sidebar-link" id="adminMenuStation" style="display: none;">
                 <i class="fa-solid fa-building-shield"></i> <span>ข้อมูลสถานีตำรวจ</span>
             </a>
@@ -90,7 +86,6 @@
                 <i class="fa-solid fa-user-shield"></i> <span>ข้อมูลเจ้าหน้าที่</span>
             </a>
             
-            <!-- เมนูออกจากระบบ (แสดงให้ทุกคน) -->
             <a href="#" class="sidebar-link text-danger" onclick="logout()">
                 <i class="fa-solid fa-power-off"></i> <span>ออกจากระบบ</span>
             </a>
@@ -100,7 +95,6 @@
     <div class="container container-sm">
         <p class="section-label" id="sectionLabel">เลือกรายการที่ต้องการปฏิบัติ</p>
         
-        <!-- พื้นที่แสดงข้อความเมื่อค้นหาไม่พบ -->
         <div id="notFoundMsg" style="display: none; text-align: center; padding: 40px 20px; color: var(--text-light);">
             <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
             <h3 style="font-size: 1.2rem; font-weight: 500; color: var(--text-main);">ไม่พบเครื่องมือที่ค้นหา</h3>
@@ -108,7 +102,8 @@
         </div>
 
         <div id="toolsContainer">
-            <a href="duty/duty.html" class="menu-card theme-sage hover-zoom-card" tabindex="0">
+            <!-- ใช้สีเดิมตามต้นฉบับ เพิ่มแค่ hover-zoom-card -->
+            <a href="duty/duty.html" class="menu-card theme-green hover-zoom-card" tabindex="0">
                 <div class="menu-icon"><i class="fa-solid fa-calendar-days"></i></div>
                 <div class="menu-info">
                     <h3>ตารางเวรงานสอบสวน</h3>
@@ -117,7 +112,7 @@
                 <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
             </a>
 
-            <a href="drunk-case/drunk-case.html" class="menu-card theme-crimson hover-zoom-card" tabindex="0">
+            <a href="drunk-case/drunk-case.html" class="menu-card theme-red hover-zoom-card" tabindex="0">
                 <div class="menu-icon"><i class="fa-solid fa-wine-bottle"></i></div>
                 <div class="menu-info">
                     <h3>ฟ้องวาจาเมาขับ</h3>
@@ -165,7 +160,6 @@
             setupSearch();
         });
 
-        // --- ระบบ Sidebar ---
         function toggleSidebar(show) {
             const sidebar = document.getElementById('rightSidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -178,7 +172,6 @@
             }
         }
 
-        // --- ระบบค้นหา (Search) ---
         let isSearchActive = false;
         function toggleSearch() {
             isSearchActive = !isSearchActive;
@@ -192,14 +185,14 @@
                 btnBack.style.display = 'none';
                 input.style.display = 'block';
                 input.focus();
-                searchIcon.className = 'fa-solid fa-xmark'; // เปลี่ยนไอคอนเป็นกากบาท
+                searchIcon.className = 'fa-solid fa-xmark';
             } else {
                 title.style.display = 'block';
                 btnBack.style.display = 'flex';
                 input.style.display = 'none';
-                input.value = ''; // ล้างค่า
+                input.value = ''; 
                 searchIcon.className = 'fa-solid fa-magnifying-glass';
-                filterTools(''); // รีเซ็ตการค้นหา
+                filterTools(''); 
             }
         }
 
@@ -228,7 +221,6 @@
                 }
             });
 
-            // จัดการแสดงผลข้อความ "ไม่พบข้อมูล"
             if (hasVisible) {
                 notFoundMsg.style.display = 'none';
                 sectionLabel.style.display = 'block';
@@ -238,7 +230,6 @@
             }
         }
 
-        // --- ระบบวันเกิด (คงเดิม) ---
         async function checkBirthdays() {
             const today = new Date();
             const currentDay = today.getDate();
