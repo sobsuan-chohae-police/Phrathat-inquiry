@@ -325,7 +325,7 @@ button.card { border: none; outline: none; font-family: inherit; color: var(--te
 .hover-zoom-card:hover .menu-icon { 
     background: var(--navy-gradient); 
     color: var(--gold-light); 
-    transform: scale(1.15); /* ซูมเข้า ไม่หมุน */
+    transform: scale(1.15) !important; /* ✨ ใส่ !important เพื่อลบล้างการหมุนของโค้ดเก่า */
     box-shadow: var(--shadow-gold); 
 }
 
