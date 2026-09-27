@@ -1,4 +1,5 @@
-const AUTH_SCRIPT_URL = document.currentScript.src;
+// ✨ จับ URL ของไฟล์ auth.js ไว้ตั้งแต่ตอนโหลดไฟล์
+const AUTH_SCRIPT_URL = document.currentScript ? document.currentScript.src : window.location.href;
 const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
 
 function checkAuth() {
@@ -8,20 +9,20 @@ function checkAuth() {
     const userName = localStorage.getItem('userName');
     const currentPage = window.location.pathname;
 
-    // ป้องกันการเตะกลับไปกลับมา (Infinite Loop)
+    // 1. จัดการการเปลี่ยนหน้า (ใช้โค้ดดั้งเดิมของคุณที่เสถียรที่สุด)
     if (currentPage.includes('login.html')) {
         if (isLoggedIn === 'true') {
-            window.location.href = 'staff.html';
+            window.location.replace(AUTH_SCRIPT_URL.replace('auth.js', 'staff.html'));
         }
         return;
     }
 
-    if (!isLoggedIn || isLoggedIn !== 'true') {
-        window.location.href = AUTH_SCRIPT_URL.replace('auth.js', 'login.html');
+    if (isLoggedIn !== 'true') {
+        window.location.replace(AUTH_SCRIPT_URL.replace('auth.js', 'login.html'));
         return;
     }
 
-    // 1. โหลดหน้าเว็บทันที (Instant Load)
+    // 2. จัดการ UI ทันทีที่โหลดหน้าเว็บเสร็จ
     document.addEventListener("DOMContentLoaded", () => {
         const adminMenuStation = document.getElementById('adminMenuStation');
         const adminMenuOfficer = document.getElementById('adminMenuOfficer');
@@ -35,13 +36,12 @@ function checkAuth() {
             if (adminMenuOfficer) adminMenuOfficer.style.display = 'none';
         }
 
-        // แสดงชื่อผู้ใช้งานใน Sidebar
         if (sidebarUserName && userName) {
             sidebarUserName.innerText = userName;
         }
     });
 
-    // 2. แอบเช็คสิทธิ์หลังบ้าน (Silent Check)
+    // 3. แอบเช็คสิทธิ์หลังบ้าน (Silent Check)
     if (userEmail) {
         fetch(AUTH_API_URL, {
             method: 'POST',
@@ -51,7 +51,7 @@ function checkAuth() {
         .then(res => res.json())
         .then(result => {
             if (result.status === 'error') {
-                // กรณีโดนลบชื่อออก -> ล้างข้อมูลและเตะออกทันที
+                // โดนลบสิทธิ์ -> เตะออก
                 localStorage.removeItem('userEmail');
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('userRole');
@@ -59,14 +59,14 @@ function checkAuth() {
                 
                 Swal.fire({
                     icon: 'error',
-                    title: 'สิทธิ์การเข้าถึงถูกเพิกถอน',
+                    title: 'สิทธิ์ถูกเพิกถอน',
                     text: 'บัญชีของคุณไม่มีสิทธิ์เข้าใช้งานระบบแล้ว',
                     confirmButtonText: 'ตกลง'
                 }).then(() => {
-                    window.location.href = AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html');
+                    window.location.replace(AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html'));
                 });
             } else if (result.status === 'success') {
-                // กรณีโดนเปลี่ยนสิทธิ์ (เช่น จาก Admin เป็น User) -> อัปเดต UI ทันทีโดยไม่ต้องรีเฟรช
+                // อัปเดตข้อมูลถ้ามีการเปลี่ยนแปลง
                 if (result.role !== userRole || result.name !== userName) {
                     localStorage.setItem('userRole', result.role);
                     localStorage.setItem('userName', result.name);
@@ -89,7 +89,7 @@ function checkAuth() {
                 }
             }
         })
-        .catch(err => console.error('Silent check failed:', err));
+        .catch(err => console.error('Silent check error:', err));
     }
 }
 
@@ -109,9 +109,10 @@ function logout() {
             localStorage.removeItem('userRole');
             localStorage.removeItem('userName');
             
-            window.location.href = AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html'); 
+            window.location.replace(AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html')); 
         }
     });
 }
 
+// รันเช็คทันทีที่โหลดไฟล์นี้
 checkAuth();
