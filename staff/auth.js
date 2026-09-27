@@ -9,13 +9,16 @@ function checkAuth() {
     const userName = localStorage.getItem('userName');
     const currentPage = window.location.pathname;
 
+    // ป้องกันการเตะกลับไปกลับมา (Infinite Loop)
     if (currentPage.includes('login.html')) {
-        if (isLoggedIn) window.location.replace(AUTH_SCRIPT_URL.replace('auth.js', 'staff.html'));
+        if (isLoggedIn === 'true') {
+            window.location.href = 'staff.html';
+        }
         return;
     }
 
-    if (!isLoggedIn) {
-        window.location.replace(AUTH_SCRIPT_URL.replace('auth.js', 'login.html'));
+    if (!isLoggedIn || isLoggedIn !== 'true') {
+        window.location.href = AUTH_SCRIPT_URL.replace('auth.js', 'login.html');
         return;
     }
 
@@ -61,7 +64,7 @@ function checkAuth() {
                     text: 'บัญชีของคุณไม่มีสิทธิ์เข้าใช้งานระบบแล้ว',
                     confirmButtonText: 'ตกลง'
                 }).then(() => {
-                    window.location.replace(AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html'));
+                    window.location.href = AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html');
                 });
             } else if (result.status === 'success') {
                 // กรณีโดนเปลี่ยนสิทธิ์ (เช่น จาก Admin เป็น User) -> อัปเดต UI ทันทีโดยไม่ต้องรีเฟรช
@@ -107,7 +110,7 @@ function logout() {
             localStorage.removeItem('userRole');
             localStorage.removeItem('userName'); // ลบชื่อทิ้งด้วย
             
-            window.location.replace(AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html')); 
+            window.location.href = AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html'); 
         }
     });
 }
