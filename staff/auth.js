@@ -35,6 +35,7 @@ function checkAuth() {
             if (adminMenuOfficer) adminMenuOfficer.style.display = 'none';
         }
 
+        // แสดงชื่อผู้ใช้งานใน Sidebar
         if (sidebarUserName && userName) {
             sidebarUserName.innerText = userName;
         }
@@ -50,6 +51,7 @@ function checkAuth() {
         .then(res => res.json())
         .then(result => {
             if (result.status === 'error') {
+                // กรณีโดนลบชื่อออก -> ล้างข้อมูลและเตะออกทันที
                 localStorage.removeItem('userEmail');
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('userRole');
@@ -63,4 +65,53 @@ function checkAuth() {
                 }).then(() => {
                     window.location.href = AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html');
                 });
-            } else if (result.status === 'success')
+            } else if (result.status === 'success') {
+                // กรณีโดนเปลี่ยนสิทธิ์ (เช่น จาก Admin เป็น User) -> อัปเดต UI ทันทีโดยไม่ต้องรีเฟรช
+                if (result.role !== userRole || result.name !== userName) {
+                    localStorage.setItem('userRole', result.role);
+                    localStorage.setItem('userName', result.name);
+                    
+                    const adminMenuStation = document.getElementById('adminMenuStation');
+                    const adminMenuOfficer = document.getElementById('adminMenuOfficer');
+                    const sidebarUserName = document.getElementById('sidebarUserName');
+
+                    if (result.role === 'admin') {
+                        if (adminMenuStation) adminMenuStation.style.display = 'flex';
+                        if (adminMenuOfficer) adminMenuOfficer.style.display = 'flex';
+                    } else {
+                        if (adminMenuStation) adminMenuStation.style.display = 'none';
+                        if (adminMenuOfficer) adminMenuOfficer.style.display = 'none';
+                    }
+                    
+                    if (sidebarUserName) {
+                        sidebarUserName.innerText = result.name;
+                    }
+                }
+            }
+        })
+        .catch(err => console.error('Silent check failed:', err));
+    }
+}
+
+function logout() {
+    Swal.fire({
+        title: 'ยืนยันการออกจากระบบ',
+        text: 'คุณต้องการออกจากระบบใช่หรือไม่',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userName');
+            
+            window.location.href = AUTH_SCRIPT_URL.replace('staff/auth.js', 'index.html'); 
+        }
+    });
+}
+
+checkAuth();
