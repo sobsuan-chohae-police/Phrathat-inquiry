@@ -100,7 +100,8 @@
     </div>
 
     <script>
-        const AUTH_API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
+        // ✨ แก้ไข: ลบ const AUTH_API_URL ออก เพราะ auth.js ประกาศไว้แล้ว
+        // ใช้ AUTH_API_URL จาก auth.js ได้เลย
 
         async function handleCredentialResponse(response) {
             const token = response.credential; 
