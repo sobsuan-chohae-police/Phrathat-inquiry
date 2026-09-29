@@ -9,7 +9,7 @@
     <!-- โหลด jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
    
-    <!-- ใส่ URL ของ Google Apps Script -->
+    <!-- URL ของ Google Apps Script -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbyfqHPo0xC0jhfDFK3t33Ajh2gp88E0jrS6tn6FLHV3j3_0odXPcmHHP8WCdhBbRMm3Yg/exec';
     </script>
@@ -134,7 +134,7 @@
 
     <button class="fab" onclick="openModal('create')"><i class="fa-solid fa-plus"></i> เพิ่มข้อมูลใหม่</button>
 
-    <!-- Modal Form หลัก -->
+    <!-- Modal Form หลัก (ข้อมูลคดี) -->
     <div id="caseModal" class="modal-overlay">
         <div class="modal-card">
             <button class="close-modal-btn" onclick="closeModal('caseModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -361,7 +361,7 @@
         document.getElementById('btnSaveCase').disabled = (currentFormString === originalFormString);
     }
 
-    // ✨ ฟังก์ชันดึงข้อมูลแบบ POST (เร็ว เสถียร ไม่ติด CORS/Redirect)
+    // ✨ ดึงข้อมูลตารางผ่านคำสั่ง POST
     async function loadTableData() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = `
