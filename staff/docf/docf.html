@@ -55,6 +55,93 @@
         .btn-doc { background: #f1f5f9; color: var(--navy-main); border: 1px solid #cbd5e1; }
         .btn-doc:hover { background: var(--navy-main); color: white; }
 
+        /* Search Box & Controls */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 42px;
+            border: 1px solid #cbd5e1;
+            border-radius: 50px;
+            font-family: 'Kanit';
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+            background: white;
+            transition: var(--transition);
+        }
+        .search-input:focus {
+            border-color: var(--navy-main);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        /* Pagination Bar */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+            border-radius: 0 0 16px 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .pagination-info {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-pagination {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: var(--text-main);
+            cursor: pointer;
+            font-family: 'Kanit';
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-pagination:hover:not(:disabled) {
+            background: var(--navy-main);
+            color: white;
+            border-color: var(--navy-main);
+        }
+        .btn-pagination:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+
         /* FAB & Modal */
         .fab { position: fixed; bottom: 30px; right: 30px; background: var(--navy-gradient); color: white; padding: 15px 25px; border-radius: 50px; border: none; font-family: 'Kanit'; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3); cursor: pointer; z-index: 99; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
@@ -126,6 +213,14 @@
     </nav>
 
     <div class="container">
+        <!-- แถบควบคุมและค้นหาข้อมูล -->
+        <div class="table-controls">
+            <div class="search-box-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาเลขคดี, ชื่อผู้ต้องหา, พงส. ..." oninput="filterTable()">
+            </div>
+        </div>
+
         <div class="table-card">
             <table>
                 <thead>
@@ -139,9 +234,22 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="6" style="text-align:center; padding:30px;">รอโหลดข้อมูล...</td></tr>
+                    <tr><td colspan="6" style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--navy-main); margin-bottom:10px; display:block;"></i>รอโหลดข้อมูล...</td></tr>
                 </tbody>
             </table>
+
+            <!-- แถบระบบแบ่งหน้า (Pagination) -->
+            <div class="pagination-container">
+                <div id="paginationInfo" class="pagination-info">กำลังเตรียมข้อมูล...</div>
+                <div class="pagination-buttons">
+                    <button id="btnPrevPage" class="btn-pagination" onclick="changePage(-1)" disabled>
+                        <i class="fa-solid fa-chevron-left"></i> ก่อนหน้า
+                    </button>
+                    <button id="btnNextPage" class="btn-pagination" onclick="changePage(1)" disabled>
+                        ถัดไป <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -309,10 +417,15 @@
     let masterOfficers = [];
     let historicalAccusers = {}; 
     let allCasesData = []; 
+    let filteredCasesData = [];
     let originalFormString = ""; 
     
     let currentMode = '';
     let currentRowIndex = null;
+
+    // Pagination State
+    let currentPage = 1;
+    const rowsPerPage = 10;
 
     // ตัวแปรเก็บรายชื่อสำหรับ Autocomplete
     let globalAccuserList = [];
@@ -488,61 +601,141 @@
         document.getElementById('btnSaveCase').disabled = (currentFormString === originalFormString);
     }
 
-    function loadTableData() {
+    // ==========================================
+    // ฟังก์ชันดึงข้อมูลตาราง (POST + async/await)
+    // ==========================================
+    async function loadTableData() {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">กำลังโหลดข้อมูล...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--navy-main); margin-bottom:10px; display:block;"></i>กำลังโหลดข้อมูล...</td></tr>';
         
-        fetch(API_URL + '?action=getData')
-            .then(res => res.json())
-            .then(data => {
-                tbody.innerHTML = '';
-                allCasesData = data;
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">ยังไม่มีข้อมูลคดี</td></tr>';
-                    return;
-                }
-                
-                const accuserSet = new Set(), assistSet = new Set();
-                historicalAccusers = {}; 
-
-                data.forEach(item => {
-                    let doc1Btn = item.docLink1 && item.docLink1.includes('http') 
-                        ? `<a href="${item.docLink1}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> ปัสสาวะ</a>`
-                        : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, 1, '${item.caseNo}')"><i class="fa-solid fa-plus"></i> ปัสสาวะ</button>`;
-                        
-                    let doc2Btn = item.docLink2 && item.docLink2.includes('http') 
-                        ? `<a href="${item.docLink2}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> ยา</a>`
-                        : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, 2, '${item.caseNo}')"><i class="fa-solid fa-plus"></i> ยา</button>`;
-
-                    let isUrineOnly = (!item.charge || item.charge.trim() === '');
-                    let docsHtml = isUrineOnly ? doc1Btn : `${doc1Btn} ${doc2Btn}`;
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>
-                                <button class="btn-action btn-edit" onclick="openModal('edit', ${item.rowIndex})"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-action btn-delete" onclick="deleteCase(${item.rowIndex})"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                            <td style="font-weight:bold;">${item.caseNo || "-"}</td>
-                            <td>${item.suspectName || "-"}</td>
-                            <td>${item.incidentDate || "-"}</td>
-                            <td>${item.officer || "-"}</td>
-                            <td style="text-align:center; white-space:nowrap;">${docsHtml}</td>
-                        </tr>
-                    `;
-
-                    if (item.accuser) { accuserSet.add(item.accuser.trim()); historicalAccusers[item.accuser.trim()] = item.accuserPos; }
-                    if (item.assistantOfficer) assistSet.add(item.assistantOfficer.trim());
-                });
-
-                // เตรียมข้อมูลสำหรับ Autocomplete
-                globalAccuserList = Array.from(accuserSet).filter(Boolean);
-                globalAssistList = Array.from(assistSet).filter(Boolean);
-
-                // เรียกใช้ฟังก์ชันสร้าง Autocomplete
-                setupAutocomplete('accuserInput', 'accuserDropdown', globalAccuserList, updateAccuserPos);
-                setupAutocomplete('assistInput', 'assistDropdown', globalAssistList);
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'getData' })
             });
+            const data = await response.json();
+            allCasesData = data || [];
+            
+            const accuserSet = new Set(), assistSet = new Set();
+            historicalAccusers = {}; 
+
+            allCasesData.forEach(item => {
+                if (item.accuser) { 
+                    accuserSet.add(item.accuser.trim()); 
+                    historicalAccusers[item.accuser.trim()] = item.accuserPos; 
+                }
+                if (item.assistantOfficer) assistSet.add(item.assistantOfficer.trim());
+            });
+
+            // เตรียมข้อมูลสำหรับ Autocomplete
+            globalAccuserList = Array.from(accuserSet).filter(Boolean);
+            globalAssistList = Array.from(assistSet).filter(Boolean);
+
+            setupAutocomplete('accuserInput', 'accuserDropdown', globalAccuserList, updateAccuserPos);
+            setupAutocomplete('assistInput', 'assistDropdown', globalAssistList);
+
+            filterTable();
+        } catch (error) {
+            console.error(error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#dc2626;"><i class="fa-solid fa-triangle-exclamation fa-2x" style="margin-bottom:10px; display:block;"></i>เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+            document.getElementById('paginationInfo').textContent = 'เกิดข้อผิดพลาด';
+        }
+    }
+
+    // ==========================================
+    // ฟังก์ชันค้นหาข้อมูล (Search Filter)
+    // ==========================================
+    function filterTable() {
+        const searchInput = document.getElementById('searchInput');
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+        if (!query) {
+            filteredCasesData = [...allCasesData];
+        } else {
+            filteredCasesData = allCasesData.filter(item => {
+                const caseNo = (item.caseNo || '').toLowerCase();
+                const suspectName = (item.suspectName || '').toLowerCase();
+                const officer = (item.officer || '').toLowerCase();
+                const incidentDate = (item.incidentDate || '').toLowerCase();
+                const fullText = (item.fullData ? item.fullData.join(' ') : '').toLowerCase();
+                return caseNo.includes(query) || suspectName.includes(query) || officer.includes(query) || incidentDate.includes(query) || fullText.includes(query);
+            });
+        }
+
+        currentPage = 1; // รีเซ็ตกลับไปหน้า 1 เสมอเมื่อมีการค้นหา
+        renderTable();
+    }
+
+    // ==========================================
+    // ฟังก์ชันเปลี่ยนหน้า (Pagination Change)
+    // ==========================================
+    function changePage(delta) {
+        const totalPages = Math.ceil(filteredCasesData.length / rowsPerPage) || 1;
+        const targetPage = currentPage + delta;
+        if (targetPage >= 1 && targetPage <= totalPages) {
+            currentPage = targetPage;
+            renderTable();
+        }
+    }
+
+    // ==========================================
+    // ฟังก์ชันแสดงผลตาราง (Render Table)
+    // ==========================================
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        const btnPrev = document.getElementById('btnPrevPage');
+        const btnNext = document.getElementById('btnNextPage');
+        const paginationInfo = document.getElementById('paginationInfo');
+
+        if (!filteredCasesData || filteredCasesData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">ไม่พบข้อมูลคดี</td></tr>';
+            paginationInfo.textContent = 'หน้า 1 / 1 (ทั้งหมด 0 รายการ)';
+            btnPrev.disabled = true;
+            btnNext.disabled = true;
+            return;
+        }
+
+        const totalItems = filteredCasesData.length;
+        const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
+        const currentSlice = filteredCasesData.slice(startIndex, endIndex);
+
+        let rowsHtml = '';
+        currentSlice.forEach(item => {
+            let doc1Btn = item.docLink1 && item.docLink1.includes('http') 
+                ? `<a href="${item.docLink1}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> ปัสสาวะ</a>`
+                : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, 1, '${item.caseNo}')"><i class="fa-solid fa-plus"></i> ปัสสาวะ</button>`;
+                
+            let doc2Btn = item.docLink2 && item.docLink2.includes('http') 
+                ? `<a href="${item.docLink2}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> ยา</a>`
+                : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, 2, '${item.caseNo}')"><i class="fa-solid fa-plus"></i> ยา</button>`;
+
+            let isUrineOnly = (!item.charge || item.charge.trim() === '');
+            let docsHtml = isUrineOnly ? doc1Btn : `${doc1Btn} ${doc2Btn}`;
+
+            rowsHtml += `
+                <tr>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="openModal('edit', ${item.rowIndex})"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-action btn-delete" onclick="deleteCase(${item.rowIndex})"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                    <td style="font-weight:bold;">${item.caseNo || "-"}</td>
+                    <td>${item.suspectName || "-"}</td>
+                    <td>${item.incidentDate || "-"}</td>
+                    <td>${item.officer || "-"}</td>
+                    <td style="text-align:center; white-space:nowrap;">${docsHtml}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = rowsHtml;
+        paginationInfo.textContent = `หน้า ${currentPage} / ${totalPages} (ทั้งหมด ${totalItems} รายการ)`;
+        btnPrev.disabled = (currentPage <= 1);
+        btnNext.disabled = (currentPage >= totalPages);
     }
 
     // ==========================================
@@ -552,12 +745,10 @@
         const input = document.getElementById(inputId);
         const dropdown = document.getElementById(dropdownId);
 
-        // เมื่อมีการพิมพ์ข้อความ
         input.addEventListener('input', function() {
             const val = this.value.toLowerCase();
             dropdown.innerHTML = '';
             
-            // กรองข้อมูลที่ตรงกับที่พิมพ์
             const filtered = dataList.filter(item => item.toLowerCase().includes(val));
             
             if (filtered.length > 0) {
@@ -568,7 +759,7 @@
                     div.onclick = function() {
                         input.value = item;
                         dropdown.style.display = 'none';
-                        if(callback) callback(); // เรียกฟังก์ชันอัปเดตตำแหน่ง (ถ้ามี)
+                        if(callback) callback();
                         checkFormChanged();
                     };
                     dropdown.appendChild(div);
@@ -578,15 +769,13 @@
                 dropdown.style.display = 'none';
             }
             
-            if(callback) callback(); // อัปเดตตำแหน่งแบบ Real-time ตอนพิมพ์
+            if(callback) callback();
         });
 
-        // เมื่อคลิกที่ช่อง ให้แสดงรายชื่อทั้งหมดทันที
         input.addEventListener('focus', function() {
             input.dispatchEvent(new Event('input'));
         });
 
-        // ซ่อน Dropdown เมื่อคลิกที่อื่น
         document.addEventListener('click', function(e) {
             if (e.target !== input && e.target !== dropdown) {
                 dropdown.style.display = 'none';
@@ -656,7 +845,6 @@
             cb.checked = currentBehavior.includes(cb.value);
         });
 
-        // ดึงข้อมูลใส่ช่อง Input ธรรมดา
         form.accuser.value = d[19] || '';
         form.accuserPos.value = d[20] || ""; 
         form.officer.value = d[21] || ""; 
@@ -695,36 +883,45 @@
         });
     }
 
-    function loadMasterData() {
-        fetch(API_URL + '?action=getMasterData')
-            .then(res => res.json())
-            .then(data => {
-                if(data.officers) {
-                    masterOfficers = data.officers; 
-                    let officerOptions = '<option value="">- เลือกพนักงานสอบสวน -</option>';
-                    
-                    data.officers.forEach(off => {
-                        const role1 = (off['หน้าที่1'] || '').toString().trim();
-                        const role2 = (off['หน้าที่'] || '').toString().trim();
-                        const pos = (off['ตำแหน่งย่อ'] || off['ตำแหน่ง'] || '').toString().trim();
-                        const fullText = `${role1} ${role2} ${pos}`;
-                        
-                        const isOfficer = fullText.includes('พนักงานสอบสวน') || 
-                                          fullText.includes('พงส.') || 
-                                          fullText.includes('(สอบสวน)');
-                                          
-                        const isAssistant = fullText.includes('ผู้ช่วย') || 
-                                            fullText.includes('ช่วยงาน') || 
-                                            fullText.includes('ช่วย พงส.');
-
-                        if (isOfficer && !isAssistant) {
-                            officerOptions += `<option value="${off['ยศ ชื่อ สกุล']}" data-pos="${pos || role1}" data-phone="${off['โทรศัพท์'] || ''}">${off['ยศ ชื่อ สกุล']}</option>`;
-                        }
-                    });
-                    
-                    document.getElementById('officerSelect').innerHTML = officerOptions;
-                }
+    // ==========================================
+    // ฟังก์ชันดึง Master Data (POST + async/await)
+    // ==========================================
+    async function loadMasterData() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'getMasterData' })
             });
+            const data = await response.json();
+            if(data && data.officers) {
+                masterOfficers = data.officers; 
+                let officerOptions = '<option value="">- เลือกพนักงานสอบสวน -</option>';
+                
+                data.officers.forEach(off => {
+                    const role1 = (off['หน้าที่1'] || '').toString().trim();
+                    const role2 = (off['หน้าที่'] || '').toString().trim();
+                    const pos = (off['ตำแหน่งย่อ'] || off['ตำแหน่ง'] || '').toString().trim();
+                    const fullText = `${role1} ${role2} ${pos}`;
+                    
+                    const isOfficer = fullText.includes('พนักงานสอบสวน') || 
+                                      fullText.includes('พงส.') || 
+                                      fullText.includes('(สอบสวน)');
+                                      
+                    const isAssistant = fullText.includes('ผู้ช่วย') || 
+                                        fullText.includes('ช่วยงาน') || 
+                                        fullText.includes('ช่วย พงส.');
+
+                    if (isOfficer && !isAssistant) {
+                        officerOptions += `<option value="${off['ยศ ชื่อ สกุล']}" data-pos="${pos || role1}" data-phone="${off['โทรศัพท์'] || ''}">${off['ยศ ชื่อ สกุล']}</option>`;
+                    }
+                });
+                
+                document.getElementById('officerSelect').innerHTML = officerOptions;
+            }
+        } catch (error) {
+            console.error('Error loading master data:', error);
+        }
     }
 
     function updateOfficerInfo() {
