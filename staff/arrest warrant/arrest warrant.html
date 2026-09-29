@@ -39,15 +39,31 @@
         nav { background: white; padding: 15px 30px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
         .page-title { font-size: 1.25rem; font-weight: 600; margin-left: 10px; }
        
-        /* Table */
+        /* Container & Table Card */
         .container { padding: 30px; max-width: 1400px; margin: auto; }
-        .table-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow-x: auto; }
+        .table-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden; }
+        .table-responsive { overflow-x: auto; width: 100%; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: #f8fafc; padding: 15px; text-align: left; font-weight: 500; color: var(--text-light); white-space: nowrap; }
         td { padding: 15px; border-top: 1px solid #f1f5f9; vertical-align: middle; }
        
+        /* ✨ กล่องค้นหาเหนือตาราง (Search Bar) */
+        .table-toolbar { padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; border-bottom: 1px solid #f1f5f9; background: #fff; }
+        .search-box { position: relative; width: 100%; max-width: 360px; }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 0.95rem; }
+        .search-input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid #cbd5e1; border-radius: 50px; font-family: 'Kanit'; font-size: 0.95rem; outline: none; transition: var(--transition); box-sizing: border-box; }
+        .search-input:focus { border-color: var(--navy-main); box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
+
+        /* ✨ แถบเปลี่ยนหน้า (Pagination Bar) */
+        .pagination { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-top: 1px solid #f1f5f9; background: #fff; }
+        .page-info { font-size: 0.95rem; color: var(--text-light); font-weight: 500; }
+        .page-btn-group { display: flex; gap: 8px; }
+        .page-btn { background: #fff; border: 1px solid #cbd5e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--transition); color: var(--text-main); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .page-btn:hover:not(:disabled) { background: var(--navy-main); color: white; border-color: var(--navy-main); }
+        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; background: #f8fafc; }
+
         /* Action Buttons */
-        .btn-action { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-family: 'Kanit'; font-size: 0.85rem; margin-right: 5px; transition: 0.2s; margin-bottom: 5px;}
+        .btn-action { padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-family: 'Kanit'; font-size: 0.85rem; margin-right: 5px; transition: 0.2s; margin-bottom: 5px; }
         .btn-edit { background: #e0f2fe; color: #0284c7; }
         .btn-edit:hover { background: #bae6fd; }
         .btn-delete { background: #fee2e2; color: #dc2626; }
@@ -107,28 +123,50 @@
 
     <div class="container">
         <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">จัดการ</th>
-                        <th>คดีอาญาที่</th>
-                        <th>หมายจับที่</th>
-                        <th>ชื่อ-สกุล ผู้ต้องหา</th>
-                        <th style="text-align: center;">ส่งตำหนิรูปพรรณ</th>
-                        <th style="text-align: center;">งดสืบจับและรายงานศาล</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="6">
-                            <div class="loader-box">
-                                <div class="spinner"></div>
-                                <div>กำลังโหลดข้อมูล...</div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            
+            <!-- ✨ แถบเครื่องมือค้นหาเหนือตาราง -->
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="พิมพ์ค้นหาเลขคดี, หมายจับ, ชื่อผู้ต้องหา..." oninput="handleSearch()">
+                </div>
+            </div>
+
+            <!-- ตารางแสดงผล -->
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">จัดการ</th>
+                            <th>คดีอาญาที่</th>
+                            <th>หมายจับที่</th>
+                            <th>ชื่อ-สกุล ผู้ต้องหา</th>
+                            <th style="text-align: center;">ส่งตำหนิรูปพรรณ</th>
+                            <th style="text-align: center;">งดสืบจับและรายงานศาล</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="loader-box">
+                                    <div class="spinner"></div>
+                                    <div>กำลังโหลดข้อมูล...</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ✨ แถบแบ่งหน้า Pagination ใต้ตาราง -->
+            <div class="pagination">
+                <span class="page-info" id="pageInfo">กำลังโหลด...</span>
+                <div class="page-btn-group">
+                    <button class="page-btn" id="btnPrevPage" onclick="changePage(-1)" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="page-btn" id="btnNextPage" onclick="changePage(1)" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -252,7 +290,10 @@
     </div>
 
     <script>
-    let allCasesData = [];
+    let allCasesData = [];       // เก็บข้อมูลทั้งหมดจาก API
+    let filteredCasesData = [];  // เก็บข้อมูลที่ผ่านการค้นหา
+    let currentPage = 1;         // หน้าปัจจุบัน
+    const itemsPerPage = 10;     // แสดงผลหน้าละ 10 แถว
     let originalFormString = "";
     const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
     let fpInstances = [];
@@ -361,7 +402,7 @@
         document.getElementById('btnSaveCase').disabled = (currentFormString === originalFormString);
     }
 
-    // ✨ ดึงข้อมูลตารางผ่านคำสั่ง POST
+    // ✨ ฟังก์ชันดึงข้อมูลจาก Server
     async function loadTableData() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = `
@@ -382,39 +423,91 @@
                 body: JSON.stringify({ action: 'getData' })
             });
             const data = await response.json();
-            tbody.innerHTML = '';
-            allCasesData = data;
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-light);">ยังไม่มีข้อมูล</td></tr>';
-                return;
-            }
-
-            data.forEach(item => {
-                let docBtn = item.docLink && item.docLink.includes('http')
-                    ? `<a href="${item.docLink}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารส่งฯ</a>`
-                    : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, '${item.caseNo}')"><i class="fa-solid fa-print"></i> ส่งหมายจับ</button>`;
-
-                let suspendBtn = item.suspendDocLink1 && item.suspendDocLink1.includes('http')
-                    ? `<button class="btn-action btn-suspend" onclick="showSuspendLinks('${item.suspendDocLink1}', '${item.suspendDocLink2}')" style="background:#a21caf; color:white;"><i class="fa-solid fa-folder-open"></i> เปิดเอกสารงดสืบฯ</button>`
-                    : `<button class="btn-action btn-suspend" onclick="openSuspendModal(${item.rowIndex})"><i class="fa-solid fa-gavel"></i> งดสืบจับ</button>`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="openModal('edit', ${item.rowIndex})"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteCase(${item.rowIndex})"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                        <td style="font-weight:bold;">${item.caseNo || "-"}</td>
-                        <td>${item.warrantNo || "-"}</td>
-                        <td>${item.suspectName || "-"}</td>
-                        <td style="text-align:center; white-space:nowrap;">${docBtn}</td>
-                        <td style="text-align:center; white-space:nowrap;">${suspendBtn}</td>
-                    </tr>
-                `;
-            });
+            allCasesData = data || [];
+            filteredCasesData = [...allCasesData];
+            currentPage = 1;
+            renderTable();
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#dc2626;">ไม่สามารถโหลดข้อมูลได้ โปรดตรวจสอบการเชื่อมต่อ</td></tr>';
+            document.getElementById('pageInfo').innerText = "เกิดข้อผิดพลาดในการโหลด";
+        }
+    }
+
+    // ✨ ฟังก์ชันค้นหาข้อมูลแบบ Real-time
+    function handleSearch() {
+        const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (!keyword) {
+            filteredCasesData = [...allCasesData];
+        } else {
+            filteredCasesData = allCasesData.filter(item => {
+                const caseNo = (item.caseNo || '').toLowerCase();
+                const warrantNo = (item.warrantNo || '').toLowerCase();
+                const suspectName = (item.suspectName || '').toLowerCase();
+                return caseNo.includes(keyword) || warrantNo.includes(keyword) || suspectName.includes(keyword);
+            });
+        }
+        currentPage = 1; // รีเซ็ตไปหน้าแรกเสมอเมื่อค้นหา
+        renderTable();
+    }
+
+    // ✨ ฟังก์ชัน Render ตารางตามหน้า (10 แถว/หน้า)
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        const totalItems = filteredCasesData.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+        if (totalItems === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-light);">ไม่พบข้อมูล</td></tr>';
+            document.getElementById('pageInfo').innerText = 'หน้า 0 / 0 (ทั้งหมด 0 รายการ)';
+            document.getElementById('btnPrevPage').disabled = true;
+            document.getElementById('btnNextPage').disabled = true;
+            return;
+        }
+
+        // คำนวณช่วงข้อมูลของหน้าปัจจุบัน (Slice ทีละ 10)
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageData = filteredCasesData.slice(startIndex, endIndex);
+
+        pageData.forEach(item => {
+            let docBtn = item.docLink && item.docLink.includes('http')
+                ? `<a href="${item.docLink}" target="_blank" class="btn-action btn-doc" style="background:var(--navy-main); color:white;"><i class="fa-solid fa-file-word"></i> เปิดเอกสารส่งฯ</a>`
+                : `<button class="btn-action btn-doc" onclick="generateDoc(${item.rowIndex}, '${item.caseNo}')"><i class="fa-solid fa-print"></i> ส่งหมายจับ</button>`;
+
+            let suspendBtn = item.suspendDocLink1 && item.suspendDocLink1.includes('http')
+                ? `<button class="btn-action btn-suspend" onclick="showSuspendLinks('${item.suspendDocLink1}', '${item.suspendDocLink2}')" style="background:#a21caf; color:white;"><i class="fa-solid fa-folder-open"></i> เปิดเอกสารงดสืบฯ</button>`
+                : `<button class="btn-action btn-suspend" onclick="openSuspendModal(${item.rowIndex})"><i class="fa-solid fa-gavel"></i> งดสืบจับ</button>`;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="openModal('edit', ${item.rowIndex})"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-action btn-delete" onclick="deleteCase(${item.rowIndex})"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                    <td style="font-weight:bold;">${item.caseNo || "-"}</td>
+                    <td>${item.warrantNo || "-"}</td>
+                    <td>${item.suspectName || "-"}</td>
+                    <td style="text-align:center; white-space:nowrap;">${docBtn}</td>
+                    <td style="text-align:center; white-space:nowrap;">${suspendBtn}</td>
+                </tr>
+            `;
+        });
+
+        // อัปเดตข้อมูลแถบ Pagination
+        document.getElementById('pageInfo').innerText = `หน้า ${currentPage} / ${totalPages} (ทั้งหมด ${totalItems} รายการ)`;
+        document.getElementById('btnPrevPage').disabled = (currentPage === 1);
+        document.getElementById('btnNextPage').disabled = (currentPage === totalPages);
+    }
+
+    // ✨ ฟังก์ชันเปลี่ยนหน้า
+    function changePage(delta) {
+        const totalPages = Math.ceil(filteredCasesData.length / itemsPerPage) || 1;
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+            currentPage = newPage;
+            renderTable();
         }
     }
 
