@@ -21,3 +21,6 @@ const SHEET_NAMES = {
   STATION: 'ข้อมูลสถานีตำรวจ',
   OFFICER: 'ข้อมูลเจ้าหน้าที่'
 };
+
+// 4. Google OAuth Client ID (ต้องตรงกับ data-client_id ใน staff/login.html)
+const GOOGLE_CLIENT_ID = '298931412406-s91ak2nnd6hng8a225r1mkajq37m6hal.apps.googleusercontent.com';

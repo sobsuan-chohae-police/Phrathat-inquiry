@@ -103,6 +103,38 @@
         // ✨ แก้ไข: ลบ const AUTH_API_URL ออก เพราะ auth.js ประกาศไว้แล้ว
         // ใช้ AUTH_API_URL จาก auth.js ได้เลย
 
+        // จำนวนครั้งที่พยายามเชื่อมต่อทั้งหมด (ครั้งแรก + ลองใหม่ 2 ครั้ง)
+        // ลองซ้ำเฉพาะกรณี "เชื่อมต่อไม่ได้ / คำตอบไม่ใช่ JSON" เท่านั้น
+        // ถ้าเซิร์ฟเวอร์ตอบกลับมาปกติ (แม้จะปฏิเสธสิทธิ์) จะไม่ลองซ้ำ
+        const VERIFY_MAX_ATTEMPTS = 3;
+
+        async function requestVerifyUser(token) {
+            let lastError;
+            for (let attempt = 1; attempt <= VERIFY_MAX_ATTEMPTS; attempt++) {
+                try {
+                    const res = await fetch(AUTH_API_URL, {
+                        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'verifyUser', token: token })
+                    });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                    const text = await res.text();
+                    try {
+                        return JSON.parse(text);
+                    } catch (parseError) {
+                        throw new Error('เซิร์ฟเวอร์ไม่ได้ตอบกลับเป็น JSON: ' + text.slice(0, 200));
+                    }
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`[Login] เชื่อมต่อครั้งที่ ${attempt}/${VERIFY_MAX_ATTEMPTS} ล้มเหลว:`, error);
+                    if (attempt < VERIFY_MAX_ATTEMPTS) {
+                        await new Promise(resolve => setTimeout(resolve, attempt * 1000)); // รอ 1 วิ, 2 วิ
+                    }
+                }
+            }
+            throw lastError;
+        }
+
         async function handleCredentialResponse(response) {
             const token = response.credential; 
             
@@ -110,11 +142,7 @@
             document.getElementById('loadingText').style.display = 'flex';
 
             try {
-                const res = await fetch(AUTH_API_URL, {
-                    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'verifyUser', token: token })
-                });
-                const result = await res.json();
+                const result = await requestVerifyUser(token);
                 
                 if (result.status === 'success') {
                     // บันทึกข้อมูลลงเครื่อง
@@ -141,7 +169,8 @@
                     document.getElementById('loadingText').style.display = 'none';
                 }
             } catch (error) {
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+                console.error('[Login] เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ (ครบทุกครั้งที่ลองแล้ว):', error);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
                 document.getElementById('googleBtnWrapper').style.display = 'flex';
                 document.getElementById('loadingText').style.display = 'none';
             }

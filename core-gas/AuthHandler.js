@@ -27,6 +27,16 @@ const AuthHandler = {
 
       const tokenInfo = JSON.parse(responseText);
 
+      // ต้องเป็น token ที่ออกให้ Client ID ของระบบนี้เท่านั้น (กันการนำ token จากแอปอื่นมาใช้)
+      if (tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+        return responseJSON({ status: 'error', message: 'ข้อมูลยืนยันตัวตนไม่ได้ออกให้ระบบนี้' });
+      }
+
+      // อีเมลต้องผ่านการยืนยันจาก Google แล้ว (tokeninfo ส่งค่าเป็นข้อความ "true")
+      if (String(tokenInfo.email_verified) !== 'true') {
+        return responseJSON({ status: 'error', message: 'อีเมลนี้ยังไม่ผ่านการยืนยันจาก Google' });
+      }
+
       if (tokenInfo.email) {
         userEmail = tokenInfo.email.toLowerCase().trim();
       } else {
@@ -58,7 +68,8 @@ const AuthHandler = {
     }
 
     // ไม่พบสิทธิ์ -> เตะออก
-    return responseJSON({ status: 'error', message: 'ไม่พบสิทธิ์การเข้าใช้งาน' });
+    // code: 'UNAUTHORIZED' ใช้แยกกรณี "ไม่มีสิทธิ์จริง" ออกจาก error ชั่วคราว (เช่น ชีทเปิดไม่ได้) ที่ Router ส่งมา
+    return responseJSON({ status: 'error', code: 'UNAUTHORIZED', message: 'ไม่พบสิทธิ์การเข้าใช้งาน' });
   },
 
   // ==========================================

@@ -50,7 +50,10 @@ function checkAuth() {
         })
         .then(res => res.json())
         .then(result => {
-            if (result.status === 'error') {
+            if (result.status === 'error' && result.code !== 'UNAUTHORIZED') {
+                // error ชั่วคราวจากเซิร์ฟเวอร์ (เช่น ชีทเปิดไม่ได้) -> ไม่เตะออก แค่บันทึกไว้
+                console.warn('Silent check server error:', result.message);
+            } else if (result.status === 'error') {
                 // โดนลบสิทธิ์ -> เตะออก
                 localStorage.removeItem('userEmail');
                 localStorage.removeItem('isLoggedIn');
