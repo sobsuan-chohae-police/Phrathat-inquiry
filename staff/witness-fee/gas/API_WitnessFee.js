@@ -19,11 +19,7 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  const lock = LockService.getScriptLock();
   try {
-    // รอคิวสูงสุด 30 วินาที ป้องกันเซิร์ฟเวอร์แบนจากการยิง Request ชนกัน
-    lock.waitLock(30000); 
-    
     const params = JSON.parse(e.postData.contents);
     const action = params.action;
     
@@ -35,8 +31,6 @@ function doPost(e) {
     return responseJSON({ status: 'error', message: 'Unknown action' });
   } catch (error) {
     return responseJSON({ status: 'error', message: error.toString() });
-  } finally {
-    lock.releaseLock();
   }
 }
 
@@ -129,61 +123,79 @@ function getOptions() {
  * 3. บันทึกข้อมูล (เพิ่มใหม่ / แก้ไข)
  */
 function saveData(params) {
-  const ss = SpreadsheetApp.openById(CONFIG.WITNESS_SHEET_ID);
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_WITNESS);
-  
-  const formData = params.formData;
-  const mode = params.mode; // 'add' หรือ 'edit'
-  const rowIndex = params.rowIndex;
-  
-  // สร้าง Placeholders จากหลังบ้านเลย (ปลอดภัยและเร็วกว่า)
-  const placeholders = buildPlaceholders(formData);
-  
-  let docUrl = "";
-  let oldDocUrl = "";
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    
+    const ss = SpreadsheetApp.openById(CONFIG.WITNESS_SHEET_ID);
+    const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_WITNESS);
+    
+    const formData = params.formData;
+    const mode = params.mode; // 'add' หรือ 'edit'
+    const rowIndex = params.rowIndex;
+    
+    // สร้าง Placeholders จากหลังบ้านเลย (ปลอดภัยและเร็วกว่า)
+    const placeholders = buildPlaceholders(formData);
+    
+    let docUrl = "";
+    let oldDocUrl = "";
 
-  if (mode === 'edit') {
-    oldDocUrl = sheet.getRange(rowIndex, 17).getValue(); // คอลัมน์ Q (17) คือ File_URL
-    if (oldDocUrl) deleteFileByUrl(oldDocUrl); // ลบไฟล์เก่าทิ้ง
-  }
+    if (mode === 'edit') {
+      oldDocUrl = sheet.getRange(rowIndex, 17).getValue(); // คอลัมน์ Q (17) คือ File_URL
+      if (oldDocUrl) deleteFileByUrl(oldDocUrl); // ลบไฟล์เก่าทิ้ง
+    }
 
-  // สร้างไฟล์ใหม่เสมอเมื่อมีการบันทึก
-  docUrl = createDocument(placeholders, formData);
-  
-  // เตรียมข้อมูลลงชีต 18 คอลัมน์
-  const id = mode === 'add' ? new Date().getTime().toString() : sheet.getRange(rowIndex, 18).getValue();
-  
-  const rowData = [
-    formData.caseType, formData.caseNo, formData.accuser, formData.suspect, formData.investigator,
-    formData.witnessDate, formData.dailyNo, formData.time, formData.witnessType, formData.titleName,
-    formData.firstName, formData.lastName, formData.idCard, formData.zone, formData.address, formData.phone,
-    docUrl, id
-  ];
-  
-  if (mode === 'add') {
-    sheet.appendRow(rowData);
-  } else {
-    sheet.getRange(rowIndex, 1, 1, 18).setValues([rowData]);
+    // สร้างไฟล์ใหม่เสมอเมื่อมีการบันทึก
+    docUrl = createDocument(placeholders, formData);
+    
+    // เตรียมข้อมูลลงชีต 18 คอลัมน์
+    const id = mode === 'add' ? new Date().getTime().toString() : sheet.getRange(rowIndex, 18).getValue();
+    
+    const rowData = [
+      formData.caseType, formData.caseNo, formData.accuser, formData.suspect, formData.investigator,
+      formData.witnessDate, formData.dailyNo, formData.time, formData.witnessType, formData.titleName,
+      formData.firstName, formData.lastName, formData.idCard, formData.zone, formData.address, formData.phone,
+      docUrl, id
+    ];
+    
+    if (mode === 'add') {
+      sheet.appendRow(rowData);
+    } else {
+      sheet.getRange(rowIndex, 1, 1, 18).setValues([rowData]);
+    }
+    
+    return responseJSON({ status: 'success' });
+  } catch (error) {
+    return responseJSON({ status: 'error', message: error.toString() });
+  } finally {
+    lock.releaseLock();
   }
-  
-  return responseJSON({ status: 'success' });
 }
 
 /**
  * 4. ลบข้อมูล
  */
 function deleteData(params) {
-  const ss = SpreadsheetApp.openById(CONFIG.WITNESS_SHEET_ID);
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_WITNESS);
-  const rowIndex = params.rowIndex;
-  
-  if (rowIndex <= 1) return responseJSON({ status: 'error', message: 'Cannot delete header' });
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    
+    const ss = SpreadsheetApp.openById(CONFIG.WITNESS_SHEET_ID);
+    const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_WITNESS);
+    const rowIndex = params.rowIndex;
+    
+    if (rowIndex <= 1) return responseJSON({ status: 'error', message: 'Cannot delete header' });
 
-  const fileUrl = sheet.getRange(rowIndex, 17).getValue();
-  if (fileUrl) deleteFileByUrl(fileUrl);
-  
-  sheet.deleteRow(rowIndex);
-  return responseJSON({ status: 'success' });
+    const fileUrl = sheet.getRange(rowIndex, 17).getValue();
+    if (fileUrl) deleteFileByUrl(fileUrl);
+    
+    sheet.deleteRow(rowIndex);
+    return responseJSON({ status: 'success' });
+  } catch (error) {
+    return responseJSON({ status: 'error', message: error.toString() });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 /**

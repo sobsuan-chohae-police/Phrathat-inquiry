@@ -555,10 +555,15 @@
                     body: JSON.stringify({ action: 'getData', page: page })
                 });
                 const json = await response.json();
+                if (json.status === 'error') throw new Error(json.message);
+                
                 allData = json.data;
                 renderTable(allData);
                 updatePagination(page, json.total);
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--danger);">โหลดข้อมูลไม่สำเร็จ</td></tr>'; }
+            } catch (e) { 
+                console.error("loadTable error:", e);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger);">โหลดข้อมูลไม่สำเร็จ: ${e.message || 'ไม่ทราบสาเหตุ'}</td></tr>`; 
+            }
         }
 
         function renderTable(data) {
@@ -601,17 +606,24 @@
         function changePage(delta) { loadTable(currentPage + delta); }
 
         async function loadOptions() {
-            const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'getOptions' }) });
-            const json = await res.json();
-            const dlAcc = document.getElementById('listAccusers');
-            dlAcc.innerHTML = '';
-            json.accusers.forEach(item => { const op = document.createElement('option'); op.value = item; dlAcc.appendChild(op); });
-            const dlPlace = document.getElementById('listPlaces');
-            dlPlace.innerHTML = '';
-            json.places.forEach(item => { const op = document.createElement('option'); op.value = item; dlPlace.appendChild(op); });
-            const selOff = document.getElementById('selectOfficer');
-            selOff.innerHTML = '<option value="">-- เลือก --</option>';
-            json.officers.forEach(item => { const op = document.createElement('option'); op.value = item; op.text = item; selOff.appendChild(op); });
+            try {
+                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'getOptions' }) });
+                const json = await res.json();
+                if (json.status === 'error') throw new Error(json.message);
+                
+                const dlAcc = document.getElementById('listAccusers');
+                dlAcc.innerHTML = '';
+                json.accusers.forEach(item => { const op = document.createElement('option'); op.value = item; dlAcc.appendChild(op); });
+                const dlPlace = document.getElementById('listPlaces');
+                dlPlace.innerHTML = '';
+                json.places.forEach(item => { const op = document.createElement('option'); op.value = item; dlPlace.appendChild(op); });
+                const selOff = document.getElementById('selectOfficer');
+                selOff.innerHTML = '<option value="">-- เลือก --</option>';
+                json.officers.forEach(item => { const op = document.createElement('option'); op.value = item; op.text = item; selOff.appendChild(op); });
+            } catch (e) {
+                console.error('Failed to load options:', e);
+                Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'โหลดข้อมูลตัวเลือกบางส่วนไม่สำเร็จ', text: e.message, showConfirmButton: false, timer: 4000 });
+            }
         }
 
         function openModal(mode, index = -1) {

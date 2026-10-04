@@ -463,13 +463,15 @@
                     body: JSON.stringify({ action: 'getData', page: page })
                 });
                 const json = await response.json();
+                if (json.status === 'error') throw new Error(json.message);
                 
                 allData = json.data; // เก็บข้อมูล 10 แถวของหน้านี้ไว้ใช้ตอนกดแก้ไข
                 renderTable(allData);
                 updatePagination(page, json.total);
                 
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--danger);">โหลดข้อมูลไม่สำเร็จ</td></tr>';
+                console.error("loadTable error:", e);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger);">โหลดข้อมูลไม่สำเร็จ: ${e.message || 'ไม่ทราบสาเหตุ'}</td></tr>`;
             } finally {
                 document.getElementById('mainLoader').style.display = 'none';
             }
@@ -530,6 +532,7 @@
                     body: JSON.stringify({ action: 'getOptions' })
                 });
                 const json = await res.json();
+                if (json.status === 'error') throw new Error(json.message);
                 
                 // 1. เติม Dropdown พนักงานสอบสวน
                 const select = document.getElementById('investigator');
@@ -547,6 +550,7 @@
                 
             } catch (e) {
                 console.error('Failed to load options:', e);
+                Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'โหลดข้อมูลตัวเลือกบางส่วนไม่สำเร็จ', text: e.message, showConfirmButton: false, timer: 4000 });
             }
         }
 

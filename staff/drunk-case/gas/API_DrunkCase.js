@@ -14,9 +14,7 @@ const CONFIG = {
 function doGet(e) { return HtmlService.createHtmlOutput("Backend Running"); }
 
 function doPost(e) {
-  const lock = LockService.getScriptLock();
   try {
-    lock.waitLock(30000); 
     const params = JSON.parse(e.postData.contents);
     const action = params.action;
     
@@ -28,8 +26,6 @@ function doPost(e) {
     return responseJSON({ status: 'error', message: 'Unknown action' });
   } catch (error) {
     return responseJSON({ status: 'error', message: error.toString() });
-  } finally {
-    lock.releaseLock();
   }
 }
 
@@ -98,20 +94,24 @@ function getOptions() {
 }
 
 function saveCase(params) {
-  const ss = SpreadsheetApp.openById(CONFIG.SHEET_DRUNK_ID);
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_DETAIL);
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  
-  const formData = params.formData;
-  let newRowData = new Array(headers.length).fill("");
-  
-  for (const [key, value] of Object.entries(formData)) {
-    const colIndex = headers.indexOf(key);
-    if (colIndex !== -1) newRowData[colIndex] = value;
-  }
-  
-  let targetRow;
-  let oldRowDataMap = {}; 
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    
+    const ss = SpreadsheetApp.openById(CONFIG.SHEET_DRUNK_ID);
+    const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_DETAIL);
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    
+    const formData = params.formData;
+    let newRowData = new Array(headers.length).fill("");
+    
+    for (const [key, value] of Object.entries(formData)) {
+      const colIndex = headers.indexOf(key);
+      if (colIndex !== -1) newRowData[colIndex] = value;
+    }
+    
+    let targetRow;
+    let oldRowDataMap = {}; 
   
   if (params.mode === 'add') {
     const lastRow = sheet.getLastRow();
@@ -228,27 +228,41 @@ function saveCase(params) {
   }
   
   return responseJSON({ status: 'success' });
+  } catch (error) {
+    return responseJSON({ status: 'error', message: error.toString() });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function deleteCase(params) {
-  const ss = SpreadsheetApp.openById(CONFIG.SHEET_DRUNK_ID);
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_DETAIL);
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const rowIndex = params.rowIndex;
-  
-  if (rowIndex <= 2) return responseJSON({ status: 'error', message: 'Cannot delete header' });
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    
+    const ss = SpreadsheetApp.openById(CONFIG.SHEET_DRUNK_ID);
+    const sheet = ss.getSheetByName(CONFIG.SHEET_NAME_DETAIL);
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const rowIndex = params.rowIndex;
+    
+    if (rowIndex <= 2) return responseJSON({ status: 'error', message: 'Cannot delete header' });
 
-  const colIndexFileCase = headers.indexOf('File_ID_สำนวน');
-  const colIndexFileBail = headers.indexOf('File_ID_ประกัน');
-  
-  const fileIdCase = sheet.getRange(rowIndex, colIndexFileCase + 1).getValue();
-  const fileIdBail = sheet.getRange(rowIndex, colIndexFileBail + 1).getValue();
-  
-  if (fileIdCase) try { DriveApp.getFileById(fileIdCase).setTrashed(true); } catch(e){}
-  if (fileIdBail) try { DriveApp.getFileById(fileIdBail).setTrashed(true); } catch(e){}
-  
-  sheet.deleteRow(rowIndex);
-  return responseJSON({ status: 'success' });
+    const colIndexFileCase = headers.indexOf('File_ID_สำนวน');
+    const colIndexFileBail = headers.indexOf('File_ID_ประกัน');
+    
+    const fileIdCase = sheet.getRange(rowIndex, colIndexFileCase + 1).getValue();
+    const fileIdBail = sheet.getRange(rowIndex, colIndexFileBail + 1).getValue();
+    
+    if (fileIdCase) try { DriveApp.getFileById(fileIdCase).setTrashed(true); } catch(e){}
+    if (fileIdBail) try { DriveApp.getFileById(fileIdBail).setTrashed(true); } catch(e){}
+    
+    sheet.deleteRow(rowIndex);
+    return responseJSON({ status: 'success' });
+  } catch (error) {
+    return responseJSON({ status: 'error', message: error.toString() });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function createDocFromTemplate(templateId, folder, fileName, dataMap) {
