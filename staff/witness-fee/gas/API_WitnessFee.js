@@ -159,8 +159,11 @@ function saveData(params) {
     ];
     
     if (mode === 'add') {
-      sheet.appendRow(rowData);
+      const nextRow = sheet.getLastRow() + 1;
+      sheet.getRange(nextRow, 16).setNumberFormat('@'); // บังคับให้คอลัมน์ 16 (เบอร์โทร) เป็น Text เสมอก่อนใส่ค่า
+      sheet.getRange(nextRow, 1, 1, 18).setValues([rowData]);
     } else {
+      sheet.getRange(rowIndex, 16).setNumberFormat('@'); // บังคับให้คอลัมน์ 16 เป็น Text 
       sheet.getRange(rowIndex, 1, 1, 18).setValues([rowData]);
     }
     

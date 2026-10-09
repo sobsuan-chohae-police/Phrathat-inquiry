@@ -24,13 +24,6 @@
         /* ==========================================================================
            UI/UX & Animations
            ========================================================================== */
-        body {
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-color);
-        }
 
         /* Navbar */
         .nav-btn { 
@@ -39,65 +32,113 @@
             display: flex; align-items: center; justify-content: center; 
             transition: var(--transition); text-decoration: none; flex-shrink: 0; 
         }
-        .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; padding: 5px 15px 5px 0; }
-        .btn-back:hover { color: var(--navy-main); transform: translateX(-5px); }
+        .btn-back {
+            background: transparent !important; 
+            color: var(--text-main);
+            font-size: 1.3rem; 
+            width: auto; 
+            height: auto;
+            padding: 5px 15px 5px 0; 
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-back i { transition: var(--transition); }
+        .btn-back:hover { color: var(--navy-main); }
+        .btn-back:hover i { transform: translateX(-5px) scaleX(1.1); }
         .nav-left { flex: 1; display: flex; align-items: center; }
-        .nav-right-invisible { width: 42px; height: 42px; visibility: hidden; pointer-events: none; }
+        
+        .btn-add-nav { background: #e2e8f0 !important; color: #365f70 !important; border: none !important; }
+        .btn-add-nav i { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-add-nav:hover { background: #365f70 !important; color: white !important; transform: none !important; box-shadow: 0 6px 15px rgba(54, 95, 112, 0.4) !important; }
+        .btn-add-nav:hover i { transform: scale(1.3); }
+        
+        .btn-menu-nav { background: #e2e8f0 !important; color: #365f70 !important; border: none !important; }
+        .btn-menu-nav i { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-menu-nav:hover, .btn-menu-nav.active { background: #365f70 !important; color: white !important; transform: none !important; box-shadow: 0 6px 15px rgba(54, 95, 112, 0.4) !important; }
+        .btn-menu-nav:hover i, .btn-menu-nav.active i { transform: scale(1.3); }
+        
+        /* Dropdown Styles */
+        .dropdown-container { position: relative; display: inline-block; }
+        @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; right: 0;
+            background: white; min-width: 180px;
+            border-radius: 16px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+            padding: 8px; flex-direction: column; gap: 4px;
+            z-index: 1000; transform-origin: top right; border: 1px solid #f1f5f9;
+            margin-top: 8px;
+        }
+        .dropdown-menu.show { display: flex; animation: fadeDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .dropdown-item {
+            padding: 10px 15px; border-radius: 8px; color: var(--text-main);
+            text-decoration: none; display: flex; align-items: center;
+            font-size: 0.95rem; font-weight: 500; transition: var(--transition);
+            background: transparent; border: none; cursor: pointer;
+            width: 100%; text-align: left;
+        }
+        .dropdown-item i {
+            margin-right: 12px; color: var(--text-light); font-size: 1.1rem;
+            transition: var(--transition); width: 20px; text-align: center;
+        }
+        
+        /* Colored Actions */
+        .dropdown-item.action-blue { color: var(--navy-main); }
+        .dropdown-item.action-blue i { color: var(--navy-main); }
+        .dropdown-item.action-blue:hover { background: var(--navy-main); color: white; transform: translateX(4px); }
+        .dropdown-item.action-blue:hover i { color: white; }
 
-        /* Main Content Area */
-        .main-wrapper {
-            flex: 1;
-            position: relative;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            animation: softScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            will-change: transform, opacity;
+        .dropdown-item.action-green { color: #10b981; }
+        .dropdown-item.action-green i { color: #10b981; }
+        .dropdown-item.action-green:hover { background: #10b981; color: white; transform: translateX(4px); }
+        .dropdown-item.action-green:hover i { color: white; }
+
+        .dropdown-item.action-red { color: var(--danger); }
+        .dropdown-item.action-red i { color: var(--danger); }
+        .dropdown-item.action-red:hover { background: var(--danger); color: white; transform: translateX(4px); }
+        .dropdown-item.action-red:hover i { color: white; }
+        
+        .dropdown-item:not(.action-blue):not(.action-green):not(.action-red):hover { background: #f8fafc; color: var(--navy-main); transform: translateX(4px); }
+        .dropdown-item:not(.action-blue):not(.action-green):not(.action-red):hover i { color: var(--navy-main); }
+        
+        /* Row Menu Button */
+        .btn-row-menu {
+            background: #e2e8f0; color: #365f70; border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1rem; cursor: pointer; transition: var(--transition);
+        }
+        .btn-row-menu:hover, .btn-row-menu.active {
+            background: #365f70; color: white;
+            transform: scale(1.15); box-shadow: 0 4px 10px rgba(54, 95, 112, 0.3);
         }
 
-        @keyframes softScale {
-            0% { opacity: 0; transform: scale(0.97) translateY(10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+        /* Modern Loading Animation */
+        .modern-wave-loader {
+            display: flex; gap: 6px; justify-content: center; align-items: center; height: 40px; margin-bottom: 10px;
         }
-
-        /* Sticky Table Container */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-soft);
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            overflow: hidden;
-            position: relative;
+        .modern-wave-loader .bar {
+            width: 5px; height: 12px; border-radius: 4px;
+            background: var(--navy-main);
+            animation: elegantWave 1.2s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
         }
-
-        .table-scroll {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        .modern-wave-loader .bar:nth-child(2) { animation-delay: 0.1s; background: var(--gold-main); }
+        .modern-wave-loader .bar:nth-child(3) { animation-delay: 0.2s; background: #10b981; }
+        .modern-wave-loader .bar:nth-child(4) { animation-delay: 0.3s; background: var(--navy-main); }
+        
+        @keyframes elegantWave {
+            0%, 100% { height: 12px; opacity: 0.4; }
+            50% { height: 32px; opacity: 1; transform: translateY(-4px); }
         }
-
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th { position: sticky; top: 0; background: #f8fafc; z-index: 10; box-shadow: 0 1px 0 #e2e8f0; }
-        td { padding: 16px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         
         .doc-link { color: var(--navy-main); font-size: 1.2rem; transition: var(--transition); }
         .doc-link:hover { color: var(--gold-main); transform: scale(1.1); }
 
-        /* Table Footer (Pagination & Add Button) */
-        .table-footer {
-            padding: 15px 20px;
-            background: #fff;
-            border-top: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
+        /* Table Toolbar (Pagination) */
+        .table-toolbar {
+            display: flex; justify-content: flex-end; align-items: center;
+            padding-bottom: 16px;
+            margin-top: -10px;
         }
 
         .btn-add {
@@ -114,7 +155,7 @@
             background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%;
             color: var(--text-main); cursor: pointer; transition: var(--transition);
         }
-        .btn-page:hover:not(:disabled) { background: var(--navy-main); color: white; }
+        .btn-page:hover:not(:disabled) { background: var(--gold-main); color: white; }
         .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* Slide Animations for Table Body */
@@ -123,13 +164,7 @@
         @keyframes slideLeft { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideRight { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* Loading Overlay */
-        .content-loader {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9); z-index: 50;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: var(--radius-xl); backdrop-filter: blur(4px);
-        }
+        /* Removed content-loader */
 
         /* ==========================================================================
            Modal & Form
@@ -143,12 +178,12 @@
         .btn-delete-modal { background: #fff1f2; color: var(--danger); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--transition); display: none; }
         .btn-delete-modal:hover { background: var(--danger); color: white; transform: scale(1.1); }
         .btn-close-modal { background: #f1f5f9; color: var(--text-light); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: var(--transition); }
-        .btn-close-modal:hover { background: var(--text-main); color: white; transform: rotate(90deg); }
+        .btn-close-modal:hover { background: var(--danger); color: white; transform: scale(1.15); }
 
         /* Tabs */
         .tabs-container { display: flex; position: relative; gap: 30px; }
         .tab-btn {
-            background: none; border: none; font-family: 'Kanit'; font-size: 1.05rem; font-weight: 500;
+            background: none; border: none; font-family: inherit; font-size: 1.05rem; font-weight: 500;
             color: var(--text-light); padding: 10px 5px; cursor: pointer; transition: color 0.3s;
         }
         .tab-btn.active { color: var(--navy-main); }
@@ -203,26 +238,48 @@
     <!-- Navbar -->
     <nav>
         <div class="nav-left">
-            <a href="../staff.html" class="nav-btn btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+            <a href="../staff.html" class="btn-back">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
             <span class="page-title">เบิกค่าตอบแทนพยาน</span>
         </div>
-        <div class="nav-right-invisible"></div>
+        <div class="nav-right">
+            <button class="nav-btn btn-add-nav tooltip-right" onclick="openModal()" data-tooltip="เพิ่มข้อมูล">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="dropdown-container">
+                <button class="nav-btn btn-menu-nav tooltip-right" onclick="toggleDropdown(event)" data-tooltip="เรียกเมนู">
+                    <i class="fa-solid fa-caret-down"></i>
+                </button>
+                <div class="dropdown-menu" id="toolsDropdown">
+                    <button class="dropdown-item" onclick="handleMenuAction('เมนู 1')">
+                        <i class="fa-solid fa-file-invoice"></i> เมนู 1
+                    </button>
+                    <button class="dropdown-item" onclick="handleMenuAction('เมนู 2')">
+                        <i class="fa-solid fa-print"></i> เมนู 2
+                    </button>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="main-wrapper">
-        <div class="table-container">
-            
-            <!-- Loading Overlay -->
-            <div id="mainLoader" class="content-loader">
-                <div class="premium-loader"></div>
-                <p class="premium-loader-text mt-3">กำลังโหลดข้อมูล...</p>
+    <div class="container">
+        
+        <!-- Toolbar (Pagination) -->
+        <div class="table-toolbar">
+            <div class="pagination-controls">
+                <button class="btn-page" id="btnPrevPage" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <span class="page-info" id="pageInfo">หน้า 1 / 1</span>
+                <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
+        </div>
 
-            <!-- Table -->
-            <div class="table-scroll">
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-responsive">
                 <table id="dataTable">
-                    <thead>
+                    <thead style="display: none;">
                         <tr>
                             <th style="width: 60px; text-align: center;">จัดการ</th>
                             <th>วันที่สอบปากคำ</th>
@@ -231,25 +288,19 @@
                             <th>ชื่อพยาน</th>
                             <th>ชื่อผู้ต้องหา</th>
                             <th>พนักงานสอบสวน</th>
-                            <th style="text-align: center;">เอกสาร</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- ข้อมูลจะถูกเติมด้วย JS -->
+                        <tr>
+                            <td colspan="7" style="text-align:center; padding:60px 20px;">
+                                <div class="modern-wave-loader">
+                                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                </div>
+                                <div class="premium-loader-text" style="color: var(--text-light); font-size: 0.95rem;">กำลังโหลดข้อมูลพยาน...</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Footer Controls -->
-            <div class="table-footer">
-                <button class="btn-add" onclick="openModal()" data-tooltip="เพิ่มข้อมูลใหม่" class="tooltip-right">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-                <div class="pagination-controls">
-                    <button class="btn-page" id="btnPrevPage" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span class="page-info" id="pageInfo">1 / 1</span>
-                    <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
             </div>
         </div>
     </div>
@@ -263,7 +314,6 @@
                 <div class="modal-title-row">
                     <h3 id="modalTitle">เพิ่มข้อมูลใหม่</h3>
                     <div class="modal-actions">
-                        <button class="btn-delete-modal" id="btnDelete" onclick="deleteData()" data-tooltip="ลบข้อมูล" class="tooltip-left"><i class="fa-solid fa-trash-can"></i></button>
                         <button class="btn-close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
@@ -430,6 +480,110 @@
         };
 
         // ==========================================================================
+        // DROPDOWN LOGIC
+        // ==========================================================================
+        let activeDropdown = null;
+        let activeDropdownBtn = null;
+
+        function toggleRowDropdown(event, index) {
+            event.stopPropagation();
+            const dropdown = document.getElementById(`rowDropdown-${index}`);
+            const btn = event.currentTarget;
+            
+            if (activeDropdown && activeDropdown !== dropdown) {
+                activeDropdown.classList.remove('show');
+                if (activeDropdownBtn) activeDropdownBtn.classList.remove('active');
+            }
+            
+            dropdown.classList.toggle('show');
+            btn.classList.toggle('active');
+            
+            if (dropdown.classList.contains('show')) {
+                activeDropdown = dropdown;
+                activeDropdownBtn = btn;
+                
+                // ใช้ position: fixed เพื่อให้เมนูลอยทะลุกรอบตารางที่ตั้ง overflow ไว้
+                const rect = btn.getBoundingClientRect();
+                dropdown.style.position = 'fixed';
+                dropdown.style.marginTop = '0';
+                
+                // หาความสูงของเมนูเพื่อตรวจสอบการล้นขอบจอ
+                let dropdownHeight = dropdown.offsetHeight;
+                if (dropdownHeight === 0) dropdownHeight = 160; 
+
+                // หากเปิดลงล่างแล้วทะลุขอบจอ ให้สลับเป็นเปิดขึ้นบนแทน
+                if (rect.bottom + dropdownHeight + 10 > window.innerHeight) {
+                    dropdown.style.top = `${rect.top - dropdownHeight - 8}px`;
+                    dropdown.style.transformOrigin = 'bottom left';
+                } else {
+                    dropdown.style.top = `${rect.bottom + 8}px`;
+                    dropdown.style.transformOrigin = 'top left';
+                }
+                
+                dropdown.style.left = `${rect.left}px`;
+                dropdown.style.right = 'auto';
+            } else {
+                activeDropdown = null;
+                activeDropdownBtn = null;
+            }
+        }
+
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('toolsDropdown');
+            const btn = event.currentTarget;
+            
+            if (activeDropdown && activeDropdown !== dropdown) {
+                activeDropdown.classList.remove('show');
+                if (activeDropdownBtn) activeDropdownBtn.classList.remove('active');
+            }
+            
+            dropdown.classList.toggle('show');
+            btn.classList.toggle('active');
+            
+            if (dropdown.classList.contains('show')) {
+                activeDropdown = dropdown;
+                activeDropdownBtn = btn;
+            } else {
+                activeDropdown = null;
+                activeDropdownBtn = null;
+            }
+        }
+
+        window.addEventListener('click', function(event) {
+            if (activeDropdown) {
+                activeDropdown.classList.remove('show');
+                if (activeDropdownBtn) activeDropdownBtn.classList.remove('active');
+                activeDropdown = null;
+                activeDropdownBtn = null;
+            }
+        });
+
+        // ปิดเมนูเมื่อมีการเลื่อนหน้าจอหรือเลื่อนตาราง
+        window.addEventListener('scroll', function(event) {
+            if (activeDropdown) {
+                activeDropdown.classList.remove('show');
+                if (activeDropdownBtn) activeDropdownBtn.classList.remove('active');
+                activeDropdown = null;
+                activeDropdownBtn = null;
+            }
+        }, true);
+
+        function handleMenuAction(menuName) {
+            document.getElementById('toolsDropdown').classList.remove('show');
+            if (activeDropdownBtn) activeDropdownBtn.classList.remove('active');
+            activeDropdown = null;
+            activeDropdownBtn = null;
+            Swal.fire({
+                title: menuName,
+                text: 'ฟังก์ชันนี้กำลังอยู่ในช่วงการพัฒนา',
+                icon: 'info',
+                confirmButtonText: 'ตกลง',
+                confirmButtonColor: 'var(--navy-main)'
+            });
+        }
+
+        // ==========================================================================
         // INITIALIZATION
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', () => {
@@ -454,7 +608,9 @@
         // ==========================================================================
         async function loadTable(page) {
             const tbody = document.getElementById('tableBody');
-            document.getElementById('mainLoader').style.display = 'flex';
+            const thead = document.querySelector('#dataTable thead');
+            thead.style.display = 'none';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:60px 20px; border-radius: var(--radius-xl);"><div class="modern-wave-loader"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div><div class="premium-loader-text" style="color: var(--text-light); font-size: 0.95rem;">กำลังโหลดข้อมูลพยาน...</div></td></tr>';
             
             try {
                 const response = await fetch(API_URL, {
@@ -471,26 +627,43 @@
                 
             } catch (e) {
                 console.error("loadTable error:", e);
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--danger);">โหลดข้อมูลไม่สำเร็จ: ${e.message || 'ไม่ทราบสาเหตุ'}</td></tr>`;
-            } finally {
-                document.getElementById('mainLoader').style.display = 'none';
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger); border-radius: var(--radius-xl);">โหลดข้อมูลไม่สำเร็จ: ${e.message || 'ไม่ทราบสาเหตุ'}</td></tr>`;
             }
         }
 
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
+            const thead = document.querySelector('#dataTable thead');
             tbody.innerHTML = '';
             
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-light); padding: 30px;">ไม่มีข้อมูล</td></tr>`;
+                thead.style.display = 'table-header-group';
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-light); padding: 30px;">ไม่มีข้อมูล</td></tr>`;
                 return;
             }
             
+            thead.style.display = 'table-header-group';
+            
             data.forEach((row, index) => {
                 const tr = document.createElement('tr');
+                
+                let docAction = '';
+                if (row.display.docUrl) {
+                    docAction = `<button class="dropdown-item action-blue" onclick="window.open('${row.display.docUrl}', '_blank')"><i class="fa-solid fa-file-lines"></i> เปิดเอกสาร</button>`;
+                } else {
+                    docAction = `<button class="dropdown-item action-blue" disabled style="opacity: 0.5; cursor: not-allowed;"><i class="fa-solid fa-file-lines"></i> ไม่มีเอกสาร</button>`;
+                }
+
                 tr.innerHTML = `
-                    <td style="text-align: center;">
-                        <button class="action-btn btn-edit" onclick="editData(${index})"><i class="fa-solid fa-pen"></i></button>
+                    <td style="text-align: center; overflow: visible;">
+                        <div class="dropdown-container">
+                            <button class="btn-row-menu" onclick="toggleRowDropdown(event, ${index})"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <div class="dropdown-menu" id="rowDropdown-${index}" style="left: 0; right: auto; transform-origin: top left; margin-left: 10px;">
+                                ${docAction}
+                                <button class="dropdown-item action-green" onclick="editData(${index})"><i class="fa-solid fa-pen"></i> แก้ไขข้อมูล</button>
+                                <button class="dropdown-item action-red" onclick="deleteData(${index})"><i class="fa-solid fa-trash-can"></i> ลบข้อมูล</button>
+                            </div>
+                        </div>
                     </td>
                     <td>${row.display.date}</td>
                     <td>${row.display.caseType}</td>
@@ -498,9 +671,6 @@
                     <td>${row.display.witnessName}</td>
                     <td>${row.display.suspect}</td>
                     <td>${row.display.investigator}</td>
-                    <td style="text-align: center;">
-                        ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="doc-link"><i class="fa-solid fa-file-lines"></i></a>` : '-'}
-                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -597,7 +767,6 @@
             toggleOtherTitle();
             
             document.getElementById('modalTitle').innerText = 'เพิ่มข้อมูลใหม่';
-            document.getElementById('btnDelete').style.display = 'none';
             
             switchTab(1);
             document.getElementById('formModal').style.display = 'flex';
@@ -667,7 +836,7 @@
                 idCard: document.getElementById('idCard').value,
                 zone: document.getElementById('zone').value,
                 address: document.getElementById('address').value,
-                phone: document.getElementById('phone').value
+                phone: document.getElementById('phone').value.trim()
             };
         }
 
@@ -700,7 +869,6 @@
             const raw = row.rawData;
             
             document.getElementById('modalTitle').innerText = 'แก้ไขข้อมูล';
-            document.getElementById('btnDelete').style.display = 'block';
             
             // Pre-fill Data
             document.getElementById('caseType').value = raw.caseType;
@@ -727,7 +895,12 @@
             document.getElementById('idCard').value = raw.idCard;
             document.getElementById('zone').value = raw.zone;
             document.getElementById('address').value = raw.address;
-            document.getElementById('phone').value = raw.phone;
+            let phoneStr = raw.phone ? raw.phone.toString() : "";
+            phoneStr = phoneStr.replace(/^'/, '').trim();
+            if (phoneStr.match(/^[1-9]\d{7,8}$/)) { 
+                phoneStr = "0" + phoneStr;
+            }
+            document.getElementById('phone').value = phoneStr;
             
             originalDataStr = JSON.stringify(getFormData());
             
@@ -739,40 +912,57 @@
         async function saveData() {
             const formData = getFormData();
             
-            const payload = {
-                action: 'saveData',
-                mode: editMode ? 'edit' : 'add',
-                rowIndex: currentEditRowIndex,
-                formData: formData
-            };
-            
-            showLoading('กำลังบันทึกข้อมูลและสร้างเอกสาร...');
-            
-            try {
-                const res = await fetch(API_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload) 
-                });
-                const json = await res.json();
-                
-                if (json.status === 'success') {
-                    closeModal();
-                    loadTable(1); // โหลดตารางหน้าแรกใหม่
-                    loadOptions(); // อัปเดตรายชื่อ Autocomplete ใหม่
-                    Swal.fire('สำเร็จ', editMode ? 'อัปเดตข้อมูลและสร้างเอกสารสำเร็จ' : 'การดำเนินการเสร็จสมบูรณ์', 'success');
-                } else {
-                    throw new Error(json.message);
+            Swal.fire({
+                title: 'ยืนยันการบันทึก',
+                text: 'ตรวจสอบข้อมูลให้ครบถ้วนก่อนบันทึก',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'บันทึก',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: 'var(--navy-main)',
+                reverseButtons: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const payload = {
+                        action: 'saveData',
+                        mode: editMode ? 'edit' : 'add',
+                        rowIndex: currentEditRowIndex,
+                        formData: formData
+                    };
+                    
+                    showLoading('กำลังบันทึกข้อมูลและสร้างเอกสาร...');
+                    
+                    try {
+                        const res = await fetch(API_URL, { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify(payload) 
+                        });
+                        const json = await res.json();
+                        
+                        if (json.status === 'success') {
+                            closeModal();
+                            loadTable(1); // โหลดตารางหน้าแรกใหม่
+                            loadOptions(); // อัปเดตรายชื่อ Autocomplete ใหม่
+                            Swal.fire('สำเร็จ', editMode ? 'อัปเดตข้อมูลและสร้างเอกสารสำเร็จ' : 'การดำเนินการเสร็จสมบูรณ์', 'success');
+                        } else {
+                            throw new Error(json.message);
+                        }
+                    } catch (error) {
+                        Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง', 'error');
+                    }
                 }
-            } catch (error) {
-                Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาด โปรดลองใหม่อีกครั้ง', 'error');
-            }
+            });
         }
 
-        function deleteData() {
+        function deleteData(index = -1) {
+            if (index !== -1) {
+                currentEditRowIndex = allData[index].rowIndex;
+            }
+            
             Swal.fire({
                 title: 'ยืนยันการลบข้อมูล',
-                text: 'คุณต้องการลบข้อมูลและเอกสารนี้ใช่หรือไม่? (ไม่สามารถกู้คืนได้)',
+                text: '',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ลบข้อมูล',

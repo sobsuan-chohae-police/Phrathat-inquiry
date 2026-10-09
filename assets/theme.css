@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
 /* ==========================================================================
    [THEME CSS] ระบบงานสอบสวน สภ.พระธาตุช่อแฮ
    Design Concept: Lively, Minimal, Ultra-Professional (Navy & Gold)
@@ -42,9 +44,11 @@ html {
     height: 100%; 
     scroll-behavior: smooth; 
     overflow-y: scroll; /* ✨ บังคับให้มี Scrollbar เสมอ ป้องกันหน้าจอขยับเวลาค้นหา */
+    overflow-x: hidden; /* ป้องกัน scrollbar แนวนอน */
 }
 body { 
-    font-family: 'Kanit', sans-serif; 
+    font-family: 'Sarabun', system-ui, sans-serif; 
+    font-weight: 500; /* ✨ น้ำหนักฟอนต์ระดับ Medium เพื่อความคมชัดทั้งแอป */
     background-color: var(--bg-color); 
     color: var(--text-main); 
     line-height: 1.6; 
@@ -90,7 +94,7 @@ nav {
     content: attr(data-tooltip);
     position: absolute; top: 130%; left: 50%; transform: translateX(-50%) translateY(10px);
     background: var(--navy-dark); color: white; padding: 6px 14px;
-    border-radius: 8px; font-size: 0.85rem; font-family: 'Kanit'; font-weight: 400;
+    border-radius: 8px; font-size: 0.85rem; font-family: inherit; font-weight: 400;
     white-space: nowrap; opacity: 0; visibility: hidden; transition: var(--transition);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2); pointer-events: none; z-index: 1000;
 }
@@ -133,6 +137,7 @@ nav {
 .card, .menu-card { cursor: pointer; }
 .card:focus, .menu-card:focus { outline: 3px solid rgba(212, 175, 55, 0.5); outline-offset: 2px; }
 .card:hover, .menu-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+.table-card { box-shadow: 0 20px 45px -8px rgba(15, 23, 42, 0.15), 0 10px 20px -5px rgba(15, 23, 42, 0.08); }
 
 /* --- Color Coding (ของเดิม) --- */
 .theme-blue .icon-box, .theme-blue .menu-icon { color: #1d4ed8; background-color: #eff6ff; }
@@ -156,7 +161,7 @@ nav {
 /* --- Buttons --- */
 .btn-primary {
     background: var(--navy-gradient); color: white; border: none;
-    padding: 12px 30px; border-radius: 50px; font-family: 'Kanit'; font-size: 1rem; font-weight: 500;
+    padding: 12px 30px; border-radius: 50px; font-family: inherit; font-size: 1rem; font-weight: 500;
     cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
 }
 .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-gold); }
@@ -164,7 +169,7 @@ nav {
 
 .btn-secondary {
     background: #f1f5f9; color: var(--text-main); border: none;
-    padding: 12px 30px; border-radius: 50px; font-family: 'Kanit'; font-size: 1rem; font-weight: 500;
+    padding: 12px 30px; border-radius: 50px; font-family: inherit; font-size: 1rem; font-weight: 500;
     cursor: pointer; transition: var(--transition);
 }
 .btn-secondary:hover { background: #e2e8f0; }
@@ -184,7 +189,7 @@ nav {
     background: var(--gold-gradient); color: white; border-radius: var(--radius-lg);
     display: flex; align-items: center; justify-content: center; gap: 10px;
     font-size: 1.1rem; font-weight: 500; box-shadow: var(--shadow-gold);
-    cursor: pointer; transition: var(--transition); border: none; z-index: 90; font-family: 'Kanit';
+    cursor: pointer; transition: var(--transition); border: none; z-index: 90; font-family: inherit;
 }
 .fab:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(212, 175, 55, 0.45); }
 
@@ -192,7 +197,8 @@ nav {
 .form-label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-main); font-weight: 500; }
 .form-input {
     width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 12px;
-    font-family: 'Kanit'; font-size: 1rem; color: var(--text-main); background: #fff;
+    font-family: inherit; font-size: 1rem; font-weight: 500; color: var(--text-main); background: #fff;
+    line-height: 1.6; min-height: 52px; /* ✨ ป้องกันสระตกขอบ */
     transition: var(--transition); -webkit-appearance: none;
 }
 .form-input:focus { border-color: var(--gold-main); outline: none; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
@@ -201,9 +207,10 @@ nav {
 /* --- Tables --- */
 .table-responsive { overflow-x: auto; border-radius: var(--radius-xl); }
 table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-th { background: #f8fafc; color: var(--text-light); font-weight: 600; padding: 18px 15px; text-align: left; font-size: 0.95rem; border-bottom: 1px solid #e2e8f0; }
-td { padding: 16px 15px; border-bottom: 1px solid #f1f5f9; font-size: 1rem; vertical-align: middle; color: var(--text-main); transition: background 0.2s; }
+th { background: #365f70; color: #ffffff; font-weight: 600; padding: 18px 15px; text-align: left; font-size: 1.05rem; border-bottom: none; letter-spacing: 0.5px; }
+td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 1rem; vertical-align: middle; color: var(--text-main); transition: background 0.2s; }
 tr:hover td { background-color: #f8fafc; }
+tr:last-child td { border-bottom: none; }
 
 /* --- Modals --- */
 .modal-overlay {
@@ -241,18 +248,20 @@ div:where(.swal2-container) {
     background: rgba(15, 23, 42, 0.4) !important; 
 }
 .swal2-popup { 
-    font-family: 'Kanit', sans-serif !important; 
+    font-family: inherit !important; 
     border-radius: var(--radius-xl) !important; 
     box-shadow: var(--shadow-modal) !important; 
     padding: 2em !important; 
 }
+/* ป้องกันหน้าจอขยับเมื่อโหลด SweetAlert */
+body.swal2-shown { padding-right: 0 !important; overflow-y: visible !important; overflow-x: hidden !important; }
 .swal2-title { font-weight: 600 !important; color: var(--text-main) !important; font-size: 1.5rem !important; }
 .swal2-html-container { color: var(--text-light) !important; font-size: 1rem !important; }
 .swal2-icon { border-width: 3px !important; } 
 .swal2-actions { gap: 15px; margin-top: 1.5em !important; }
 
 .swal2-confirm { 
-    font-family: 'Kanit', sans-serif !important; 
+    font-family: inherit !important; 
     background: var(--navy-gradient) !important; border-radius: 50px !important; 
     padding: 12px 30px !important; font-weight: 500 !important; 
     box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2) !important; transition: var(--transition) !important; 
@@ -260,7 +269,7 @@ div:where(.swal2-container) {
 .swal2-confirm:hover { transform: translateY(-2px); box-shadow: var(--shadow-gold) !important; }
 
 .swal2-cancel { 
-    font-family: 'Kanit', sans-serif !important; 
+    font-family: inherit !important; 
     background: #f1f5f9 !important; color: var(--text-main) !important; 
     border-radius: 50px !important; padding: 12px 30px !important; 
     font-weight: 500 !important; transition: var(--transition) !important; 
@@ -275,8 +284,8 @@ div:where(.swal2-container) {
 
 .hero-header-section { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0 auto 25px auto; padding: 0 20px; max-width: 1000px; width: 100%; animation: fadeUp 0.8s ease-out; }
 .hero-title-group { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.hero-title-group h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.1; margin: 0; background: var(--navy-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
-.hero-title-group h1:first-child { margin-bottom: 2px; font-size: clamp(1.6rem, 3vw, 2.2rem); opacity: 0.9; }
+.hero-title-group h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.4; padding-bottom: 8px; margin: 0; background: var(--navy-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.hero-title-group h1:first-child { margin-bottom: -10px; font-size: clamp(1.6rem, 3vw, 2.2rem); opacity: 0.9; }
 .hero-subtitle { font-size: clamp(0.9rem, 2vw, 1rem); color: var(--text-light); margin-top: 12px; margin-bottom: 0; font-weight: 300; line-height: 1.5; max-width: 600px; }
 
 .responsive-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1050px; margin: 0 auto; width: 100%; padding: 0 20px; }
@@ -374,7 +383,7 @@ button.card { border: none; outline: none; font-family: inherit; color: var(--te
 /* --- Search Bar Inline --- */
 .nav-search-input {
     display: none; width: 100%; padding: 8px 16px; border-radius: 20px;
-    border: 1px solid #cbd5e1; font-family: 'Kanit'; font-size: 1rem;
+    border: 1px solid #cbd5e1; font-family: inherit; font-size: 1rem;
     outline: none; transition: var(--transition); background: #f8fafc;
     animation: fadeIn 0.3s ease;
 }
