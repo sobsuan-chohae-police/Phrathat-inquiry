@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>รายงานผลการส่งหมายเรียก</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+    
+    <!-- Core Scripts & Theme -->
+    <script src="../auth.js"></script>
+    <script src="../../assets/datepicker.js"></script>
+    <link rel="stylesheet" href="../../assets/theme.css">
+
+    <style>
+        body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; background-color: var(--bg-color, #f8fafc); font-family: 'Kanit', sans-serif; }
+        .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: #64748b; cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0; }
+        .btn-back { background: transparent !important; color: #1e293b; font-size: 1.3rem; width: auto; padding: 5px 15px 5px 0; }
+        .nav-left { flex: 1; display: flex; align-items: center; }
+        .main-wrapper { flex: 1; position: relative; padding: 20px; display: flex; flex-direction: column; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        
+        .table-container { background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
+        .table-scroll { flex: 1; overflow: auto; }
+        table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 0.95rem; }
+        th { position: sticky; top: 0; background: #f8fafc; z-index: 10; box-shadow: 0 1px 0 #e2e8f0; padding: 14px 16px; text-align: left; color: #475569; font-weight: 500; }
+        td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; color: #1e293b; }
+        .doc-link { color: #1e3a8a; font-size: 1.25rem; transition: 0.2s; }
+        .doc-link:hover { color: #b45309; transform: scale(1.15); }
+
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-success { background: #dcfce7; color: #15803d; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
+
+        .table-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .btn-add { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(30,58,138,0.25); transition: 0.2s; }
+        .btn-add:hover { transform: translateY(-2px) rotate(90deg); }
+
+        .pagination-controls { display: flex; align-items: center; gap: 15px; }
+        .btn-page { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; color: #334155; cursor: pointer; }
+        .btn-page:hover:not(:disabled) { background: #1e3a8a; color: white; }
+        .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .content-loader { position: absolute; inset: 0; background: rgba(255,255,255,0.85); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+
+        /* Modal */
+        .modal-card { max-width: 720px; height: 85vh; max-height: 800px; padding: 0; background: #fff; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin: auto; }
+        .modal-header-area { padding: 20px 28px 0; border-bottom: 1px solid #e2e8f0; }
+        .modal-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-delete-modal { background: #fee2e2; color: #dc2626; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: none; }
+        .btn-close-modal { background: #f1f5f9; color: #64748b; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+
+        .tabs-container { display: flex; position: relative; gap: 24px; }
+        .tab-btn { background: none; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; color: #64748b; padding: 10px 5px; cursor: pointer; }
+        .tab-btn.active { color: #1e3a8a; font-weight: 600; }
+        .tab-indicator { position: absolute; bottom: -1px; left: 0; height: 3px; background: #d97706; transition: 0.3s; }
+
+        .modal-body { padding: 25px 28px; overflow-y: auto; flex: 1; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 15px; }
+        .full-width { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; color: #334155; }
+        .form-input { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 10px; font-family: 'Kanit'; font-size: 0.95rem; box-sizing: border-box; background: #f8fafc; }
+        .form-input:focus { border-color: #1e3a8a; background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(30,58,138,0.1); }
+        textarea.form-input { resize: vertical; min-height: 75px; }
+
+        /* Delivery Condition Box */
+        .failed-section { background: #fff7ed; border: 1px dashed #f97316; border-radius: 12px; padding: 16px; margin-top: 15px; display: none; }
+
+        /* Autocomplete */
+        .autocomplete-wrapper { position: relative; }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 4px; max-height: 180px; overflow-y: auto; z-index: 100; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .autocomplete-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f8fafc; }
+        .autocomplete-item:hover { background: #f1f5f9; color: #1e3a8a; }
+
+        .modal-footer { padding: 16px 28px; border-top: 1px solid #e2e8f0; background: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .footer-left { display: flex; gap: 10px; }
+        .btn-primary { background: #1e3a8a; color: white; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; font-size: 0.95rem; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-size: 0.95rem; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <nav style="padding: 12px 20px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid #e2e8f0;">
+        <div class="nav-left">
+            <a href="../staff.html" class="nav-btn btn-back"><i class="fa-solid fa-chevron-left"></i></a>
+            <span style="font-weight: 600; font-size: 1.2rem; color: #1e293b;">แจ้งผลการส่งหมายเรียกผู้ต้องหา/พยาน</span>
+        </div>
+    </nav>
+
+    <!-- Main Table Layout -->
+    <div class="main-wrapper">
+        <div class="table-container">
+            <div id="mainLoader" class="content-loader">
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #1e3a8a;"></i>
+                <p style="margin-top: 10px; color: #64748b;">กำลังโหลดข้อมูล...</p>
+            </div>
+
+            <div class="table-scroll">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">จัดการ</th>
+                            <th>วันที่ส่ง</th>
+                            <th>สถานะ</th>
+                            <th>ครั้งที่</th>
+                            <th>ชื่อผู้รับหมาย</th>
+                            <th>หนังสือเลขที่</th>
+                            <th>ผลการส่ง</th>
+                            <th style="text-align: center;">เอกสาร</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <button class="btn-add" onclick="openModal()" title="เพิ่มข้อมูลใหม่"><i class="fa-solid fa-plus"></i></button>
+                <div class="pagination-controls">
+                    <button class="btn-page" id="btnPrevPage" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="pageInfo" style="font-size: 0.9rem; font-weight: 500;">1 / 1</span>
+                    <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="formModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-card">
+            
+            <div class="modal-header-area">
+                <div class="modal-title-row">
+                    <h3 id="modalTitle" style="margin: 0; color: #1e3a8a;">สร้างรายงานผลการส่งหมาย</h3>
+                    <div class="modal-actions">
+                        <button class="btn-delete-modal" id="btnDelete" onclick="deleteData()" title="ลบข้อมูล"><i class="fa-solid fa-trash-can"></i></button>
+                        <button class="btn-close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="switchTab(1)" id="tabBtn1">๑. ข้อมูลหนังสือและคดี</button>
+                    <button class="tab-btn" onclick="switchTab(2)" id="tabBtn2">๒. ข้อมูลผู้รับหมาย & บันทึกหลังหมาย</button>
+                    <div class="tab-indicator" id="tabIndicator"></div>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="mainForm">
+                    
+                    <!-- Tab 1: ข้อมูลหนังสือและคดี -->
+                    <div class="tab-content active" id="tab1">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">สถานะผู้รับหมาย</label>
+                                <select class="form-input" id="targetStatus" required>
+                                    <option value="ผู้ต้องหา" selected>ผู้ต้องหา</option>
+                                    <option value="พยาน">พยาน</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ส่งหมายครั้งที่</label>
+                                <input type="number" class="form-input" id="roundNo" value="1" min="1" required>
+                            </div>
+                            
+                            <div class="form-group full-width autocomplete-wrapper">
+                                <label class="form-label">เรียน (ผู้รับเรื่อง)</label>
+                                <input type="text" class="form-input" id="recipient" placeholder="เช่น ผกก.สภ.เมืองแพร่" required autocomplete="off">
+                                <div class="autocomplete-list" id="recipientList"></div>
+                            </div>
+                            
+                            <div class="form-group full-width autocomplete-wrapper">
+                                <label class="form-label">ตามหนังสือของ (สภ./หน่วยงานขอความร่วมมือ)</label>
+                                <input type="text" class="form-input" id="agency" placeholder="เช่น สภ.เมืองแพร่" required autocomplete="off">
+                                <div class="autocomplete-list" id="agencyList"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">เลขหนังสือขอความร่วมมือ</label>
+                                <input type="text" class="form-input" id="bookNo" placeholder="เช่น ๐๐๒๐(พร).๑/๑๒๓" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ลงวันที่ (ในหนังสือ)</label>
+                                <input type="text" class="form-input" id="bookDate" placeholder="เลือกวันที่" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">พนักงานสอบสวนเจ้าของคดี (ที่ต้องไปพบ)</label>
+                                <input type="text" class="form-input" id="investigator" placeholder="เช่น ร.ต.อ.สมชาย สายตรวจ" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: ข้อมูลผู้รับหมาย และผลการส่ง -->
+                    <div class="tab-content" id="tab2">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">ชื่อผู้ต้องหา/พยาน (ผู้รับหมาย)</label>
+                                <input type="text" class="form-input" id="targetName" placeholder="ระบุยศ/คำนำหน้า ชื่อ นามสกุล" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">ที่อยู่ (ตามหมายเรียก)</label>
+                                <input type="text" class="form-input" id="targetAddress" placeholder="บ้านเลขที่ หมู่ ตำบล อำเภอ จังหวัด" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">วันที่ส่งหมาย</label>
+                                <input type="text" class="form-input" id="sendDate" placeholder="เลือกวันที่ส่งหมาย" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ผลการส่งหมาย</label>
+                                <select class="form-input" id="deliveryStatus" onchange="toggleDeliveryResult()" required>
+                                    <option value="ส่งหมายสำเร็จ">ส่งหมายสำเร็จ (มีผู้ตอบรับ)</option>
+                                    <option value="ไม่สามารถส่งหมายได้">ไม่สามารถส่งหมายได้ (ทำบันทึกหลังหมาย)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- ส่วนข้อมูลเฉพาะกรณีส่งไม่ได้ (บันทึกหลังหมาย) -->
+                        <div id="failedSection" class="failed-section">
+                            <h4 style="margin: 0 0 12px 0; color: #c2410c;"><i class="fa-solid fa-file-pen"></i> ข้อมูลบันทึกหลังหมาย</h4>
+                            
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label class="form-label">สาเหตุไม่สามารถส่งหมายได้ (สรุปสั้นๆ ในบันทึกข้อความ)</label>
+                                    <input type="text" class="form-input" id="failReason" placeholder="เช่น ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย">
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label class="form-label">ปรากฏผลการส่งหมาย (เลือก ๑ ข้อ)</label>
+                                    <select class="form-input" id="recordChoice">
+                                        <option value="พบผู้ต้องหา แต่ไม่ลงลายมือชื่อผู้รับหมาย">พบผู้ต้องหา แต่ไม่ลงลายมือชื่อผู้รับหมาย</option>
+                                        <option value="มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย" selected>มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย</option>
+                                        <option value="ไม่พบตัวผู้ต้องหา และไม่มีบ้านเลขที่ตามหมาย">ไม่พบตัวผู้ต้องหา และไม่มีบ้านเลขที่ตามหมาย</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label class="form-label">เมื่อเดินทางไปถึงที่บ้านดังกล่าว (รายละเอียดบันทึกหลังหมาย)</label>
+                                    <textarea class="form-input" id="recordDetail" placeholder="ระบุสิ่งที่พบ เช่น พบบ้านปิดเงียบ สอบถามเพื่อนบ้านแจ้งว่าย้ายไปทำงานต่างจังหวัด..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">เจ้าหน้าที่ผู้ส่งหมาย</label>
+                                    <input type="text" class="form-input" id="officerName" placeholder="ยศ ชื่อ นามสกุล">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">ตำแหน่งผู้ส่งหมาย</label>
+                                    <input type="text" class="form-input" id="officerRank" placeholder="เช่น ผบ.หมู่(ป.) สภ.พระธาตุช่อแฮ">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <div class="footer-left">
+                    <button type="button" class="btn-secondary" id="btnBack" onclick="switchTab(1)" disabled>กลับ</button>
+                    <button type="button" class="btn-secondary" id="btnNext" onclick="switchTab(2)">ต่อไป</button>
+                </div>
+                <button type="button" class="btn-primary" id="btnSave" onclick="saveData()" disabled>บันทึกและสร้างเอกสาร</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ เปลี่ยนเป็น Web App URL ของ Apps Script ที่ Deploy ล่าสุด
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
+        
+        let allData = [];
+        let currentPage = 1;
+        let totalPages = 1;
+        let editMode = false;
+        let currentEditRowIndex = -1;
+        let originalDataStr = ""; 
+        let autocompleteData = { agencies: [], recipients: [], officers: [] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ThaiDatePicker.init('#bookDate');
+            ThaiDatePicker.init('#sendDate');
+
+            const inputs = document.querySelectorAll('#mainForm input, #mainForm select, #mainForm textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', checkFormChanges);
+                input.addEventListener('change', checkFormChanges);
+            });
+
+            setupAutocomplete('agency', 'agencyList', 'agencies');
+            setupAutocomplete('recipient', 'recipientList', 'recipients');
+
+            loadTable(1);
+            loadOptions();
+        });
+
+        // Toggle แสดงส่วนบันทึกหลังหมาย
+        function toggleDeliveryResult() {
+            const status = document.getElementById('deliveryStatus').value;
+            const failedSec = document.getElementById('failedSection');
+            const isFailed = status !== 'ส่งหมายสำเร็จ';
+            
+            failedSec.style.display = isFailed ? 'block' : 'none';
+            document.getElementById('failReason').required = isFailed;
+            document.getElementById('officerName').required = isFailed;
+            document.getElementById('officerRank').required = isFailed;
+            
+            checkFormChanges();
+        }
+
+        async function loadTable(page) {
+            const tbody = document.getElementById('tableBody');
+            document.getElementById('mainLoader').style.display = 'flex';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getData', page: page })
+                });
+                const json = await response.json();
+                if (json.status === 'error') throw new Error(json.message);
+                
+                allData = json.data;
+                renderTable(allData);
+                updatePagination(page, json.total);
+            } catch (e) {
+                console.error("loadTable error:", e);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ef4444;">โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
+            } finally {
+                document.getElementById('mainLoader').style.display = 'none';
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8; padding: 30px;">ยังไม่มีรายการข้อมูล</td></tr>`;
+                return;
+            }
+            
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                const isSuccess = row.display.deliveryStatus === 'ส่งหมายสำเร็จ';
+                const statusHtml = isSuccess 
+                    ? `<span class="status-badge badge-success"><i class="fa-solid fa-check"></i> สำเร็จ</span>` 
+                    : `<span class="status-badge badge-danger"><i class="fa-solid fa-circle-exclamation"></i> บันทึกหลังหมาย</span>`;
+
+                tr.innerHTML = `
+                    <td style="text-align: center;">
+                        <button class="nav-btn" style="width:32px; height:32px; margin:auto;" onclick="editData(${index})"><i class="fa-solid fa-pen" style="font-size:0.85rem;"></i></button>
+                    </td>
+                    <td>${row.display.sendDate}</td>
+                    <td><span style="font-weight:500;">${row.display.targetStatus}</span></td>
+                    <td>${row.display.roundNo}</td>
+                    <td><b>${row.display.targetName}</b></td>
+                    <td>${row.display.bookNo}</td>
+                    <td>${statusHtml}</td>
+                    <td style="text-align: center;">
+                        ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="doc-link" title="เปิด Google Doc"><i class="fa-solid fa-file-lines"></i></a>` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updatePagination(page, total) {
+            currentPage = page;
+            totalPages = Math.ceil(total / 10) || 1;
+            document.getElementById('pageInfo').innerText = `${page} / ${totalPages}`;
+            document.getElementById('btnPrevPage').disabled = page === 1;
+            document.getElementById('btnNextPage').disabled = page === totalPages || totalPages === 0;
+        }
+
+        function changePage(step) {
+            const newPage = currentPage + step;
+            if (newPage >= 1 && newPage <= totalPages) loadTable(newPage);
+        }
+
+        async function loadOptions() {
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getOptions' })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    autocompleteData = json;
+                }
+            } catch (e) {
+                console.warn('โหลดตัวเลือกไม่สำเร็จ:', e);
+            }
+        }
+
+        function setupAutocomplete(inputId, listId, dataKey) {
+            const input = document.getElementById(inputId);
+            const list = document.getElementById(listId);
+            
+            input.addEventListener('focus', () => showList(input.value));
+            input.addEventListener('input', () => showList(input.value));
+            input.addEventListener('blur', () => setTimeout(() => list.style.display = 'none', 250));
+            
+            function showList(query) {
+                const source = autocompleteData[dataKey] || [];
+                const filtered = source.filter(val => val.toLowerCase().includes(query.toLowerCase()));
+                list.innerHTML = '';
+                if (filtered.length > 0) {
+                    filtered.forEach(val => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = val;
+                        div.onmousedown = () => {
+                            input.value = val;
+                            list.style.display = 'none';
+                            checkFormChanges();
+                        };
+                        list.appendChild(div);
+                    });
+                    list.style.display = 'block';
+                } else {
+                    list.style.display = 'none';
+                }
+            }
+        }
+
+        function openModal() {
+            editMode = false;
+            currentEditRowIndex = -1;
+            document.getElementById('mainForm').reset();
+            ThaiDatePicker.clear('bookDate');
+            ThaiDatePicker.clear('sendDate');
+            toggleDeliveryResult();
+            
+            document.getElementById('modalTitle').innerText = 'สร้างรายงานผลการส่งหมาย';
+            document.getElementById('btnDelete').style.display = 'none';
+            switchTab(1);
+            document.getElementById('formModal').style.display = 'flex';
+            checkFormChanges();
+        }
+
+        function closeModal() {
+            document.getElementById('formModal').style.display = 'none';
+        }
+
+        function switchTab(tabIndex) {
+            document.getElementById('tab1').classList.toggle('active', tabIndex === 1);
+            document.getElementById('tab2').classList.toggle('active', tabIndex === 2);
+            
+            const btn1 = document.getElementById('tabBtn1');
+            const btn2 = document.getElementById('tabBtn2');
+            btn1.classList.toggle('active', tabIndex === 1);
+            btn2.classList.toggle('active', tabIndex === 2);
+            
+            const activeBtn = tabIndex === 1 ? btn1 : btn2;
+            const ind = document.getElementById('tabIndicator');
+            ind.style.width = `${activeBtn.offsetWidth}px`;
+            ind.style.left = `${activeBtn.offsetLeft}px`;
+            
+            document.getElementById('btnBack').disabled = (tabIndex === 1);
+            document.getElementById('btnNext').disabled = (tabIndex === 2);
+        }
+
+        function getFormData() {
+            return {
+                targetStatus: document.getElementById('targetStatus').value,
+                roundNo: document.getElementById('roundNo').value,
+                recipient: document.getElementById('recipient').value,
+                agency: document.getElementById('agency').value,
+                bookNo: document.getElementById('bookNo').value,
+                bookDate: ThaiDatePicker.getISODate('bookDate'),
+                investigator: document.getElementById('investigator').value,
+                targetName: document.getElementById('targetName').value,
+                targetAddress: document.getElementById('targetAddress').value,
+                sendDate: ThaiDatePicker.getISODate('sendDate'),
+                deliveryStatus: document.getElementById('deliveryStatus').value,
+                failReason: document.getElementById('failReason').value,
+                recordChoice: document.getElementById('recordChoice').value,
+                recordDetail: document.getElementById('recordDetail').value,
+                officerName: document.getElementById('officerName').value,
+                officerRank: document.getElementById('officerRank').value
+            };
+        }
+
+        function checkFormChanges() {
+            const form = document.getElementById('mainForm');
+            const datesValid = ThaiDatePicker.getISODate('bookDate') !== "" && ThaiDatePicker.getISODate('sendDate') !== "";
+            const isValid = form.checkValidity() && datesValid;
+            const btnSave = document.getElementById('btnSave');
+            
+            if (!editMode) {
+                btnSave.disabled = !isValid;
+            } else {
+                const currentStr = JSON.stringify(getFormData());
+                btnSave.disabled = !(isValid && currentStr !== originalDataStr);
+            }
+        }
+
+        function editData(index) {
+            const row = allData[index];
+            if (!row) return;
+
+            editMode = true;
+            currentEditRowIndex = row.rowIndex;
+            const raw = row.rawData;
+            
+            document.getElementById('modalTitle').innerText = 'แก้ไขข้อมูลรายงานผลการส่งหมาย';
+            document.getElementById('btnDelete').style.display = 'block';
+
+            document.getElementById('targetStatus').value = raw.targetStatus;
+            document.getElementById('roundNo').value = raw.roundNo;
+            document.getElementById('recipient').value = raw.recipient;
+            document.getElementById('agency').value = raw.agency;
+            document.getElementById('bookNo').value = raw.bookNo;
+            ThaiDatePicker.setISODate('bookDate', raw.bookDate);
+            document.getElementById('investigator').value = raw.investigator;
+
+            document.getElementById('targetName').value = raw.targetName;
+            document.getElementById('targetAddress').value = raw.targetAddress;
+            ThaiDatePicker.setISODate('sendDate', raw.sendDate);
+            document.getElementById('deliveryStatus').value = raw.deliveryStatus;
+            
+            document.getElementById('failReason').value = raw.failReason || '';
+            document.getElementById('recordChoice').value = raw.recordChoice || 'มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย';
+            document.getElementById('recordDetail').value = raw.recordDetail || '';
+            document.getElementById('officerName').value = raw.officerName || '';
+            document.getElementById('officerRank').value = raw.officerRank || '';
+
+            toggleDeliveryResult();
+            originalDataStr = JSON.stringify(getFormData());
+            
+            switchTab(1);
+            document.getElementById('formModal').style.display = 'flex';
+            checkFormChanges();
+        }
+
+        async function saveData() {
+            const payload = {
+                action: 'saveData',
+                mode: editMode ? 'edit' : 'add',
+                rowIndex: currentEditRowIndex,
+                formData: getFormData()
+            };
+            
+            Swal.fire({
+                title: 'กำลังบันทึกและสร้างเอกสาร...',
+                text: 'ระบบกำลังจัดทำหนังสือราชการ Google Doc',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+                
+                if (json.status === 'success') {
+                    closeModal();
+                    loadTable(1);
+                    loadOptions();
+                    Swal.fire({
+                        title: 'สำเร็จ!',
+                        html: `สร้างและจัดทำเอกสารเรียบร้อยแล้ว<br><a href="${json.docUrl}" target="_blank" style="color:#1e3a8a;font-weight:bold;text-decoration:underline;">คลิกเพื่อเปิดเอกสาร</a>`,
+                        icon: 'success'
+                    });
+                } else {
+                    throw new Error(json.message);
+                }
+            } catch (err) {
+                Swal.fire('ข้อผิดพลาด', err.message || 'บันทึกข้อมูลไม่สำเร็จ', 'error');
+            }
+        }
+
+        function deleteData() {
+            Swal.fire({
+                title: 'ยืนยันการลบรายการนี้?',
+                text: 'ไฟล์เอกสารในไดรฟ์จะถูกย้ายไปถังขยะด้วยเช่นกัน',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'ยืนยันลบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    try {
+                        const res = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ action: 'deleteData', rowIndex: currentEditRowIndex })
+                        });
+                        const json = await res.json();
+                        if (json.status === 'success') {
+                            closeModal();
+                            loadTable(currentPage);
+                            Swal.fire('สำเร็จ', 'ลบข้อมูลเรียบร้อยแล้ว', 'success');
+                        } else {
+                            throw new Error(json.message);
+                        }
+                    } catch (e) {
+                        Swal.fire('ข้อผิดพลาด', e.message, 'error');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
