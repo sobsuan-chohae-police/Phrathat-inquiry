@@ -279,7 +279,7 @@
     </div>
 
     <script>
-        // ⚠️ เปลี่ยนเป็น Web App URL ของ Apps Script ที่ Deploy ล่าสุด
+        // ⚠️ Web App URL ของ Apps Script
         const API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
         
         let allData = [];
@@ -291,8 +291,10 @@
         let autocompleteData = { agencies: [], recipients: [], officers: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
-            ThaiDatePicker.init('#bookDate');
-            ThaiDatePicker.init('#sendDate');
+            if (typeof ThaiDatePicker !== 'undefined') {
+                ThaiDatePicker.init('#bookDate');
+                ThaiDatePicker.init('#sendDate');
+            }
 
             const inputs = document.querySelectorAll('#mainForm input, #mainForm select, #mainForm textarea');
             inputs.forEach(input => {
@@ -307,7 +309,110 @@
             loadOptions();
         });
 
-        // Toggle แสดงส่วนบันทึกหลังหมาย
+        // ฟังก์ชันแปลงสตริงวันที่ทุกรูปแบบให้เป็น YYYY-MM-DD แบบ ค.ศ. แท้จริง
+        function parseToValidISODate(input) {
+            if (!input) return '';
+            let str = String(input).trim();
+            
+            // กรณีเป็น ISO string ที่มีเวลาติดมา เช่น 2026-01-20T17:00:00.000Z
+            if (str.includes('T')) {
+                str = str.split('T')[0];
+            }
+
+            // รูปแบบ YYYY-MM-DD หรือ YYYY/MM/DD
+            let match = str.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+            if (match) {
+                let y = parseInt(match[1], 10);
+                const m = String(match[2]).padStart(2, '0');
+                const d = String(match[3]).padStart(2, '0');
+                // หากถูกส่งมาเป็น พ.ศ. (ปีมากกว่า 2400) ให้แปลงกลับเป็น ค.ศ. ทันที
+                if (y > 2400) y -= 543;
+                return `${y}-${m}-${d}`;
+            }
+
+            // รูปแบบ DD/MM/YYYY หรือ DD-MM-YYYY
+            match = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+            if (match) {
+                const d = String(match[1]).padStart(2, '0');
+                const m = String(match[2]).padStart(2, '0');
+                let y = parseInt(match[3], 10);
+                if (y > 2400) y -= 543;
+                return `${y}-${m}-${d}`;
+            }
+
+            return '';
+        }
+
+        // ฟังก์ชันตั้งค่าวันที่เข้า Datepicker อย่างปลอดภัย
+        function safelySetDate(elementId, rawDate) {
+            const cleanDate = parseToValidISODate(rawDate);
+            const inputEl = document.getElementById(elementId);
+            
+            if (!cleanDate) {
+                if (window.ThaiDatePicker && typeof ThaiDatePicker.clear === 'function') {
+                    try { ThaiDatePicker.clear('#' + elementId); } catch(e) {}
+                    try { ThaiDatePicker.clear(elementId); } catch(e) {}
+                }
+                if (inputEl) inputEl.value = '';
+                return;
+            }
+
+            // 1) ถ้ามี flatpickr instance ให้ set ตรงๆ เพื่อป้องกันการแปลง พ.ศ. ซ้อน พ.ศ.
+            if (inputEl && inputEl._flatpickr) {
+                inputEl._flatpickr.setDate(cleanDate, true);
+                return;
+            }
+
+            // 2) ทดสอบเรียกผ่าน ThaiDatePicker แบบทั้งมี # และไม่มี #
+            let success = false;
+            if (window.ThaiDatePicker && typeof ThaiDatePicker.setISODate === 'function') {
+                try {
+                    ThaiDatePicker.setISODate('#' + elementId, cleanDate);
+                    success = true;
+                } catch (e) {
+                    try {
+                        ThaiDatePicker.setISODate(elementId, cleanDate);
+                        success = true;
+                    } catch (e2) {}
+                }
+            }
+
+            // 3) ถ้าไม่มี library ให้ใส่ค่าตรงๆ
+            if (!success && inputEl) {
+                inputEl.value = cleanDate;
+            }
+        }
+
+        // ฟังก์ชันดึงค่า ISO Date ออกมาอย่างถูกต้อง
+        function safelyGetDate(elementId) {
+            const inputEl = document.getElementById(elementId);
+            if (!inputEl) return '';
+
+            // ถ้ามี flatpickr
+            if (inputEl._flatpickr && inputEl._flatpickr.selectedDates.length > 0) {
+                const d = inputEl._flatpickr.selectedDates[0];
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // ถ้ามี ThaiDatePicker
+            if (window.ThaiDatePicker && typeof ThaiDatePicker.getISODate === 'function') {
+                try {
+                    const res = ThaiDatePicker.getISODate('#' + elementId);
+                    if (res) return parseToValidISODate(res);
+                } catch(e) {
+                    try {
+                        const res2 = ThaiDatePicker.getISODate(elementId);
+                        if (res2) return parseToValidISODate(res2);
+                    } catch(e2) {}
+                }
+            }
+
+            return parseToValidISODate(inputEl.value);
+        }
+
         function toggleDeliveryResult() {
             const status = document.getElementById('deliveryStatus').value;
             const failedSec = document.getElementById('failedSection');
@@ -349,7 +454,7 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8; padding: 30px;">ยังไม่มีรายการข้อมูล</td></tr>`;
                 return;
             }
@@ -443,8 +548,9 @@
             editMode = false;
             currentEditRowIndex = -1;
             document.getElementById('mainForm').reset();
-            ThaiDatePicker.clear('bookDate');
-            ThaiDatePicker.clear('sendDate');
+            
+            safelySetDate('bookDate', '');
+            safelySetDate('sendDate', '');
             toggleDeliveryResult();
             
             document.getElementById('modalTitle').innerText = 'สร้างรายงานผลการส่งหมาย';
@@ -483,11 +589,11 @@
                 recipient: document.getElementById('recipient').value,
                 agency: document.getElementById('agency').value,
                 bookNo: document.getElementById('bookNo').value,
-                bookDate: ThaiDatePicker.getISODate('bookDate'),
+                bookDate: safelyGetDate('bookDate'),
                 investigator: document.getElementById('investigator').value,
                 targetName: document.getElementById('targetName').value,
                 targetAddress: document.getElementById('targetAddress').value,
-                sendDate: ThaiDatePicker.getISODate('sendDate'),
+                sendDate: safelyGetDate('sendDate'),
                 deliveryStatus: document.getElementById('deliveryStatus').value,
                 failReason: document.getElementById('failReason').value,
                 recordChoice: document.getElementById('recordChoice').value,
@@ -499,7 +605,7 @@
 
         function checkFormChanges() {
             const form = document.getElementById('mainForm');
-            const datesValid = ThaiDatePicker.getISODate('bookDate') !== "" && ThaiDatePicker.getISODate('sendDate') !== "";
+            const datesValid = safelyGetDate('bookDate') !== "" && safelyGetDate('sendDate') !== "";
             const isValid = form.checkValidity() && datesValid;
             const btnSave = document.getElementById('btnSave');
             
@@ -522,19 +628,23 @@
             document.getElementById('modalTitle').innerText = 'แก้ไขข้อมูลรายงานผลการส่งหมาย';
             document.getElementById('btnDelete').style.display = 'block';
 
-            document.getElementById('targetStatus').value = raw.targetStatus;
-            document.getElementById('roundNo').value = raw.roundNo;
-            document.getElementById('recipient').value = raw.recipient;
-            document.getElementById('agency').value = raw.agency;
-            document.getElementById('bookNo').value = raw.bookNo;
-            ThaiDatePicker.setISODate('bookDate', raw.bookDate);
-            document.getElementById('investigator').value = raw.investigator;
+            document.getElementById('targetStatus').value = raw.targetStatus || 'ผู้ต้องหา';
+            document.getElementById('roundNo').value = raw.roundNo || 1;
+            document.getElementById('recipient').value = raw.recipient || '';
+            document.getElementById('agency').value = raw.agency || '';
+            document.getElementById('bookNo').value = raw.bookNo || '';
 
-            document.getElementById('targetName').value = raw.targetName;
-            document.getElementById('targetAddress').value = raw.targetAddress;
-            ThaiDatePicker.setISODate('sendDate', raw.sendDate);
-            document.getElementById('deliveryStatus').value = raw.deliveryStatus;
-            
+            // กำหนดวันที่โดยตรงผ่านฟังก์ชันป้องกันปีเพี้ยน
+            safelySetDate('bookDate', raw.bookDate);
+
+            document.getElementById('investigator').value = raw.investigator || '';
+            document.getElementById('targetName').value = raw.targetName || '';
+            document.getElementById('targetAddress').value = raw.targetAddress || '';
+
+            // กำหนดวันที่ส่งหมาย
+            safelySetDate('sendDate', raw.sendDate);
+
+            document.getElementById('deliveryStatus').value = raw.deliveryStatus || 'ส่งหมายสำเร็จ';
             document.getElementById('failReason').value = raw.failReason || '';
             document.getElementById('recordChoice').value = raw.recordChoice || 'มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย';
             document.getElementById('recordDetail').value = raw.recordDetail || '';
@@ -542,11 +652,14 @@
             document.getElementById('officerRank').value = raw.officerRank || '';
 
             toggleDeliveryResult();
-            originalDataStr = JSON.stringify(getFormData());
+            
+            setTimeout(() => {
+                originalDataStr = JSON.stringify(getFormData());
+                checkFormChanges();
+            }, 60);
             
             switchTab(1);
             document.getElementById('formModal').style.display = 'flex';
-            checkFormChanges();
         }
 
         async function saveData() {
