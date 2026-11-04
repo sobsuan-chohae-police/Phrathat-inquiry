@@ -11,13 +11,9 @@
     
     <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
     
     <!-- Core Scripts & Theme -->
     <script src="../auth.js"></script>
-    <script src="../../assets/datepicker.js"></script>
     <link rel="stylesheet" href="../../assets/theme.css">
 
     <style>
@@ -227,11 +223,12 @@
                             <input type="number" class="form-input" id="roundNo" value="1" min="1" required>
                         </div>
 
+                        <!-- ใช้อินพุตแบบ date ของเบราว์เซอร์ตรงๆ ไม่ผ่าน datepicker ภายนอก -->
                         <div class="form-group full-width" style="background: #eef2ff; padding: 12px; border-radius: 8px; border: 1px solid #c7d2fe;">
                             <label class="form-label" style="color: #3730a3; font-weight: 600;">
                                 <i class="fa-solid fa-calendar-check"></i> วันที่นัดให้ไปพบตามหมายเรียก
                             </label>
-                            <input type="text" class="form-input" id="appointmentDate" placeholder="เลือกหรือกรอกวันที่นัด" required style="background: #fff;">
+                            <input type="date" class="form-input" id="appointmentDate" required style="background: #fff;">
                         </div>
 
                         <div class="form-group full-width autocomplete-wrapper">
@@ -246,7 +243,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">ลงวันที่ (ในหนังสือ)</label>
-                            <input type="text" class="form-input" id="bookDate" placeholder="เลือกหรือกรอกวันที่" required>
+                            <input type="date" class="form-input" id="bookDate" required>
                         </div>
 
                         <div class="form-group full-width autocomplete-wrapper">
@@ -294,7 +291,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">วันที่ส่งหมาย</label>
-                            <input type="text" class="form-input" id="sendDate" placeholder="เลือกหรือกรอกวันที่ส่งหมาย" required>
+                            <input type="date" class="form-input" id="sendDate" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">ผลการส่งหมาย</label>
@@ -367,89 +364,49 @@
         let autocompleteData = { agencies: [], recipients: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof ThaiDatePicker !== 'undefined') {
-                try { ThaiDatePicker.init('#appointmentDate'); } catch(e){}
-                try { ThaiDatePicker.init('#bookDate'); } catch(e){}
-                try { ThaiDatePicker.init('#sendDate'); } catch(e){}
-            }
-
             setupAutocomplete('agency', 'agencyList', 'agencies');
             setupAutocomplete('recipient', 'recipientList', 'recipients');
-
             loadData();
             loadOptions();
         });
 
-        // ================= Date Helpers (ดึงจากชีตตรงๆ 100%) =================
-        function safelySetDate(elementId, sheetDateValue) {
-            const val = (sheetDateValue || '').trim().replace(/^'/, '');
-            const inputEl = document.getElementById(elementId);
-            if (!inputEl) return;
+        // ฟังก์ชันล้างค่าปีที่เพี้ยนให้กลับเป็น ค.ศ. (YYYY-MM-DD) ป้องกันปี พ.ศ. วนลูป
+        function cleanToISODate(input) {
+            if (!input) return '';
+            let str = String(input).trim().replace(/^'/, '');
+            if (!str || str === '-') return '';
 
-            inputEl.value = val;
-
-            if (inputEl._flatpickr) {
-                if (!val) {
-                    try { inputEl._flatpickr.clear(); } catch(e){}
-                } else {
-                    try {
-                        inputEl._flatpickr.setDate(val, false);
-                    } catch(e) {}
-                    if (inputEl._flatpickr.altInput) {
-                        inputEl._flatpickr.altInput.value = val;
-                    }
-                }
-            }
-        }
-
-        function safelyGetDate(elementId) {
-            const inputEl = document.getElementById(elementId);
-            if (!inputEl) return '';
-            if (inputEl._flatpickr && inputEl._flatpickr.input) {
-                return inputEl._flatpickr.input.value.trim() || inputEl.value.trim();
-            }
-            return inputEl.value.trim();
-        }
-
-        // แปลงข้อความวันที่ทุกรูปแบบเพื่อคำนวณจำนวนวันคงเหลือ (Countdown)
-        function parseDateForDiff(str) {
-            if (!str) return null;
-            str = String(str).trim().replace(/^'/, '');
-            if (!str || str === '-') return null;
+            let day, month, year;
 
             let m = str.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
             if (m) {
-                let y = parseInt(m[1], 10);
-                if (y > 2400) y -= 543;
-                return new Date(y, parseInt(m[2], 10) - 1, parseInt(m[3], 10));
-            }
-
-            m = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
-            if (m) {
-                let y = parseInt(m[3], 10);
-                if (y > 2400) y -= 543;
-                return new Date(y, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
-            }
-
-            const thaiMonthsShort = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            const thaiMonthsFull = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-            for (let i = 0; i < 12; i++) {
-                if (str.includes(thaiMonthsFull[i]) || str.includes(thaiMonthsShort[i])) {
-                    let nums = str.match(/\d+/g);
-                    if (nums && nums.length >= 2) {
-                        let d = parseInt(nums[0], 10);
-                        let y = parseInt(nums[1], 10);
-                        if (y > 2400) y -= 543;
-                        return new Date(y, i, d);
-                    }
+                year = parseInt(m[1], 10);
+                month = parseInt(m[2], 10);
+                day = parseInt(m[3], 10);
+            } else {
+                m = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+                if (m) {
+                    day = parseInt(m[1], 10);
+                    month = parseInt(m[2], 10);
+                    year = parseInt(m[3], 10);
                 }
             }
-            return null;
+
+            if (!year || !month || !day) return str;
+
+            while (year > 2800) year -= 543;
+            if (year >= 2400) year -= 543;
+
+            return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         }
 
+        // คำนวณวันคงเหลือ (Countdown)
         function getAppointmentDiff(dateStr) {
-            const targetDate = parseDateForDiff(dateStr);
-            if (!targetDate || isNaN(targetDate.getTime())) return null;
+            const iso = cleanToISODate(dateStr);
+            if (!iso || !iso.includes('-')) return null;
+            const parts = iso.split('-');
+            const targetDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            if (isNaN(targetDate.getTime())) return null;
 
             targetDate.setHours(0,0,0,0);
             const today = new Date();
@@ -458,7 +415,7 @@
             return Math.round((targetDate - today) / (1000 * 60 * 60 * 24));
         }
 
-        // ================= Core Data Logic =================
+        // โหลดข้อมูล
         async function loadData() {
             document.getElementById('mainLoader').style.display = 'flex';
             try {
@@ -586,7 +543,7 @@
                         </div>
                     </td>
                     <td>${statusBadge}</td>
-                    <td><b>${raw.appointmentDate || '-'}</b></td>
+                    <td><b>${row.display.appointmentDate || '-'}</b></td>
                     <td>${dueBadge}</td>
                     <td><span style="font-weight:500;">${raw.targetStatus || '-'}</span></td>
                     <td>${raw.roundNo || '1'}</td>
@@ -613,8 +570,8 @@
             document.getElementById('warrantForm').reset();
             document.getElementById('warrantModalTitle').innerText = 'บันทึกรับหมายเรียกใหม่';
             document.getElementById('btnDeleteWarrant').style.display = 'none';
-            safelySetDate('appointmentDate', '');
-            safelySetDate('bookDate', '');
+            document.getElementById('appointmentDate').value = '';
+            document.getElementById('bookDate').value = '';
             openModal('warrantModal');
         }
 
@@ -632,9 +589,9 @@
             document.getElementById('targetStatus').value = raw.targetStatus || 'ผู้ต้องหา';
             document.getElementById('roundNo').value = raw.roundNo || 1;
             
-            // นำค่าวันที่จากชีตตรงๆ ใส่เข้าช่อง Input
-            safelySetDate('appointmentDate', raw.appointmentDate);
-            safelySetDate('bookDate', raw.bookDate);
+            // ดึงค่าวันที่ตรงๆ จาก Sheet เข้าสู่ Input Date
+            document.getElementById('appointmentDate').value = cleanToISODate(raw.appointmentDate);
+            document.getElementById('bookDate').value = cleanToISODate(raw.bookDate);
 
             document.getElementById('agency').value = raw.agency || '';
             document.getElementById('bookNo').value = raw.bookNo || '';
@@ -648,7 +605,10 @@
 
         async function saveWarrantData() {
             const form = document.getElementById('warrantForm');
-            if (!form.checkValidity() || !safelyGetDate('appointmentDate') || !safelyGetDate('bookDate')) {
+            const aDate = document.getElementById('appointmentDate').value;
+            const bDate = document.getElementById('bookDate').value;
+
+            if (!form.checkValidity() || !aDate || !bDate) {
                 Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุข้อมูลและวันที่จำเป็นให้ครบถ้วน', 'warning');
                 return;
             }
@@ -660,10 +620,10 @@
                 warrantData: {
                     targetStatus: document.getElementById('targetStatus').value,
                     roundNo: document.getElementById('roundNo').value,
-                    appointmentDate: safelyGetDate('appointmentDate'),
+                    appointmentDate: aDate,
                     agency: document.getElementById('agency').value,
                     bookNo: document.getElementById('bookNo').value,
-                    bookDate: safelyGetDate('bookDate'),
+                    bookDate: bDate,
                     recipient: document.getElementById('recipient').value,
                     investigator: document.getElementById('investigator').value,
                     targetName: document.getElementById('targetName').value,
@@ -738,13 +698,13 @@
                     <i class="fa-solid fa-user-tag"></i> ${raw.targetStatus}: <b>${raw.targetName}</b> (ครั้งที่ ${raw.roundNo || 1})
                 </div>
                 <div style="color:#475569; font-size:0.86rem;">
-                    หนังสือเลขที่: <b>${raw.bookNo || '-'}</b> | นัดพบวันที่: <b style="color:#b45309;">${raw.appointmentDate || '-'}</b><br>
+                    หนังสือเลขที่: <b>${raw.bookNo || '-'}</b> | นัดพบวันที่: <b style="color:#b45309;">${row.display.appointmentDate || '-'}</b><br>
                     ที่อยู่: ${raw.targetAddress || '-'}
                 </div>
             `;
 
             // ดึงค่าวันที่ส่งจากชีตตรงๆ
-            safelySetDate('sendDate', raw.sendDate || '');
+            document.getElementById('sendDate').value = cleanToISODate(raw.sendDate);
             document.getElementById('deliveryStatus').value = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' ? raw.deliveryStatus : 'ส่งหมายสำเร็จ';
             document.getElementById('failReason').value = raw.failReason || '';
             document.getElementById('recordChoice').value = raw.recordChoice || 'มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย';
@@ -768,8 +728,8 @@
         }
 
         async function saveResultData() {
-            const sendDate = safelyGetDate('sendDate');
-            if (!sendDate) {
+            const sDate = document.getElementById('sendDate').value;
+            if (!sDate) {
                 Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุวันที่ส่งหมาย', 'warning');
                 return;
             }
@@ -785,7 +745,7 @@
                 action: 'saveDeliveryResult',
                 rowIndex: selectedRowIndex,
                 resultData: {
-                    sendDate: sendDate,
+                    sendDate: sDate,
                     deliveryStatus: deliveryStatus,
                     failReason: document.getElementById('failReason').value,
                     recordChoice: document.getElementById('recordChoice').value,
