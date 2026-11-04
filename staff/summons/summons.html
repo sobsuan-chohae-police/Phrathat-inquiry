@@ -183,7 +183,6 @@
                             <th>ประเภท</th>
                             <th>ครั้งที่</th>
                             <th>ผู้รับหมาย</th>
-                            <th>หนังสือเลขที่</th>
                             <th>หน่วยงานขอความร่วมมือ</th>
                             <th style="text-align: center;">เอกสาร</th>
                         </tr>
@@ -605,7 +604,7 @@
                 applyFilter();
             } catch (e) {
                 console.error("loadData error:", e);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="10" style="text-align:center; color:#ef4444; padding:20px;">โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:#ef4444; padding:20px;">โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
             } finally {
                 document.getElementById('mainLoader').style.display = 'none';
             }
@@ -670,7 +669,7 @@
             document.getElementById('showingText').innerText = `แสดง ${total > 0 ? start + 1 : 0} - ${Math.min(end, total)} จาก ${total} รายการ`;
 
             if (pageItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#94a3b8; padding:30px;">ไม่พบรายการหมาย</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:30px;">ไม่พบรายการหมาย</td></tr>`;
                 return;
             }
 
@@ -725,7 +724,6 @@
                     <td><span style="font-weight:500;">${raw.targetStatus || '-'}</span></td>
                     <td>${raw.roundNo || '1'}</td>
                     <td><b>${raw.targetName || '-'}</b></td>
-                    <td>${raw.bookNo || '-'}</td>
                     <td>${raw.agency || '-'}</td>
                     <td style="text-align: center;">
                         ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="nav-btn" style="width:30px; height:30px; margin:auto; color:#1e3a8a;" title="เปิดดูเอกสาร Google Doc"><i class="fa-solid fa-file-word"></i></a>` : '-'}
@@ -882,12 +880,10 @@
             setDateValue('sendDate', raw.sendDate || '');
             document.getElementById('deliveryStatus').value = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' ? raw.deliveryStatus : 'ส่งหมายสำเร็จ';
             
-            // ข้อมูลการรับแทน
             document.getElementById('receiveType').value = raw.receiveType || 'รับด้วยตนเอง';
             document.getElementById('substituteName').value = raw.substituteName || '';
             document.getElementById('substituteRelation').value = raw.substituteRelation || '';
 
-            // ข้อมูลบันทึกหลังหมาย
             document.getElementById('failReason').value = raw.failReason || '';
             document.getElementById('recordChoice').value = raw.recordChoice || 'มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย';
             document.getElementById('recordDetail').value = raw.recordDetail || '';
@@ -903,11 +899,9 @@
             const isSuccess = (status === 'ส่งหมายสำเร็จ');
             const isFailed = (status === 'ไม่สามารถส่งหมายได้');
 
-            // ควบคุมการแสดงผล 2 ส่วน
             document.getElementById('successSection').style.display = isSuccess ? 'block' : 'none';
             document.getElementById('failedSection').style.display = isFailed ? 'block' : 'none';
 
-            // ถ้าส่งสำเร็จ ให้เช็กเรื่องรับแทนต่อ
             if (isSuccess) {
                 toggleProxyUI();
             } else {
@@ -932,7 +926,6 @@
             updateProxyPreview();
         }
 
-        // อัปเดตตัวอย่างข้อความ template แบบสดๆ
         function updateProxyPreview() {
             const name = document.getElementById('substituteName').value.trim();
             const rel = document.getElementById('substituteRelation').value.trim();
@@ -972,7 +965,6 @@
                         return;
                     }
 
-                    // สร้างข้อความสำหรับใส่ใน Template
                     substituteStatement = `โดยมี ${substituteName} ${substituteRelation} เป็นผู้รับหมายแทน`;
                 }
             }
@@ -988,18 +980,12 @@
                 resultData: {
                     sendDate: sDate,
                     deliveryStatus: deliveryStatus,
-                    
-                    // ฟิลด์ข้อมูลการรับหมาย
                     receiveType: receiveType,
                     substituteName: substituteName,
                     substituteRelation: substituteRelation,
-                    
-                    // ตัวแปรสำหรับนำไปใส่ใน Template ของ Google Docs
-                    substituteStatement: substituteStatement, // ตัวแปรหลัก เช่น {{substituteStatement}}
-                    substituteText: substituteStatement,      // เผื่อใช้ชื่อ {{substituteText}}
-                    proxyText: substituteStatement,           // เผื่อใช้ชื่อ {{proxyText}}
-
-                    // ฟิลด์บันทึกหลังหมาย
+                    substituteStatement: substituteStatement,
+                    substituteText: substituteStatement,
+                    proxyText: substituteStatement,
                     failReason: document.getElementById('failReason').value,
                     recordChoice: document.getElementById('recordChoice').value,
                     recordDetail: document.getElementById('recordDetail').value,
