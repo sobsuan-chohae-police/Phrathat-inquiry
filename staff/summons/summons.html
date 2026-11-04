@@ -90,6 +90,8 @@
         .form-input:focus { border-color: #1e3a8a; background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(30,58,138,0.1); }
         .modal-footer { padding: 14px 22px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff; }
         
+        /* สไตล์ส่วนรับหมายสำเร็จ และ บันทึกหลังหมาย */
+        .success-section { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; margin-top: 12px; }
         .failed-section { background: #fff7ed; border: 1px dashed #f97316; border-radius: 10px; padding: 14px; margin-top: 12px; display: none; }
         .warrant-summary-box { background: #f1f5f9; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6; }
         
@@ -305,6 +307,41 @@
                         </div>
                     </div>
 
+                    <!-- ส่วนที่ 1: กรณีส่งหมายสำเร็จ (รับเอง หรือ รับแทน) -->
+                    <div id="successSection" class="success-section">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label" style="color: #15803d; font-weight: 600;">
+                                    <i class="fa-solid fa-user-check"></i> ลักษณะการรับหมาย
+                                </label>
+                                <select class="form-input" id="receiveType" onchange="toggleProxyUI()" required>
+                                    <option value="รับด้วยตนเอง" selected>รับด้วยตนเอง</option>
+                                    <option value="รับหมายแทน">รับหมายแทน</option>
+                                </select>
+                            </div>
+
+                            <div id="proxyFields" class="full-width" style="display: none;">
+                                <div class="form-grid" style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px dashed #86efac;">
+                                    <div class="form-group">
+                                        <label class="form-label">ชื่อ - สกุล ผู้รับหมายแทน <span style="color:#dc2626;">*</span></label>
+                                        <input type="text" class="form-input" id="substituteName" placeholder="เช่น นายสมหมาย ใจดี" oninput="updateProxyPreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">สถานะ / ความสัมพันธ์ <span style="color:#dc2626;">*</span></label>
+                                        <input type="text" class="form-input" id="substituteRelation" placeholder="เช่น บิดา, มารดา, ภรรยา" oninput="updateProxyPreview()">
+                                    </div>
+                                    <div class="form-group full-width" style="margin-top: 4px;">
+                                        <div style="font-size: 0.85rem; color: #166534; background: #dcfce7; padding: 8px 12px; border-radius: 6px;">
+                                            <i class="fa-solid fa-circle-info"></i> ข้อความที่จะนำไปใส่ Template: 
+                                            <b id="proxyPreviewText" style="color: #14532d;">-</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ส่วนที่ 2: กรณีไม่สามารถส่งหมายได้ (บันทึกหลังหมาย) -->
                     <div id="failedSection" class="failed-section">
                         <h4 style="margin: 0 0 10px 0; color: #c2410c; font-size: 0.95rem;">
                             <i class="fa-solid fa-file-pen"></i> ข้อมูลบันทึกหลังหมาย
@@ -367,7 +404,6 @@
         let autocompleteData = { agencies: [], recipients: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
-            // ติดตั้งปฏิทินแบบปลอดภัยทุกจุด
             initSafeDatePicker('#appointmentDate');
             initSafeDatePicker('#bookDate');
             initSafeDatePicker('#sendDate');
@@ -382,25 +418,22 @@
         function initSafeDatePicker(selector) {
             flatpickr(selector, {
                 locale: 'th',
-                dateFormat: 'Y-m-d', // ฐานข้อมูลเก็บเป็น ค.ศ. ISO (YYYY-MM-DD) เสมอ
+                dateFormat: 'Y-m-d',
                 altInput: true,
                 altInputClass: 'form-input',
                 altFormat: 'j F Y',
                 
-                // แยกการทำงานเด็ดขาดระหว่าง format ที่เก็บในระบบ กับ format ที่แสดงผล
                 formatDate: function(date, format, locale) {
                     let y = date.getFullYear();
                     while (y > 2800) y -= 543;
                     if (y >= 2400) y -= 543;
 
-                    // 1. ถ้า flatpickr เรียกเพื่อใส่ค่า hidden input
                     if (format === 'Y-m-d') {
                         const m = String(date.getMonth() + 1).padStart(2, '0');
                         const d = String(date.getDate()).padStart(2, '0');
                         return `${y}-${m}-${d}`;
                     }
 
-                    // 2. ถ้า flatpickr เรียกเพื่อแสดงผลหน้าจอ (altInput) -> แปลงเป็น พ.ศ.
                     const thaiYear = y + 543;
                     const monthText = (locale && locale.months && locale.months.longhand) 
                         ? locale.months.longhand[date.getMonth()] 
@@ -408,7 +441,6 @@
                     return `${date.getDate()} ${monthText} ${thaiYear}`;
                 },
 
-                // แปลงค่าสตริงวันที่ทุกรูปแบบให้กลับเป็น Date Object (ค.ศ. แท้จริง)
                 parseDate: function(dateStr, format) {
                     const clean = cleanToISODate(dateStr);
                     if (!clean || !clean.includes('-')) return new Date();
@@ -416,7 +448,6 @@
                     return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
                 },
 
-                // คุมการแสดงผลหัวปฏิทินให้เป็น พ.ศ. สวยงาม โดยไม่ทำให้ internal date เพี้ยน
                 onReady: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); },
                 onMonthChange: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); },
                 onYearChange: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); },
@@ -424,7 +455,6 @@
             });
         }
 
-        // คุมหัวปฏิทินให้แสดงเลขปี พ.ศ.
         function updateCalendarYearHeader(instance) {
             if (!instance || !instance.currentYearElement) return;
 
@@ -442,7 +472,6 @@
                 }
             }, 0);
 
-            // ป้องกันการพิมพ์ปี หรือกดลูกศรเปลี่ยนปีบนหัวปฏิทินแล้วปีเพี้ยน
             if (instance.yearElements) {
                 instance.yearElements.forEach(el => {
                     if (!el._hasThaiFix) {
@@ -460,7 +489,6 @@
             }
         }
 
-        // กำหนดวันที่ลงปฏิทิน
         function setDateValue(elementId, rawDate) {
             const clean = cleanToISODate(rawDate);
             const inputEl = document.getElementById(elementId);
@@ -470,7 +498,7 @@
                 if (!clean) {
                     inputEl._flatpickr.clear();
                 } else {
-                    inputEl._flatpickr.setDate(clean, true); // true = อัปเดต altInput พ.ศ. ด้วย
+                    inputEl._flatpickr.setDate(clean, true);
                     updateCalendarYearHeader(inputEl._flatpickr);
                 }
             } else {
@@ -478,7 +506,6 @@
             }
         }
 
-        // ดึงวันที่จากปฏิทินส่งไปบันทึก (รับประกันว่าได้ YYYY-MM-DD แบบ ค.ศ.)
         function getDateValue(elementId) {
             const inputEl = document.getElementById(elementId);
             if (!inputEl) return '';
@@ -498,7 +525,6 @@
             return cleanToISODate(inputEl.value);
         }
 
-        // ฟังก์ชันล้างปีเพี้ยน 3112 / 3655 / พ.ศ. กลับสู่ ค.ศ. ISO อย่างแม่นยำ
         function cleanToISODate(input) {
             if (!input) return '';
             let str = String(input).trim().replace(/^'/, '');
@@ -506,21 +532,18 @@
 
             let day, month, year;
 
-            // รูปแบบ YYYY-MM-DD
             let m = str.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
             if (m) {
                 year = parseInt(m[1], 10);
                 month = parseInt(m[2], 10);
                 day = parseInt(m[3], 10);
             } else {
-                // รูปแบบ DD/MM/YYYY
                 m = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
                 if (m) {
                     day = parseInt(m[1], 10);
                     month = parseInt(m[2], 10);
                     year = parseInt(m[3], 10);
                 } else {
-                    // กรณีข้อความภาษาไทย เช่น "4 พฤศจิกายน 2569" หรือ "4 พ.ย. 2569"
                     const thaiMonths = [
                         'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
                         'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
@@ -545,14 +568,12 @@
 
             if (!year || !month || !day) return str;
 
-            // ถอยปีที่ถูกบวกซ้ำ (3112 -> 2569 -> 2026)
             while (year > 2800) year -= 543;
             if (year >= 2400) year -= 543;
 
             return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         }
 
-        // คำนวณวันคงเหลือ (Countdown)
         function getAppointmentDiff(dateStr) {
             const iso = cleanToISODate(dateStr);
             if (!iso || !iso.includes('-')) return null;
@@ -677,7 +698,11 @@
                 if (!isDelivered) {
                     statusBadge = `<span class="status-badge badge-pending"><i class="fa-solid fa-hourglass-start"></i> รอส่งหมาย</span>`;
                 } else if (raw.deliveryStatus === 'ส่งหมายสำเร็จ') {
-                    statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-check"></i> ส่งสำเร็จ</span>`;
+                    if (raw.receiveType === 'รับหมายแทน') {
+                        statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-user-group"></i> รับแทน</span>`;
+                    } else {
+                        statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-check"></i> ส่งสำเร็จ</span>`;
+                    }
                 } else {
                     statusBadge = `<span class="status-badge badge-danger"><i class="fa-solid fa-circle-exclamation"></i> บันทึกหลังหมาย</span>`;
                 }
@@ -741,7 +766,6 @@
             document.getElementById('targetStatus').value = raw.targetStatus || 'ผู้ต้องหา';
             document.getElementById('roundNo').value = raw.roundNo || 1;
             
-            // นำเข้าวันที่สู่ Datepicker อย่างปลอดภัย
             setDateValue('appointmentDate', raw.appointmentDate);
             setDateValue('bookDate', raw.bookDate);
 
@@ -857,6 +881,13 @@
 
             setDateValue('sendDate', raw.sendDate || '');
             document.getElementById('deliveryStatus').value = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' ? raw.deliveryStatus : 'ส่งหมายสำเร็จ';
+            
+            // ข้อมูลการรับแทน
+            document.getElementById('receiveType').value = raw.receiveType || 'รับด้วยตนเอง';
+            document.getElementById('substituteName').value = raw.substituteName || '';
+            document.getElementById('substituteRelation').value = raw.substituteRelation || '';
+
+            // ข้อมูลบันทึกหลังหมาย
             document.getElementById('failReason').value = raw.failReason || '';
             document.getElementById('recordChoice').value = raw.recordChoice || 'มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย';
             document.getElementById('recordDetail').value = raw.recordDetail || '';
@@ -869,13 +900,49 @@
 
         function toggleDeliveryResultUI() {
             const status = document.getElementById('deliveryStatus').value;
+            const isSuccess = (status === 'ส่งหมายสำเร็จ');
             const isFailed = (status === 'ไม่สามารถส่งหมายได้');
-            const sec = document.getElementById('failedSection');
-            sec.style.display = isFailed ? 'block' : 'none';
+
+            // ควบคุมการแสดงผล 2 ส่วน
+            document.getElementById('successSection').style.display = isSuccess ? 'block' : 'none';
+            document.getElementById('failedSection').style.display = isFailed ? 'block' : 'none';
+
+            // ถ้าส่งสำเร็จ ให้เช็กเรื่องรับแทนต่อ
+            if (isSuccess) {
+                toggleProxyUI();
+            } else {
+                document.getElementById('substituteName').required = false;
+                document.getElementById('substituteRelation').required = false;
+            }
 
             document.getElementById('failReason').required = isFailed;
             document.getElementById('officerName').required = isFailed;
             document.getElementById('officerRank').required = isFailed;
+        }
+
+        function toggleProxyUI() {
+            const receiveType = document.getElementById('receiveType').value;
+            const isProxy = (receiveType === 'รับหมายแทน');
+            const proxyBox = document.getElementById('proxyFields');
+            
+            proxyBox.style.display = isProxy ? 'block' : 'none';
+            document.getElementById('substituteName').required = isProxy;
+            document.getElementById('substituteRelation').required = isProxy;
+            
+            updateProxyPreview();
+        }
+
+        // อัปเดตตัวอย่างข้อความ template แบบสดๆ
+        function updateProxyPreview() {
+            const name = document.getElementById('substituteName').value.trim();
+            const rel = document.getElementById('substituteRelation').value.trim();
+            const previewEl = document.getElementById('proxyPreviewText');
+
+            if (name || rel) {
+                previewEl.innerText = `โดยมี ${name || '...'} ${rel || '...'} เป็นผู้รับหมายแทน`;
+            } else {
+                previewEl.innerText = 'โดยมี (ชื่อผู้รับหมายแทน) (สถานะ) เป็นผู้รับหมายแทน';
+            }
         }
 
         async function saveResultData() {
@@ -886,7 +953,30 @@
             }
 
             const deliveryStatus = document.getElementById('deliveryStatus').value;
+            const isSuccess = (deliveryStatus === 'ส่งหมายสำเร็จ');
             const isFailed = (deliveryStatus === 'ไม่สามารถส่งหมายได้');
+
+            let receiveType = 'รับด้วยตนเอง';
+            let substituteName = '';
+            let substituteRelation = '';
+            let substituteStatement = '';
+
+            if (isSuccess) {
+                receiveType = document.getElementById('receiveType').value;
+                if (receiveType === 'รับหมายแทน') {
+                    substituteName = document.getElementById('substituteName').value.trim();
+                    substituteRelation = document.getElementById('substituteRelation').value.trim();
+
+                    if (!substituteName || !substituteRelation) {
+                        Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุชื่อ-สกุล และสถานะของผู้รับหมายแทนให้ครบถ้วน', 'warning');
+                        return;
+                    }
+
+                    // สร้างข้อความสำหรับใส่ใน Template
+                    substituteStatement = `โดยมี ${substituteName} ${substituteRelation} เป็นผู้รับหมายแทน`;
+                }
+            }
+
             if (isFailed && !document.getElementById('failReason').value.trim()) {
                 Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุสาเหตุที่ไม่สามารถส่งหมายได้', 'warning');
                 return;
@@ -898,6 +988,18 @@
                 resultData: {
                     sendDate: sDate,
                     deliveryStatus: deliveryStatus,
+                    
+                    // ฟิลด์ข้อมูลการรับหมาย
+                    receiveType: receiveType,
+                    substituteName: substituteName,
+                    substituteRelation: substituteRelation,
+                    
+                    // ตัวแปรสำหรับนำไปใส่ใน Template ของ Google Docs
+                    substituteStatement: substituteStatement, // ตัวแปรหลัก เช่น {{substituteStatement}}
+                    substituteText: substituteStatement,      // เผื่อใช้ชื่อ {{substituteText}}
+                    proxyText: substituteStatement,           // เผื่อใช้ชื่อ {{proxyText}}
+
+                    // ฟิลด์บันทึกหลังหมาย
                     failReason: document.getElementById('failReason').value,
                     recordChoice: document.getElementById('recordChoice').value,
                     recordDetail: document.getElementById('recordDetail').value,
