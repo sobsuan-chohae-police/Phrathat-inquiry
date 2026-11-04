@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
     
-    <!-- Core Scripts & Theme -->
+    <!-- Core Scripts & Theme (ตัด datepicker.js ที่เป็นต้นเหตุออก) -->
     <script src="../auth.js"></script>
     <link rel="stylesheet" href="../../assets/theme.css">
 
@@ -101,18 +101,16 @@
         .btn-primary { background: #1e3a8a; color: white; border: none; padding: 9px 20px; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; }
         .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; }
         
-        /* ปรับแต่ง Flatpickr ให้สวยงามเข้ากับ Kanit Font */
+        /* สไตล์ปฏิทิน Flatpickr ภาษาไทย */
         .flatpickr-calendar { font-family: 'Kanit', sans-serif !important; border-radius: 14px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important; border: 1px solid #e2e8f0 !important; }
         .flatpickr-day.selected, .flatpickr-day.selected:hover { background: #1e3a8a !important; border-color: #1e3a8a !important; }
-        .flatpickr-month { height: 42px !important; }
-        .flatpickr-current-month { font-size: 1.05rem !important; padding-top: 6px !important; }
+        .flatpickr-current-month { font-size: 1.05rem !important; padding-top: 5px !important; }
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     </style>
 </head>
 <body>
 
-    <!-- Topbar -->
     <nav style="padding: 10px 20px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid #e2e8f0;">
         <div class="nav-left">
             <a href="../staff.html" class="nav-btn btn-back"><i class="fa-solid fa-chevron-left"></i></a>
@@ -121,7 +119,6 @@
     </nav>
 
     <div class="main-wrapper">
-        <!-- Dashboard สรุปยอดและแจ้งเตือน -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon stat-pending"><i class="fa-solid fa-clock"></i></div>
@@ -153,14 +150,12 @@
             </div>
         </div>
 
-        <!-- Main Table Box -->
         <div class="table-container">
             <div id="mainLoader" class="content-loader">
                 <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #1e3a8a;"></i>
                 <p style="margin-top: 10px; color: #64748b;">กำลังโหลดข้อมูล...</p>
             </div>
 
-            <!-- Toolbar / Filters -->
             <div class="table-toolbar">
                 <div class="filter-tabs">
                     <button class="filter-chip active" onclick="setFilter('all', this)">ทั้งหมด</button>
@@ -174,7 +169,6 @@
                 </button>
             </div>
 
-            <!-- Data Table -->
             <div class="table-scroll">
                 <table>
                     <thead>
@@ -232,12 +226,11 @@
                             <input type="number" class="form-input" id="roundNo" value="1" min="1" required>
                         </div>
 
-                        <!-- ปฏิทิน Flatpickr ภาษาไทย -->
                         <div class="form-group full-width" style="background: #eef2ff; padding: 12px; border-radius: 8px; border: 1px solid #c7d2fe;">
                             <label class="form-label" style="color: #3730a3; font-weight: 600;">
                                 <i class="fa-solid fa-calendar-check"></i> วันที่นัดให้ไปพบตามหมายเรียก
                             </label>
-                            <input type="text" class="form-input datepicker-input" id="appointmentDate" placeholder="คลิกเพื่อเลือกวันนัดพบ..." required style="background: #fff; cursor: pointer;">
+                            <input type="text" class="form-input" id="appointmentDate" placeholder="คลิกเพื่อเลือกวันนัดพบ..." required style="background: #fff; cursor: pointer;">
                         </div>
 
                         <div class="form-group full-width autocomplete-wrapper">
@@ -252,7 +245,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">ลงวันที่ (ในหนังสือ)</label>
-                            <input type="text" class="form-input datepicker-input" id="bookDate" placeholder="คลิกเพื่อเลือกวันที่..." required style="cursor: pointer;">
+                            <input type="text" class="form-input" id="bookDate" placeholder="คลิกเพื่อเลือกวันที่..." required style="cursor: pointer;">
                         </div>
 
                         <div class="form-group full-width autocomplete-wrapper">
@@ -300,7 +293,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">วันที่ส่งหมาย</label>
-                            <input type="text" class="form-input datepicker-input" id="sendDate" placeholder="คลิกเพื่อเลือกวันที่ส่ง..." required style="cursor: pointer;">
+                            <input type="text" class="form-input" id="sendDate" placeholder="คลิกเพื่อเลือกวันที่ส่ง..." required style="cursor: pointer;">
                         </div>
                         <div class="form-group">
                             <label class="form-label">ผลการส่งหมาย</label>
@@ -373,10 +366,9 @@
         let autocompleteData = { agencies: [], recipients: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
-            // ผูก Flatpickr แบบภาษาไทยแท้ และป้องกันปีเพี้ยน
-            initThaiFlatpickr('#appointmentDate');
-            initThaiFlatpickr('#bookDate');
-            initThaiFlatpickr('#sendDate');
+            initSafeDatePicker('#appointmentDate');
+            initSafeDatePicker('#bookDate');
+            initSafeDatePicker('#sendDate');
 
             setupAutocomplete('agency', 'agencyList', 'agencies');
             setupAutocomplete('recipient', 'recipientList', 'recipients');
@@ -384,37 +376,26 @@
             loadOptions();
         });
 
-        // ================= Flatpickr ภาษาไทย (ไม่เพี้ยน ไม่จำค่าเดิม) =================
-        function initThaiFlatpickr(selector) {
+        // ================= ปฏิทินภาษาไทย ป้องกันบั๊ก 3112 แบบเด็ดขาด =================
+        function initSafeDatePicker(selector) {
             flatpickr(selector, {
                 locale: 'th',
-                dateFormat: 'Y-m-d',
+                dateFormat: 'Y-m-d', // ฐานข้อมูลเก็บเป็น ค.ศ. ISO เช่น 2026-11-04
                 altInput: true,
                 altInputClass: 'form-input',
                 altFormat: 'j F Y',
                 formatDate: function(date, format, locale) {
-                    const d = date.getDate();
-                    const m = locale.months.longhand[date.getMonth()];
-                    const y = date.getFullYear() + 543;
-                    return `${d} ${m} ${y}`;
-                },
-                onYearChange: function(s, d, instance) { updateCalendarYearHeader(instance); },
-                onMonthChange: function(s, d, instance) { updateCalendarYearHeader(instance); },
-                onOpen: function(s, d, instance) { updateCalendarYearHeader(instance); }
+                    // ดึงปี ค.ศ. แท้จริงเท่านั้น แล้วบวก 543 เพียงรอบเดียว
+                    let y = date.getFullYear();
+                    while (y > 2800) y -= 543;
+                    if (y >= 2400) y -= 543;
+                    const thaiYear = y + 543;
+                    return `${date.getDate()} ${locale.months.longhand[date.getMonth()]} ${thaiYear}`;
+                }
             });
         }
 
-        // ปรับปีบนหัวปฏิทิน Flatpickr ให้แสดงเป็น พ.ศ.
-        function updateCalendarYearHeader(instance) {
-            setTimeout(() => {
-                if (instance && instance.currentYearElement) {
-                    const cur = parseInt(instance.currentYearElement.value, 10);
-                    if (cur < 2400) instance.currentYearElement.value = cur + 543;
-                }
-            }, 10);
-        }
-
-        // ฟังก์ชันกำหนดวันที่ลง Datepicker (ล้างปี 3112 และไม่จำค่าเดิม)
+        // กำหนดวันที่ลงปฏิทิน
         function setDateValue(elementId, rawDate) {
             const clean = cleanToISODate(rawDate);
             const inputEl = document.getElementById(elementId);
@@ -431,17 +412,17 @@
             }
         }
 
-        // ฟังก์ชันอ่านค่าวันที่จาก Datepicker
+        // ดึงวันที่จากปฏิทินส่งไปบันทึก
         function getDateValue(elementId) {
             const inputEl = document.getElementById(elementId);
             if (!inputEl) return '';
             if (inputEl._flatpickr && inputEl._flatpickr.input) {
-                return inputEl._flatpickr.input.value.trim();
+                return cleanToISODate(inputEl._flatpickr.input.value);
             }
             return cleanToISODate(inputEl.value);
         }
 
-        // แก้ไขปีวนลูป (3112, 3655) ให้ถอยกลับมาเป็น ค.ศ. แท้จริง
+        // ฟังก์ชันล้างปีเพี้ยน 3112 / 3655 / พ.ศ. วนลูป
         function cleanToISODate(input) {
             if (!input) return '';
             let str = String(input).trim().replace(/^'/, '');
@@ -465,6 +446,7 @@
 
             if (!year || !month || !day) return str;
 
+            // ถอยปีที่ถูกบวกซ้ำ (3112 -> 2569 -> 2026)
             while (year > 2800) year -= 543;
             if (year >= 2400) year -= 543;
 
@@ -486,7 +468,7 @@
             return Math.round((targetDate - today) / (1000 * 60 * 60 * 24));
         }
 
-        // ================= Core Data Logic =================
+        // โหลดข้อมูล
         async function loadData() {
             document.getElementById('mainLoader').style.display = 'flex';
             try {
@@ -660,7 +642,7 @@
             document.getElementById('targetStatus').value = raw.targetStatus || 'ผู้ต้องหา';
             document.getElementById('roundNo').value = raw.roundNo || 1;
             
-            // นำวันที่จากชีตมาใส่เข้าปฏิทินอย่างปลอดภัย
+            // ดึงค่าวันที่ลง Datepicker
             setDateValue('appointmentDate', raw.appointmentDate);
             setDateValue('bookDate', raw.bookDate);
 
