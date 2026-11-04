@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
     
-    <!-- Core Scripts & Theme (ตัด datepicker.js ที่เป็นต้นเหตุออก) -->
+    <!-- Core Scripts & Theme -->
     <script src="../auth.js"></script>
     <link rel="stylesheet" href="../../assets/theme.css">
 
@@ -105,6 +105,7 @@
         .flatpickr-calendar { font-family: 'Kanit', sans-serif !important; border-radius: 14px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important; border: 1px solid #e2e8f0 !important; }
         .flatpickr-day.selected, .flatpickr-day.selected:hover { background: #1e3a8a !important; border-color: #1e3a8a !important; }
         .flatpickr-current-month { font-size: 1.05rem !important; padding-top: 5px !important; }
+        .flatpickr-current-month .numInputWrapper { width: 7ch !important; }
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     </style>
@@ -366,6 +367,7 @@
         let autocompleteData = { agencies: [], recipients: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
+            // ติดตั้งปฏิทินแบบปลอดภัยทุกจุด
             initSafeDatePicker('#appointmentDate');
             initSafeDatePicker('#bookDate');
             initSafeDatePicker('#sendDate');
@@ -376,23 +378,86 @@
             loadOptions();
         });
 
-        // ================= ปฏิทินภาษาไทย ป้องกันบั๊ก 3112 แบบเด็ดขาด =================
+        // ================= ปฏิทินภาษาไทย ป้องกันบั๊ก 3112 / วันไม่ตรง 100% =================
         function initSafeDatePicker(selector) {
             flatpickr(selector, {
                 locale: 'th',
-                dateFormat: 'Y-m-d', // ฐานข้อมูลเก็บเป็น ค.ศ. ISO เช่น 2026-11-04
+                dateFormat: 'Y-m-d', // ฐานข้อมูลเก็บเป็น ค.ศ. ISO (YYYY-MM-DD) เสมอ
                 altInput: true,
                 altInputClass: 'form-input',
                 altFormat: 'j F Y',
+                
+                // แยกการทำงานเด็ดขาดระหว่าง format ที่เก็บในระบบ กับ format ที่แสดงผล
                 formatDate: function(date, format, locale) {
-                    // ดึงปี ค.ศ. แท้จริงเท่านั้น แล้วบวก 543 เพียงรอบเดียว
                     let y = date.getFullYear();
                     while (y > 2800) y -= 543;
                     if (y >= 2400) y -= 543;
+
+                    // 1. ถ้า flatpickr เรียกเพื่อใส่ค่า hidden input
+                    if (format === 'Y-m-d') {
+                        const m = String(date.getMonth() + 1).padStart(2, '0');
+                        const d = String(date.getDate()).padStart(2, '0');
+                        return `${y}-${m}-${d}`;
+                    }
+
+                    // 2. ถ้า flatpickr เรียกเพื่อแสดงผลหน้าจอ (altInput) -> แปลงเป็น พ.ศ.
                     const thaiYear = y + 543;
-                    return `${date.getDate()} ${locale.months.longhand[date.getMonth()]} ${thaiYear}`;
-                }
+                    const monthText = (locale && locale.months && locale.months.longhand) 
+                        ? locale.months.longhand[date.getMonth()] 
+                        : (date.getMonth() + 1);
+                    return `${date.getDate()} ${monthText} ${thaiYear}`;
+                },
+
+                // แปลงค่าสตริงวันที่ทุกรูปแบบให้กลับเป็น Date Object (ค.ศ. แท้จริง)
+                parseDate: function(dateStr, format) {
+                    const clean = cleanToISODate(dateStr);
+                    if (!clean || !clean.includes('-')) return new Date();
+                    const p = clean.split('-');
+                    return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+                },
+
+                // คุมการแสดงผลหัวปฏิทินให้เป็น พ.ศ. สวยงาม โดยไม่ทำให้ internal date เพี้ยน
+                onReady: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); },
+                onMonthChange: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); },
+                onYearChange: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); },
+                onOpen: function(selectedDates, dateStr, instance) { updateCalendarYearHeader(instance); }
             });
+        }
+
+        // คุมหัวปฏิทินให้แสดงเลขปี พ.ศ.
+        function updateCalendarYearHeader(instance) {
+            if (!instance || !instance.currentYearElement) return;
+
+            let y = instance.currentYear;
+            while (y > 2800) y -= 543;
+            if (y >= 2400) {
+                instance.currentYear = y - 543;
+                y = instance.currentYear;
+                instance.redraw();
+            }
+
+            setTimeout(() => {
+                if (instance.currentYearElement) {
+                    instance.currentYearElement.value = y + 543;
+                }
+            }, 0);
+
+            // ป้องกันการพิมพ์ปี หรือกดลูกศรเปลี่ยนปีบนหัวปฏิทินแล้วปีเพี้ยน
+            if (instance.yearElements) {
+                instance.yearElements.forEach(el => {
+                    if (!el._hasThaiFix) {
+                        el._hasThaiFix = true;
+                        el.addEventListener('change', (e) => {
+                            let val = parseInt(e.target.value, 10);
+                            if (val >= 2400) {
+                                instance.currentYear = val - 543;
+                                instance.redraw();
+                                updateCalendarYearHeader(instance);
+                            }
+                        });
+                    }
+                });
+            }
         }
 
         // กำหนดวันที่ลงปฏิทิน
@@ -405,24 +470,35 @@
                 if (!clean) {
                     inputEl._flatpickr.clear();
                 } else {
-                    inputEl._flatpickr.setDate(clean, false);
+                    inputEl._flatpickr.setDate(clean, true); // true = อัปเดต altInput พ.ศ. ด้วย
+                    updateCalendarYearHeader(inputEl._flatpickr);
                 }
             } else {
                 inputEl.value = clean;
             }
         }
 
-        // ดึงวันที่จากปฏิทินส่งไปบันทึก
+        // ดึงวันที่จากปฏิทินส่งไปบันทึก (รับประกันว่าได้ YYYY-MM-DD แบบ ค.ศ.)
         function getDateValue(elementId) {
             const inputEl = document.getElementById(elementId);
             if (!inputEl) return '';
-            if (inputEl._flatpickr && inputEl._flatpickr.input) {
+            
+            if (inputEl._flatpickr) {
+                if (inputEl._flatpickr.selectedDates && inputEl._flatpickr.selectedDates.length > 0) {
+                    const d = inputEl._flatpickr.selectedDates[0];
+                    let y = d.getFullYear();
+                    while (y > 2800) y -= 543;
+                    if (y >= 2400) y -= 543;
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${day}`;
+                }
                 return cleanToISODate(inputEl._flatpickr.input.value);
             }
             return cleanToISODate(inputEl.value);
         }
 
-        // ฟังก์ชันล้างปีเพี้ยน 3112 / 3655 / พ.ศ. วนลูป
+        // ฟังก์ชันล้างปีเพี้ยน 3112 / 3655 / พ.ศ. กลับสู่ ค.ศ. ISO อย่างแม่นยำ
         function cleanToISODate(input) {
             if (!input) return '';
             let str = String(input).trim().replace(/^'/, '');
@@ -430,17 +506,40 @@
 
             let day, month, year;
 
+            // รูปแบบ YYYY-MM-DD
             let m = str.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
             if (m) {
                 year = parseInt(m[1], 10);
                 month = parseInt(m[2], 10);
                 day = parseInt(m[3], 10);
             } else {
+                // รูปแบบ DD/MM/YYYY
                 m = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
                 if (m) {
                     day = parseInt(m[1], 10);
                     month = parseInt(m[2], 10);
                     year = parseInt(m[3], 10);
+                } else {
+                    // กรณีข้อความภาษาไทย เช่น "4 พฤศจิกายน 2569" หรือ "4 พ.ย. 2569"
+                    const thaiMonths = [
+                        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+                    ];
+                    const thaiMonthsShort = [
+                        'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+                        'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+                    ];
+                    for (let i = 0; i < 12; i++) {
+                        if (str.includes(thaiMonths[i]) || str.includes(thaiMonthsShort[i])) {
+                            month = i + 1;
+                            break;
+                        }
+                    }
+                    const nums = str.match(/\d+/g);
+                    if (nums && nums.length >= 2) {
+                        day = parseInt(nums[0], 10);
+                        year = parseInt(nums[nums.length - 1], 10);
+                    }
                 }
             }
 
@@ -642,7 +741,7 @@
             document.getElementById('targetStatus').value = raw.targetStatus || 'ผู้ต้องหา';
             document.getElementById('roundNo').value = raw.roundNo || 1;
             
-            // ดึงค่าวันที่ลง Datepicker
+            // นำเข้าวันที่สู่ Datepicker อย่างปลอดภัย
             setDateValue('appointmentDate', raw.appointmentDate);
             setDateValue('bookDate', raw.bookDate);
 
