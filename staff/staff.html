@@ -414,6 +414,112 @@
         }
         .cal-task-del:hover { background: #fee2e2; }
 
+        /* =========================================================
+           📝 Style กระดาษโน้ต (Sticky Note)
+           ========================================================= */
+        .sticky-note-card {
+            background: #fef9c3;
+            background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
+            border: 1.5px solid #fde047;
+            border-radius: 18px;
+            padding: 16px 16px 14px 16px;
+            margin-top: 18px;
+            box-shadow: 0 10px 20px -5px rgba(202, 138, 4, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transform: rotate(-0.5deg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .sticky-note-card:hover {
+            transform: rotate(0deg) translateY(-2px);
+            box-shadow: 0 12px 25px -5px rgba(202, 138, 4, 0.25);
+        }
+        .sticky-note-tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 20px;
+            background: rgba(254, 240, 138, 0.75);
+            border: 1px dashed rgba(202, 138, 4, 0.4);
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            backdrop-filter: blur(1px);
+        }
+        .sticky-note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .sticky-note-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #854d0e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sticky-note-time {
+            font-size: 0.72rem;
+            color: #a16207;
+            font-weight: 400;
+        }
+        .sticky-note-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid #fde047;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 0.88rem;
+            color: #713f12;
+            resize: vertical;
+            min-height: 85px;
+            outline: none;
+            line-height: 1.45;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .sticky-note-textarea:focus {
+            background: #ffffff;
+            border-color: #eab308;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+        }
+        .sticky-note-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .btn-save-note {
+            background: #ca8a04;
+            color: #ffffff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            font-family: 'Kanit';
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 6px rgba(202, 138, 4, 0.3);
+            margin-left: auto;
+        }
+        .btn-save-note:hover {
+            background: #a16207;
+            transform: translateY(-1px);
+        }
+        .btn-save-note:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         /* Modal เพิ่ม/แก้ไขงานปฏิทิน */
         .cal-modal-overlay {
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
@@ -512,10 +618,11 @@
             </a>
         </div>
 
-        <!-- โครงสร้าง 2 คอลัมน์ (ซ้าย: ปฏิทิน / ขวา: เมนูเครื่องมือ) -->
+        <!-- โครงสร้าง 2 คอลัมน์ (ซ้าย: ปฏิทิน + กระดาษโน้ต / ขวา: เมนูเครื่องมือ) -->
         <div class="dashboard-grid">
-            <!-- 🗓️ ปฏิทินบันทึกงานและเวลา (ฝั่งซ้ายมือ) -->
+            <!-- ฝั่งซ้ายมือ: ปฏิทินบันทึกงาน + กระดาษโน้ต -->
             <div class="calendar-section-wrapper" id="calendarSectionWrapper">
+                <!-- 🗓️ ปฏิทิน -->
                 <div class="mini-cal-card">
                     <div class="cal-header-bar">
                         <h4 class="cal-header-title">
@@ -556,6 +663,25 @@
                         <div class="cal-task-items" id="calTaskList">
                             <div style="text-align: center; color: #94a3b8; font-size: 0.8rem; padding: 10px 0;">ไม่มีงานที่บันทึกไว้</div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 📝 กล่องข้อความแบบกระดาษโน้ต (Sticky Note) -->
+                <div class="sticky-note-card">
+                    <div class="sticky-note-tape"></div>
+                    <div class="sticky-note-header">
+                        <div class="sticky-note-title">
+                            <i class="fa-solid fa-thumbtack" style="color: #ca8a04;"></i>
+                            <span>กระดานโน้ตแจ้งเตือน</span>
+                        </div>
+                        <span id="noteUpdateLabel" class="sticky-note-time"></span>
+                    </div>
+                    <textarea id="noteContentInput" class="sticky-note-textarea" placeholder="พิมพ์ข้อความโน้ตทิ้งไว้ที่นี่ เพื่อแจ้งเตือนทุกคนที่เข้าใช้งาน..." rows="4"></textarea>
+                    <div class="sticky-note-footer">
+                        <span id="noteStatusText" style="font-size: 0.75rem; color: #854d0e;"></span>
+                        <button type="button" class="btn-save-note" id="btnSaveNote" onclick="saveStickyNote()">
+                            <i class="fa-regular fa-floppy-disk"></i> บันทึกโน้ต
+                        </button>
                     </div>
                 </div>
             </div>
@@ -659,8 +785,6 @@
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
         const SUMMONS_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
-        
-        // 🔴 Web App URL ปฏิทินที่ถูกต้อง
         const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbyFXp0zDFDEiBOCf-bTNywAGgU3aRQNBbFz0VQn6JPGvvwoIUJLxxSbGJY9_EtrINseGw/exec';
 
         function escapeHtml(str) {
@@ -742,7 +866,6 @@
                 return;
             }
             try {
-                // ป้องกัน Browser Cache ด้วย timestamp
                 const sep = CALENDAR_API_URL.includes('?') ? '&' : '?';
                 const res = await fetch(`${CALENDAR_API_URL}${sep}_=${Date.now()}`);
                 let data = await res.json();
@@ -755,8 +878,8 @@
                 if (Array.isArray(data)) {
                     items = data;
                 } else if (data && typeof data === 'object') {
-                    if (Array.isArray(data.data)) items = data.data;
-                    else if (Array.isArray(data.tasks)) items = data.tasks;
+                    if (Array.isArray(data.tasks)) items = data.tasks;
+                    else if (Array.isArray(data.data)) items = data.data;
                     else if (Array.isArray(data.events)) items = data.events;
                     else if (Array.isArray(data.items)) items = data.items;
                 }
@@ -778,6 +901,13 @@
 
                 renderMiniCalendar();
                 renderCalTaskList(calSelectedDateStr);
+
+                // แสดงผลกระดาษโน้ต และ เด้งแจ้งเตือนเมื่อเข้าใช้งานครั้งแรก
+                if (data && data.note) {
+                    renderStickyNote(data.note.content || '', data.note.updatedAt || '');
+                    checkFirstTimeNotePopup(data.note.content || '');
+                }
+
             } catch (err) {
                 console.error("โหลดข้อมูลปฏิทินล้มเหลว:", err);
             }
@@ -961,6 +1091,74 @@
                     }
                 }
             });
+        }
+
+        /* =========================================================
+           ฟังก์ชันสำหรับ กระดาษโน้ต (Sticky Note)
+           ========================================================= */
+        function renderStickyNote(content, updatedAt) {
+            const textarea = document.getElementById('noteContentInput');
+            const updateLabel = document.getElementById('noteUpdateLabel');
+            if (document.activeElement !== textarea) {
+                textarea.value = content || '';
+            }
+            updateLabel.innerText = updatedAt ? `อัปเดต: ${updatedAt}` : '';
+        }
+
+        // เด้งแจ้งเตือนตอนเข้าใช้งานครั้งแรก (ต่อ Session)
+        function checkFirstTimeNotePopup(content) {
+            if (!content || !content.trim()) return;
+            const lastSeen = sessionStorage.getItem('last_seen_sticky_note');
+            if (lastSeen !== content.trim()) {
+                sessionStorage.setItem('last_seen_sticky_note', content.trim());
+                Swal.fire({
+                    title: '📌 ข้อความแจ้งเตือนสำคัญ',
+                    html: `<div style="text-align:left; background:#fef9c3; padding:16px 18px; border-radius:14px; border:1px solid #fde047; font-family:'Kanit'; white-space:pre-wrap; color:#713f12; font-size:0.95rem; line-height:1.5; max-height:280px; overflow-y:auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);">${escapeHtml(content.trim())}</div>`,
+                    icon: 'info',
+                    iconColor: '#ca8a04',
+                    confirmButtonText: 'รับทราบ',
+                    confirmButtonColor: '#0f2b5c'
+                });
+            }
+        }
+
+        async function saveStickyNote() {
+            const textarea = document.getElementById('noteContentInput');
+            const btn = document.getElementById('btnSaveNote');
+            const statusText = document.getElementById('noteStatusText');
+            const content = textarea.value.trim();
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> บันทึก...';
+            statusText.innerText = '';
+
+            try {
+                const response = await fetch(CALENDAR_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'saveNote',
+                        content: content
+                    })
+                });
+                const resJson = await response.json();
+                if (resJson.status === 'success') {
+                    document.getElementById('noteUpdateLabel').innerText = resJson.updatedAt ? `อัปเดต: ${resJson.updatedAt}` : '';
+                    statusText.innerText = 'บันทึกสำเร็จ!';
+                    statusText.style.color = '#15803d';
+                    sessionStorage.setItem('last_seen_sticky_note', content);
+                    setTimeout(() => { statusText.innerText = ''; }, 3000);
+                } else {
+                    throw new Error(resJson.message || 'บันทึกไม่สำเร็จ');
+                }
+            } catch (err) {
+                statusText.innerText = 'บันทึกล้มเหลว';
+                statusText.style.color = '#dc2626';
+                Swal.fire({ icon: 'error', title: 'บันทึกโน้ตไม่สำเร็จ', text: err.message });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> บันทึกโน้ต';
+            }
         }
 
         function toggleSidebar(show) {
