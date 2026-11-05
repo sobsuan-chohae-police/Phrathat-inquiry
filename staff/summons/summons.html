@@ -6,6 +6,8 @@
     <title>ระบบจัดการและรายงานผลการส่งหมายเรียก</title>
     
     <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -20,152 +22,464 @@
     <link rel="stylesheet" href="../../assets/theme.css">
 
     <style>
-        body { height: 100vh; overflow: hidden; display: flex; flex-direction: column; background-color: var(--bg-color, #f8fafc); font-family: 'Kanit', sans-serif; }
-        .nav-btn { background: #f1f5f9; border: none; font-size: 1.1rem; color: #64748b; cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0; }
-        .btn-back { background: transparent !important; color: #1e293b; font-size: 1.3rem; width: auto; padding: 5px 15px 5px 0; }
-        .nav-left { flex: 1; display: flex; align-items: center; }
+        :root {
+            --primary-navy: #0f2b5c;
+            --primary-blue: #1e40af;
+            --accent-blue: #3b82f6;
+            --bg-body: #f1f5f9;
+            --surface-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --danger-red: #ef4444;
+            --warning-amber: #f59e0b;
+            --success-green: #10b981;
+        }
+
+        * { box-sizing: border-box; }
         
-        .main-wrapper { flex: 1; position: relative; padding: 15px 20px; display: flex; flex-direction: column; max-width: 1300px; margin: 0 auto; width: 100%; box-sizing: border-box; overflow: hidden; gap: 15px; }
+        body { 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            background: linear-gradient(145deg, #f8fafc 0%, #eef2f7 100%); 
+            font-family: 'Kanit', sans-serif; 
+            color: var(--text-main);
+            margin: 0;
+        }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
-        .stat-card { background: #fff; border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
-        .stat-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
-        .stat-pending { background: #fff7ed; color: #ea580c; }
-        .stat-urgent { background: #fef2f2; color: #dc2626; }
-        .stat-done { background: #f0fdf4; color: #16a34a; }
-        .stat-all { background: #eff6ff; color: #2563eb; }
-        .stat-title { font-size: 0.82rem; color: #64748b; font-weight: 400; }
-        .stat-value { font-size: 1.4rem; font-weight: 600; color: #1e293b; line-height: 1.2; }
+        /* Top Nav */
+        .app-navbar {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            z-index: 20;
+        }
+        .nav-btn { 
+            background: #f1f5f9; 
+            border: none; 
+            font-size: 1.1rem; 
+            color: #475569; 
+            cursor: pointer; 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 10px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none; 
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover { background: #e2e8f0; color: #1e293b; transform: scale(1.03); }
+        .btn-back { background: transparent !important; color: #334155; font-size: 1.25rem; width: auto; padding: 4px 12px 4px 0; }
+        .nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.15rem; color: #0f172a; }
+        .brand-badge { background: #e0e7ff; color: #3730a3; padding: 3px 9px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; }
 
-        /* Table & Filters */
-        .table-container { background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
-        .table-toolbar { padding: 12px 18px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .filter-tabs { display: flex; gap: 8px; }
-        .filter-chip { padding: 6px 14px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; font-size: 0.85rem; font-weight: 500; color: #64748b; cursor: pointer; transition: 0.2s; font-family: 'Kanit'; }
-        .filter-chip.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+        .main-wrapper { 
+            flex: 1; 
+            position: relative; 
+            padding: 16px 24px 20px 24px; 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 1440px; 
+            margin: 0 auto; 
+            width: 100%; 
+            overflow: hidden; 
+            gap: 16px; 
+        }
+
+        /* ---------------- Modern Stats Grid ---------------- */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 16px; 
+        }
+        @media (max-width: 992px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 576px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        .stat-card { 
+            background: var(--surface-card); 
+            border-radius: 18px; 
+            padding: 18px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); 
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 4px 0 0 4px;
+        }
+        .stat-card.card-pending::before { background: linear-gradient(180deg, #f97316, #ea580c); }
+        .stat-card.card-urgent::before { background: linear-gradient(180deg, #ef4444, #dc2626); }
+        .stat-card.card-done::before { background: linear-gradient(180deg, #10b981, #059669); }
+        .stat-card.card-total::before { background: linear-gradient(180deg, #3b82f6, #1d4ed8); }
+
+        .stat-icon { 
+            width: 52px; 
+            height: 52px; 
+            border-radius: 14px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.4rem; 
+            flex-shrink: 0;
+        }
+        .stat-pending { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
+        .stat-urgent { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+        .stat-done { background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
+        .stat-all { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+
+        .stat-info { display: flex; flex-direction: column; flex: 1; }
+        .stat-title { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 2px; }
+        .stat-value { font-size: 1.85rem; font-weight: 700; color: #0f172a; line-height: 1.1; letter-spacing: -0.5px; }
+        .stat-meta { font-size: 0.72rem; margin-top: 4px; font-weight: 500; }
+
+        /* ---------------- Table Container ---------------- */
+        .table-container { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 25px -4px rgba(15, 23, 42, 0.05); 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1; 
+            overflow: hidden; 
+            position: relative; 
+            border: 1px solid rgba(226, 232, 240, 0.9);
+        }
+        .table-toolbar { 
+            padding: 14px 20px; 
+            border-bottom: 1px solid #f1f5f9; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 12px; 
+            background: #ffffff;
+            flex-wrap: wrap;
+        }
+
+        .filter-tabs { 
+            display: flex; 
+            background: #f1f5f9; 
+            padding: 4px; 
+            border-radius: 12px; 
+            gap: 4px; 
+        }
+        .filter-chip { 
+            padding: 7px 16px; 
+            border-radius: 9px; 
+            border: none; 
+            background: transparent; 
+            font-size: 0.88rem; 
+            font-weight: 500; 
+            color: #64748b; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            font-family: 'Kanit'; 
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-chip.active { 
+            background: #ffffff; 
+            color: #0f172a; 
+            font-weight: 600; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06); 
+        }
 
         .table-scroll { flex: 1; overflow: auto; }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 0.92rem; }
-        th { position: sticky; top: 0; background: #f8fafc; z-index: 10; box-shadow: 0 1px 0 #e2e8f0; padding: 12px 16px; text-align: left; color: #475569; font-weight: 500; }
-        td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; color: #1e293b; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; white-space: nowrap; font-size: 0.92rem; }
+        th { 
+            position: sticky; 
+            top: 0; 
+            background: #f8fafc; 
+            z-index: 10; 
+            border-bottom: 1.5px solid #e2e8f0; 
+            padding: 14px 18px; 
+            text-align: left; 
+            color: #475569; 
+            font-weight: 600; 
+            font-size: 0.86rem;
+            letter-spacing: 0.3px;
+        }
+        td { 
+            padding: 14px 18px; 
+            border-bottom: 1px solid #f1f5f9; 
+            vertical-align: middle; 
+            color: #1e293b; 
+            transition: background 0.15s;
+        }
+        tbody tr:hover td { background-color: #f8fafc; }
         
-        .action-btns { display: flex; gap: 6px; }
-        .btn-act { border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: #475569; transition: 0.2s; }
-        .btn-act:hover { background: #e2e8f0; }
-        .btn-act-result { background: #e0e7ff; color: #4338ca; }
-        .btn-act-result:hover { background: #c7d2fe; }
+        .action-btns { display: flex; gap: 8px; justify-content: center; }
+        .btn-act { 
+            border: 1px solid #e2e8f0; 
+            background: #ffffff; 
+            width: 34px; 
+            height: 34px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #475569; 
+            transition: all 0.15s; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .btn-act:hover { background: #f1f5f9; color: #0f172a; transform: translateY(-1px); }
+        .btn-act-result { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+        .btn-act-result:hover { background: #2563eb; color: #ffffff; border-color: #2563eb; }
 
-        .badge-due { padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-        .due-over { background: #fee2e2; color: #b91c1c; }
-        .due-today { background: #ffedd5; color: #c2410c; animation: pulse 2s infinite; }
-        .due-soon { background: #fef9c3; color: #854d0e; }
-        .due-normal { background: #f1f5f9; color: #475569; }
+        /* ---------------- High Impact Countdown Badges ---------------- */
+        .badge-due { 
+            padding: 6px 14px; 
+            border-radius: 10px; 
+            font-size: 0.82rem; 
+            font-weight: 600; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 7px; 
+            white-space: nowrap;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        /* เกินกำหนด - สีแดงสะดุดตา เด่นสุด */
+        .due-over { 
+            background: #fef2f2; 
+            color: #dc2626; 
+            border: 1.5px solid #fca5a5; 
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.22);
+            font-weight: 700;
+        }
+        .due-over .pulse-dot { background: #dc2626; animation: redGlow 1.2s infinite; }
 
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.82rem; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+        /* วันนี้ - สีส้มแดงแจ้งเตือนด่วน */
+        .due-today { 
+            background: #fff7ed; 
+            color: #ea580c; 
+            border: 1.5px solid #fdba74; 
+            box-shadow: 0 0 12px rgba(234, 88, 12, 0.25);
+            font-weight: 700;
+            animation: cardShake 3s infinite;
+        }
+        .due-today .pulse-dot { background: #ea580c; animation: amberGlow 1s infinite; }
+
+        /* ใกล้ถึงนัด (<= 3 วัน) - สีเหลืองอำพัน */
+        .due-soon { 
+            background: #fffbeb; 
+            color: #b45309; 
+            border: 1px solid #fde68a; 
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+        }
+        .due-soon .pulse-dot { background: #d97706; }
+
+        /* ปกติ */
+        .due-normal { 
+            background: #f8fafc; 
+            color: #475569; 
+            border: 1px solid #e2e8f0; 
+        }
+        .due-normal .pulse-dot { background: #94a3b8; }
+
+        /* สถานะการส่ง */
+        .status-badge { 
+            padding: 5px 12px; 
+            border-radius: 8px; 
+            font-size: 0.82rem; 
+            font-weight: 500; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+        }
         .badge-pending { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
-        .badge-success { background: #dcfce7; color: #15803d; }
-        .badge-danger { background: #fee2e2; color: #b91c1c; }
+        .badge-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
-        .table-footer { padding: 12px 18px; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-        .btn-add-primary { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: 'Kanit'; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
-        .btn-add-primary:hover { opacity: 0.95; transform: translateY(-1px); }
+        .table-footer { 
+            padding: 12px 20px; 
+            background: #ffffff; 
+            border-top: 1px solid #f1f5f9; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .btn-add-primary { 
+            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); 
+            color: white; 
+            border: none; 
+            padding: 9px 18px; 
+            border-radius: 12px; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-family: 'Kanit'; 
+            font-weight: 500;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.25); 
+            transition: all 0.2s;
+        }
+        .btn-add-primary:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.35); }
 
-        .pagination-controls { display: flex; align-items: center; gap: 12px; }
-        .btn-page { background: #f1f5f9; border: none; width: 34px; height: 34px; border-radius: 50%; color: #334155; cursor: pointer; }
-        .btn-page:hover:not(:disabled) { background: #1e3a8a; color: white; }
+        .pagination-controls { display: flex; align-items: center; gap: 8px; }
+        .btn-page { 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            width: 34px; 
+            height: 34px; 
+            border-radius: 10px; 
+            color: #475569; 
+            cursor: pointer; 
+            transition: all 0.15s;
+        }
+        .btn-page:hover:not(:disabled) { background: #1e40af; color: white; border-color: #1e40af; }
         .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .content-loader { position: absolute; inset: 0; background: rgba(255,255,255,0.85); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 
         /* Modals */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-card { width: 100%; max-width: 680px; max-height: 90vh; background: #fff; border-radius: 18px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-        .modal-header-area { padding: 16px 22px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 1000; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(5px); }
+        .modal-card { width: 100%; max-width: 680px; max-height: 90vh; background: #fff; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(15,23,42,0.2); }
+        .modal-header-area { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 22px 24px; overflow-y: auto; flex: 1; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .full-width { grid-column: 1 / -1; }
-        .form-label { display: block; font-size: 0.88rem; font-weight: 500; margin-bottom: 5px; color: #334155; }
-        .form-input { width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: 'Kanit'; font-size: 0.92rem; box-sizing: border-box; background: #f8fafc; }
-        .form-input:focus { border-color: #1e3a8a; background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(30,58,138,0.1); }
-        .modal-footer { padding: 14px 22px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .form-label { display: block; font-size: 0.88rem; font-weight: 500; margin-bottom: 6px; color: #334155; }
+        .form-input { width: 100%; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: 'Kanit'; font-size: 0.92rem; box-sizing: border-box; background: #f8fafc; transition: all 0.2s; }
+        .form-input:focus { border-color: #2563eb; background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
         
-        /* สไตล์ส่วนรับหมายสำเร็จ และ บันทึกหลังหมาย */
-        .success-section { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 14px; margin-top: 12px; }
-        .failed-section { background: #fff7ed; border: 1px dashed #f97316; border-radius: 10px; padding: 14px; margin-top: 12px; display: none; }
-        .warrant-summary-box { background: #f1f5f9; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6; }
+        .success-section { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin-top: 14px; }
+        .failed-section { background: #fff7ed; border: 1.5px dashed #fb923c; border-radius: 12px; padding: 16px; margin-top: 14px; display: none; }
+        .warrant-summary-box { background: #f8fafc; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.6; border: 1px solid #e2e8f0; }
         
         .autocomplete-wrapper { position: relative; }
-        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 4px; max-height: 150px; overflow-y: auto; z-index: 100; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .autocomplete-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; }
-        .autocomplete-item:hover { background: #f1f5f9; color: #1e3a8a; }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 4px; max-height: 160px; overflow-y: auto; z-index: 100; display: none; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .autocomplete-item { padding: 9px 14px; cursor: pointer; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; }
+        .autocomplete-item:hover { background: #eff6ff; color: #1e40af; }
 
-        .btn-primary { background: #1e3a8a; color: white; border: none; padding: 9px 20px; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; }
-        .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-family: 'Kanit'; }
+        .btn-primary { background: #1e40af; color: white; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-weight: 500; font-size: 0.92rem; transition: background 0.15s; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-size: 0.92rem; }
+        .btn-secondary:hover { background: #e2e8f0; }
         
-        /* สไตล์ปฏิทิน Flatpickr ภาษาไทย */
-        .flatpickr-calendar { font-family: 'Kanit', sans-serif !important; border-radius: 14px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important; border: 1px solid #e2e8f0 !important; }
-        .flatpickr-day.selected, .flatpickr-day.selected:hover { background: #1e3a8a !important; border-color: #1e3a8a !important; }
+        /* Animations */
+        @keyframes redGlow {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            50% { opacity: 0.7; transform: scale(1.15); box-shadow: 0 0 0 5px rgba(220, 38, 38, 0); }
+        }
+        @keyframes amberGlow {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); }
+            50% { opacity: 0.6; transform: scale(1.15); box-shadow: 0 0 0 5px rgba(234, 88, 12, 0); }
+        }
+        @keyframes cardShake {
+            0%, 85%, 100% { transform: translate(0, 0); }
+            87% { transform: translate(-2px, 0); }
+            91% { transform: translate(2px, 0); }
+            95% { transform: translate(-1px, 0); }
+        }
+
+        /* Flatpickr Thai */
+        .flatpickr-calendar { font-family: 'Kanit', sans-serif !important; border-radius: 16px !important; box-shadow: 0 12px 36px rgba(0,0,0,0.12) !important; border: 1px solid #e2e8f0 !important; }
+        .flatpickr-day.selected, .flatpickr-day.selected:hover { background: #1e40af !important; border-color: #1e40af !important; }
         .flatpickr-current-month { font-size: 1.05rem !important; padding-top: 5px !important; }
         .flatpickr-current-month .numInputWrapper { width: 7ch !important; }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     </style>
 </head>
 <body>
 
-    <nav style="padding: 10px 20px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid #e2e8f0;">
-        <div class="nav-left">
-            <a href="../staff.html" class="nav-btn btn-back"><i class="fa-solid fa-chevron-left"></i></a>
-            <span style="font-weight: 600; font-size: 1.15rem; color: #1e293b;">ระบบจัดการและรายงานผลการส่งหมายเรียก</span>
+    <nav class="app-navbar">
+        <div class="nav-brand">
+            <a href="../staff.html" class="nav-btn btn-back" title="กลับหน้าหลัก"><i class="fa-solid fa-arrow-left"></i></a>
+            <span>ระบบจัดการและรายงานผลการส่งหมายเรียก</span>
+            <span class="brand-badge">สถานีตำรวจ</span>
         </div>
     </nav>
 
     <div class="main-wrapper">
+        <!-- 4 Stat Summary Cards -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon stat-pending"><i class="fa-solid fa-clock"></i></div>
-                <div>
-                    <div class="stat-title">หมายค้างส่ง (รอดำเนินการ)</div>
+            <div class="stat-card card-pending">
+                <div class="stat-icon stat-pending"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">ค้างส่ง (รอดำเนินการ)</div>
                     <div class="stat-value" id="countPending">0</div>
+                    <span class="stat-meta" style="color:#ea580c;">หมายที่ต้องเร่งนำส่ง</span>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon stat-urgent"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div>
-                    <div class="stat-title">ใกล้ถึงวันนัด (ภายใน 3 วัน)</div>
-                    <div class="stat-value" id="countUrgent">0</div>
+
+            <div class="stat-card card-urgent">
+                <div class="stat-icon stat-urgent"><i class="fa-solid fa-bell"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">ด่วนมาก (ภายใน 3 วัน)</div>
+                    <div class="stat-value" id="countUrgent" style="color:#dc2626;">0</div>
+                    <span class="stat-meta" style="color:#ef4444;">ใกล้ถึงกำหนดวันนัด</span>
                 </div>
             </div>
-            <div class="stat-card">
+
+            <div class="stat-card card-done">
                 <div class="stat-icon stat-done"><i class="fa-solid fa-circle-check"></i></div>
-                <div>
+                <div class="stat-info">
                     <div class="stat-title">ดำเนินการส่งแล้ว</div>
-                    <div class="stat-value" id="countDone">0</div>
+                    <div class="stat-value" id="countDone" style="color:#059669;">0</div>
+                    <span class="stat-meta" style="color:#10b981;">ส่งสำเร็จ & บันทึกผลแล้ว</span>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon stat-all"><i class="fa-solid fa-folder-open"></i></div>
-                <div>
-                    <div class="stat-title">หมายทั้งหมด</div>
+
+            <div class="stat-card card-total">
+                <div class="stat-icon stat-all"><i class="fa-solid fa-folder-closed"></i></div>
+                <div class="stat-info">
+                    <div class="stat-title">หมายเรียกทั้งหมด</div>
                     <div class="stat-value" id="countTotal">0</div>
+                    <span class="stat-meta" style="color:#64748b;">ยอดบันทึกรวมในระบบ</span>
                 </div>
             </div>
         </div>
 
+        <!-- Table Card -->
         <div class="table-container">
             <div id="mainLoader" class="content-loader">
-                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #1e3a8a;"></i>
-                <p style="margin-top: 10px; color: #64748b;">กำลังโหลดข้อมูล...</p>
+                <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: #1e40af;"></i>
+                <p style="margin-top: 12px; color: #475569; font-weight: 500;">กำลังประมวลผลข้อมูล...</p>
             </div>
 
             <div class="table-toolbar">
                 <div class="filter-tabs">
-                    <button class="filter-chip active" onclick="setFilter('all', this)">ทั้งหมด</button>
+                    <button class="filter-chip active" onclick="setFilter('all', this)">
+                        <i class="fa-solid fa-list"></i> ทั้งหมด
+                    </button>
                     <button class="filter-chip" onclick="setFilter('pending', this)">
                         <i class="fa-solid fa-hourglass-half"></i> ค้างส่ง
                     </button>
-                    <button class="filter-chip" onclick="setFilter('done', this)">ส่งแล้ว</button>
+                    <button class="filter-chip" onclick="setFilter('done', this)">
+                        <i class="fa-solid fa-circle-check"></i> ส่งแล้ว
+                    </button>
                 </div>
                 <button class="btn-add-primary" onclick="openWarrantModal()">
                     <i class="fa-solid fa-plus"></i> บันทึกรับหมายใหม่
@@ -176,12 +490,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 80px; text-align: center;">จัดการ</th>
+                            <th style="width: 85px; text-align: center;">จัดการ</th>
                             <th>สถานะการส่ง</th>
                             <th>กำหนดวันนัดพบ</th>
-                            <th>นับถอยหลัง</th>
+                            <th>การแจ้งเตือนกำหนดเวลา</th>
                             <th>ประเภท</th>
-                            <th>ครั้งที่</th>
+                            <th style="text-align: center;">ครั้งที่</th>
                             <th>ผู้รับหมาย</th>
                             <th>หน่วยงานขอความร่วมมือ</th>
                             <th style="text-align: center;">เอกสาร</th>
@@ -192,10 +506,10 @@
             </div>
 
             <div class="table-footer">
-                <span id="showingText" style="font-size: 0.85rem; color: #64748b;">กำลังแสดงข้อมูล</span>
+                <span id="showingText" style="font-size: 0.88rem; color: #64748b; font-weight: 400;">กำลังแสดงข้อมูล</span>
                 <div class="pagination-controls">
                     <button class="btn-page" id="btnPrevPage" onclick="changePage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                    <span id="pageInfo" style="font-size: 0.9rem; font-weight: 500;">1 / 1</span>
+                    <span id="pageInfo" style="font-size: 0.88rem; font-weight: 600; color: #334155; padding: 0 4px;">1 / 1</span>
                     <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
@@ -206,9 +520,9 @@
     <div id="warrantModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header-area">
-                <h3 id="warrantModalTitle" style="margin: 0; color: #1e3a8a; font-size: 1.15rem;">บันทึกรับหมายเรียกใหม่</h3>
+                <h3 id="warrantModalTitle" style="margin: 0; color: #0f172a; font-size: 1.2rem; font-weight: 600;">บันทึกรับหมายเรียกใหม่</h3>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn-act" id="btnDeleteWarrant" onclick="deleteWarrant()" style="color:#dc2626; display:none;"><i class="fa-solid fa-trash-can"></i></button>
+                    <button class="btn-act" id="btnDeleteWarrant" onclick="deleteWarrant()" style="color:#dc2626; display:none;" title="ลบข้อมูล"><i class="fa-solid fa-trash-can"></i></button>
                     <button class="btn-act" onclick="closeModal('warrantModal')"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
@@ -228,8 +542,8 @@
                             <input type="number" class="form-input" id="roundNo" value="1" min="1" required>
                         </div>
 
-                        <div class="form-group full-width" style="background: #eef2ff; padding: 12px; border-radius: 8px; border: 1px solid #c7d2fe;">
-                            <label class="form-label" style="color: #3730a3; font-weight: 600;">
+                        <div class="form-group full-width" style="background: #eff6ff; padding: 14px; border-radius: 12px; border: 1.5px solid #bfdbfe;">
+                            <label class="form-label" style="color: #1e40af; font-weight: 600;">
                                 <i class="fa-solid fa-calendar-check"></i> วันที่นัดให้ไปพบตามหมายเรียก
                             </label>
                             <input type="text" class="form-input" id="appointmentDate" placeholder="คลิกเพื่อเลือกวันนัดพบ..." required style="background: #fff; cursor: pointer;">
@@ -284,7 +598,7 @@
     <div id="resultModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header-area">
-                <h3 style="margin: 0; color: #1e3a8a; font-size: 1.15rem;">บันทึกรายงานผลการส่งหมาย</h3>
+                <h3 style="margin: 0; color: #0f172a; font-size: 1.2rem; font-weight: 600;">บันทึกรายงานผลการส่งหมาย</h3>
                 <button class="btn-act" onclick="closeModal('resultModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
@@ -306,7 +620,7 @@
                         </div>
                     </div>
 
-                    <!-- ส่วนที่ 1: กรณีส่งหมายสำเร็จ (รับเอง หรือ รับแทน) -->
+                    <!-- ส่วนที่ 1: กรณีส่งหมายสำเร็จ -->
                     <div id="successSection" class="success-section">
                         <div class="form-grid">
                             <div class="form-group full-width">
@@ -320,7 +634,7 @@
                             </div>
 
                             <div id="proxyFields" class="full-width" style="display: none;">
-                                <div class="form-grid" style="background: #ffffff; padding: 12px; border-radius: 8px; border: 1px dashed #86efac;">
+                                <div class="form-grid" style="background: #ffffff; padding: 14px; border-radius: 10px; border: 1.5px dashed #86efac;">
                                     <div class="form-group">
                                         <label class="form-label">ชื่อ - สกุล ผู้รับหมายแทน <span style="color:#dc2626;">*</span></label>
                                         <input type="text" class="form-input" id="substituteName" placeholder="เช่น นายสมหมาย ใจดี" oninput="updateProxyPreview()">
@@ -330,7 +644,7 @@
                                         <input type="text" class="form-input" id="substituteRelation" placeholder="เช่น บิดา, มารดา, ภรรยา" oninput="updateProxyPreview()">
                                     </div>
                                     <div class="form-group full-width" style="margin-top: 4px;">
-                                        <div style="font-size: 0.85rem; color: #166534; background: #dcfce7; padding: 8px 12px; border-radius: 6px;">
+                                        <div style="font-size: 0.85rem; color: #166534; background: #ecfdf5; padding: 10px 14px; border-radius: 8px;">
                                             <i class="fa-solid fa-circle-info"></i> ข้อความที่จะนำไปใส่ Template: 
                                             <b id="proxyPreviewText" style="color: #14532d;">-</b>
                                         </div>
@@ -340,9 +654,9 @@
                         </div>
                     </div>
 
-                    <!-- ส่วนที่ 2: กรณีไม่สามารถส่งหมายได้ (บันทึกหลังหมาย) -->
+                    <!-- ส่วนที่ 2: กรณีไม่สามารถส่งหมายได้ -->
                     <div id="failedSection" class="failed-section">
-                        <h4 style="margin: 0 0 10px 0; color: #c2410c; font-size: 0.95rem;">
+                        <h4 style="margin: 0 0 12px 0; color: #c2410c; font-size: 0.98rem; font-weight: 600;">
                             <i class="fa-solid fa-file-pen"></i> ข้อมูลบันทึกหลังหมาย
                         </h4>
                         
@@ -363,7 +677,7 @@
 
                             <div class="form-group full-width">
                                 <label class="form-label">เมื่อเดินทางไปถึงที่บ้านดังกล่าว (รายละเอียดบันทึกหลังหมาย)</label>
-                                <textarea class="form-input" id="recordDetail" style="min-height: 70px;" placeholder="ระบุสิ่งที่พบ เช่น พบบ้านปิดเงียบ สอบถามเพื่อนบ้านแจ้งว่า..."></textarea>
+                                <textarea class="form-input" id="recordDetail" style="min-height: 75px;" placeholder="ระบุสิ่งที่พบ เช่น พบบ้านปิดเงียบ สอบถามเพื่อนบ้านแจ้งว่า..."></textarea>
                             </div>
 
                             <div class="form-group">
@@ -604,7 +918,7 @@
                 applyFilter();
             } catch (e) {
                 console.error("loadData error:", e);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:#ef4444; padding:20px;">โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:#ef4444; padding:30px;"><i class="fa-solid fa-triangle-exclamation"></i> โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
             } finally {
                 document.getElementById('mainLoader').style.display = 'none';
             }
@@ -666,10 +980,10 @@
             document.getElementById('pageInfo').innerText = `${currentPage} / ${totalPages}`;
             document.getElementById('btnPrevPage').disabled = (currentPage === 1);
             document.getElementById('btnNextPage').disabled = (currentPage === totalPages || totalPages === 0);
-            document.getElementById('showingText').innerText = `แสดง ${total > 0 ? start + 1 : 0} - ${Math.min(end, total)} จาก ${total} รายการ`;
+            document.getElementById('showingText').innerText = `แสดง ${total > 0 ? start + 1 : 0} - ${Math.min(end, total)} จากทั้งหมด ${total} รายการ`;
 
             if (pageItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:30px;">ไม่พบรายการหมาย</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#94a3b8; padding:40px;"><i class="fa-solid fa-inbox fa-2x" style="margin-bottom:8px; display:block;"></i> ไม่พบรายการหมายในหมวดนี้</td></tr>`;
                 return;
             }
 
@@ -677,33 +991,34 @@
                 const raw = row.rawData || {};
                 const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
                 
+                // คำนวณนับถอยหลัง - ออกแบบเด่นชัดขึ้น
                 const diff = getAppointmentDiff(raw.appointmentDate);
                 let dueBadge = '-';
                 if (!isDelivered && diff !== null) {
                     if (diff < 0) {
-                        dueBadge = `<span class="badge-due due-over"><i class="fa-solid fa-triangle-exclamation"></i> เลยกำหนด ${Math.abs(diff)} วัน</span>`;
+                        dueBadge = `<span class="badge-due due-over"><span class="pulse-dot"></span><i class="fa-solid fa-triangle-exclamation"></i> เกินกำหนด ${Math.abs(diff)} วัน</span>`;
                     } else if (diff === 0) {
-                        dueBadge = `<span class="badge-due due-today"><i class="fa-solid fa-bell"></i> วันนี้!</span>`;
+                        dueBadge = `<span class="badge-due due-today"><span class="pulse-dot"></span><i class="fa-solid fa-bell"></i> วันนี้เท่านั้น!</span>`;
                     } else if (diff <= 3) {
-                        dueBadge = `<span class="badge-due due-soon"><i class="fa-solid fa-clock"></i> อีก ${diff} วัน</span>`;
+                        dueBadge = `<span class="badge-due due-soon"><span class="pulse-dot"></span><i class="fa-solid fa-hourglass-half"></i> อีก ${diff} วัน (เคสด่วน)</span>`;
                     } else {
-                        dueBadge = `<span class="badge-due due-normal">อีก ${diff} วัน</span>`;
+                        dueBadge = `<span class="badge-due due-normal"><span class="pulse-dot"></span>อีก ${diff} วัน</span>`;
                     }
                 } else if (isDelivered) {
-                    dueBadge = `<span style="color:#64748b; font-size:0.85rem;"><i class="fa-solid fa-check"></i> ดำเนินการแล้ว</span>`;
+                    dueBadge = `<span style="color:#059669; font-weight:500; font-size:0.85rem;"><i class="fa-solid fa-circle-check"></i> ดำเนินการแล้ว</span>`;
                 }
 
                 let statusBadge = '';
                 if (!isDelivered) {
-                    statusBadge = `<span class="status-badge badge-pending"><i class="fa-solid fa-hourglass-start"></i> รอส่งหมาย</span>`;
+                    statusBadge = `<span class="status-badge badge-pending"><i class="fa-solid fa-clock"></i> รอดำเนินการ</span>`;
                 } else if (raw.deliveryStatus === 'ส่งหมายสำเร็จ') {
                     if (raw.receiveType === 'รับหมายแทน') {
-                        statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-user-group"></i> รับแทน</span>`;
+                        statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-people-arrows"></i> รับแทน</span>`;
                     } else {
                         statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-check"></i> ส่งสำเร็จ</span>`;
                     }
                 } else {
-                    statusBadge = `<span class="status-badge badge-danger"><i class="fa-solid fa-circle-exclamation"></i> บันทึกหลังหมาย</span>`;
+                    statusBadge = `<span class="status-badge badge-danger"><i class="fa-solid fa-file-excel"></i> บันทึกหลังหมาย</span>`;
                 }
 
                 const tr = document.createElement('tr');
@@ -719,14 +1034,14 @@
                         </div>
                     </td>
                     <td>${statusBadge}</td>
-                    <td><b>${row.display.appointmentDate || '-'}</b></td>
+                    <td><b style="color:#0f172a;">${row.display.appointmentDate || '-'}</b></td>
                     <td>${dueBadge}</td>
-                    <td><span style="font-weight:500;">${raw.targetStatus || '-'}</span></td>
-                    <td>${raw.roundNo || '1'}</td>
-                    <td><b>${raw.targetName || '-'}</b></td>
-                    <td>${raw.agency || '-'}</td>
+                    <td><span style="font-weight:500; color:#334155;">${raw.targetStatus || '-'}</span></td>
+                    <td style="text-align: center;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:6px; font-weight:600;">${raw.roundNo || '1'}</span></td>
+                    <td><b style="color:#1e40af;">${raw.targetName || '-'}</b></td>
+                    <td style="color:#475569;">${raw.agency || '-'}</td>
                     <td style="text-align: center;">
-                        ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="nav-btn" style="width:30px; height:30px; margin:auto; color:#1e3a8a;" title="เปิดดูเอกสาร Google Doc"><i class="fa-solid fa-file-word"></i></a>` : '-'}
+                        ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="nav-btn" style="width:32px; height:32px; margin:auto; color:#2563eb; background:#eff6ff;" title="เปิดดูเอกสาร Google Doc"><i class="fa-solid fa-file-word"></i></a>` : '-'}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -738,7 +1053,7 @@
             renderTable();
         }
 
-        // ================= Warrant Intake Modal (ส่วนที่ 1) =================
+        // ================= Warrant Intake Modal =================
         function openWarrantModal() {
             editMode = false;
             selectedRowIndex = -1;
@@ -783,7 +1098,7 @@
             const bDate = getDateValue('bookDate');
 
             if (!form.checkValidity() || !aDate || !bDate) {
-                Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุข้อมูลและเลือกวันที่ให้ครบถ้วน', 'warning');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณาระบุข้อมูลและเลือกวันที่ให้ครบถ้วน' });
                 return;
             }
 
@@ -817,12 +1132,12 @@
                 if (json.status === 'success') {
                     closeModal('warrantModal');
                     await loadData();
-                    Swal.fire('สำเร็จ', 'บันทึกข้อมูลหมายเรียกเรียบร้อยแล้ว', 'success');
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'บันทึกข้อมูลหมายเรียกเรียบร้อยแล้ว' });
                 } else {
                     throw new Error(json.message);
                 }
             } catch(e) {
-                Swal.fire('ข้อผิดพลาด', e.message || 'บันทึกไม่สำเร็จ', 'error');
+                Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: e.message || 'บันทึกไม่สำเร็จ' });
             }
         }
 
@@ -848,18 +1163,18 @@
                         if (json.status === 'success') {
                             closeModal('warrantModal');
                             loadData();
-                            Swal.fire('ลบสำเร็จ', 'ลบข้อมูลเรียบร้อยแล้ว', 'success');
+                            Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', text: 'ลบข้อมูลเรียบร้อยแล้ว' });
                         } else {
                             throw new Error(json.message);
                         }
                     } catch(e) {
-                        Swal.fire('ข้อผิดพลาด', e.message, 'error');
+                        Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: e.message });
                     }
                 }
             });
         }
 
-        // ================= Delivery Result Modal (ส่วนที่ 2) =================
+        // ================= Delivery Result Modal =================
         function openResultModal(rowIndex) {
             const row = rawDataList.find(r => r.rowIndex === rowIndex);
             if (!row) return;
@@ -868,11 +1183,11 @@
             const raw = row.rawData || {};
 
             document.getElementById('resultSummaryBox').innerHTML = `
-                <div style="font-weight:600; color:#1e3a8a; margin-bottom:4px;">
+                <div style="font-weight:600; color:#1e40af; font-size:1rem; margin-bottom:4px;">
                     <i class="fa-solid fa-user-tag"></i> ${raw.targetStatus}: <b>${raw.targetName}</b> (ครั้งที่ ${raw.roundNo || 1})
                 </div>
-                <div style="color:#475569; font-size:0.86rem;">
-                    หนังสือเลขที่: <b>${raw.bookNo || '-'}</b> | นัดพบวันที่: <b style="color:#b45309;">${row.display.appointmentDate || '-'}</b><br>
+                <div style="color:#475569; font-size:0.88rem; line-height: 1.5;">
+                    หนังสือเลขที่: <b>${raw.bookNo || '-'}</b> | นัดพบวันที่: <b style="color:#ea580c;">${row.display.appointmentDate || '-'}</b><br>
                     ที่อยู่: ${raw.targetAddress || '-'}
                 </div>
             `;
@@ -941,7 +1256,7 @@
         async function saveResultData() {
             const sDate = getDateValue('sendDate');
             if (!sDate) {
-                Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุวันที่ส่งหมาย', 'warning');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณาระบุวันที่ส่งหมาย' });
                 return;
             }
 
@@ -961,7 +1276,7 @@
                     substituteRelation = document.getElementById('substituteRelation').value.trim();
 
                     if (!substituteName || !substituteRelation) {
-                        Swal.fire('ข้อมูลไม่ครบถ้วน', 'กรุณาระบุชื่อ-สกุล และสถานะของผู้รับหมายแทนให้ครบถ้วน', 'warning');
+                        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณาระบุชื่อ-สกุล และสถานะของผู้รับหมายแทนให้ครบถ้วน' });
                         return;
                     }
 
@@ -970,7 +1285,7 @@
             }
 
             if (isFailed && !document.getElementById('failReason').value.trim()) {
-                Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุสาเหตุที่ไม่สามารถส่งหมายได้', 'warning');
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณาระบุสาเหตุที่ไม่สามารถส่งหมายได้' });
                 return;
             }
 
@@ -1013,14 +1328,14 @@
                     await loadData();
                     Swal.fire({
                         title: 'บันทึกผลสำเร็จ!',
-                        html: `จัดทำเอกสารเรียบร้อยแล้ว<br><a href="${json.docUrl}" target="_blank" style="color:#1e3a8a;font-weight:bold;text-decoration:underline;">คลิกเพื่อเปิดดูเอกสาร</a>`,
+                        html: `จัดทำเอกสารเรียบร้อยแล้ว<br><a href="${json.docUrl}" target="_blank" style="color:#1e40af;font-weight:bold;text-decoration:underline;">คลิกเพื่อเปิดดูเอกสาร</a>`,
                         icon: 'success'
                     });
                 } else {
                     throw new Error(json.message);
                 }
             } catch(e) {
-                Swal.fire('ข้อผิดพลาด', e.message || 'บันทึกไม่สำเร็จ', 'error');
+                Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: e.message || 'บันทึกไม่สำเร็จ' });
             }
         }
 
