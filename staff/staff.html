@@ -35,7 +35,7 @@
         .menu-arrow { margin-left: auto; color: #cbd5e1; transition: var(--transition); font-size: 1.2rem; }
         .menu-card:hover .menu-arrow { color: var(--gold-dark); transform: translateX(5px); }
 
-        /* Summons Alert Banner (แถบแจ้งเตือนส่งหมายเรียกขนาดเล็กด้านบน) */
+        /* Summons Alert Banner */
         .summons-alert-banner {
             margin-bottom: 20px;
             animation: fadeIn 0.4s ease;
@@ -131,6 +131,249 @@
             }
         }
 
+        /* =========================================================
+           Style ปฏิทินบันทึกงาน
+           ========================================================= */
+        .calendar-section-wrapper {
+            margin-bottom: 25px;
+        }
+        .mini-cal-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-xl, 20px);
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .cal-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .cal-header-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--navy-main, #0f2b5c);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cal-nav-group {
+            display: flex;
+            gap: 4px;
+        }
+        .cal-mini-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--navy-main, #0f2b5c);
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .cal-mini-btn:hover {
+            background: var(--navy-main, #0f2b5c);
+            color: #ffffff;
+        }
+        .cal-mini-btn.today-btn {
+            width: auto;
+            padding: 0 10px;
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+        .cal-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #64748b;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 6px;
+        }
+        .cal-weekdays .sun, .cal-weekdays .sat { color: #dc2626; }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .cal-day {
+            height: 38px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.86rem;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+            color: #1e293b;
+        }
+        .cal-day:hover:not(.empty) {
+            background: #f1f5f9;
+            color: var(--navy-main, #0f2b5c);
+            font-weight: 600;
+        }
+        .cal-day.empty { cursor: default; }
+        .cal-day.holiday {
+            color: #dc2626 !important;
+            font-weight: 700;
+            background: #fef2f2;
+        }
+        .cal-day.holiday::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            right: 5px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #dc2626;
+        }
+        .cal-day.today {
+            background: var(--navy-main, #0f2b5c) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+        .cal-day.today::before {
+            background: #ffd700 !important;
+        }
+        .cal-day.selected:not(.today) {
+            border: 2px solid var(--navy-main, #0f2b5c);
+            font-weight: 700;
+        }
+        .cal-day.has-task::after {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #10b981;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 4px;
+        }
+        .cal-day.today.has-task::after {
+            background: #ffd700;
+        }
+        .cal-tasks-section {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .cal-tasks-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .cal-tasks-head span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .btn-add-cal {
+            background: var(--navy-main, #0f2b5c);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Kanit';
+        }
+        .btn-add-cal:hover { opacity: 0.9; }
+        .cal-holiday-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cal-task-items {
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .cal-task-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.86rem;
+        }
+        .cal-task-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+        }
+        .cal-task-time {
+            background: #ecfdf5;
+            color: #059669;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .cal-task-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #0f172a;
+        }
+        .cal-task-del {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 3px 6px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .cal-task-del:hover { background: #fee2e2; }
+
+        /* Modal เพิ่ม/แก้ไขงานปฏิทิน */
+        .cal-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 16px;
+        }
+        .cal-modal-card {
+            background: #ffffff; border-radius: 20px; width: 100%; max-width: 440px;
+            padding: 22px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+        .cal-modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 14px;
+        }
+        .cal-modal-header h3 { margin: 0; font-size: 1.1rem; color: var(--navy-main, #0f2b5c); }
+
         /* HBD Floating Widget */
         .hbd-floating-wrapper { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; z-index: 900; animation: slideUpFade 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; display: none; }
         @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 50px); } to { opacity: 1; transform: translate(-50%, 0); } }
@@ -174,7 +417,6 @@
             <h3><i class="fa-solid fa-bars-staggered"></i> เมนูตัวเลือก</h3>
             <button class="sidebar-close" onclick="toggleSidebar(false)"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <!-- ✨ เติม style flex ให้ sidebar-content เพื่อให้ดันชื่อไปอยู่ล่างสุดได้ -->
         <div class="sidebar-content" style="display: flex; flex-direction: column;">
             <a href="setting/station-info.html" class="sidebar-link" id="adminMenuStation" style="display: none;">
                 <i class="fa-solid fa-building-shield"></i> <span>ตั้งค่าข้อมูลสถานีตำรวจ</span>
@@ -187,7 +429,6 @@
                 <i class="fa-solid fa-power-off"></i> <span>ออกจากระบบ</span>
             </a>
 
-            <!-- ✨ เพิ่มส่วนแสดงชื่อผู้ใช้งานไว้ด้านล่างสุด -->
             <div style="margin-top: auto; padding-top: 20px; text-align: center;">
                 <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 2px;">เข้าสู่ระบบโดย</p>
                 <p id="sidebarUserName" style="font-size: 0.95rem; font-weight: 500; color: var(--navy-main); margin: 0;">กำลังโหลด...</p>
@@ -196,7 +437,7 @@
     </div>
 
     <div class="container container-sm">
-        <!-- ✨ แถบแจ้งเตือนส่งหมายเรียก (จะแสดงอัตโนมัติเฉพาะเมื่อมีหมายด่วน) -->
+        <!-- แถบแจ้งเตือนส่งหมายเรียก -->
         <div id="summonsAlertBanner" class="summons-alert-banner" style="display: none;">
             <a href="summons/summons.html" class="summons-alert-link">
                 <div class="summons-alert-icon">
@@ -215,6 +456,52 @@
             </a>
         </div>
 
+        <!-- 🗓️ ปฏิทินบันทึกงานและเวลา (เชื่อมต่อ Google Sheet) -->
+        <div class="calendar-section-wrapper" id="calendarSectionWrapper">
+            <div class="mini-cal-card">
+                <div class="cal-header-bar">
+                    <h4 class="cal-header-title">
+                        <i class="fa-regular fa-calendar-check" style="color: var(--navy-main, #0f2b5c);"></i> 
+                        <span id="calMonthYearTitle">กำลังโหลด...</span>
+                    </h4>
+                    <div class="cal-nav-group">
+                        <button class="cal-mini-btn" onclick="calPrevMonth()" title="เดือนก่อน">‹</button>
+                        <button class="cal-mini-btn today-btn" onclick="calGoToday()">วันนี้</button>
+                        <button class="cal-mini-btn" onclick="calNextMonth()" title="เดือนถัดไป">›</button>
+                    </div>
+                </div>
+
+                <div class="cal-weekdays">
+                    <div class="sun">อา</div>
+                    <div>จ</div>
+                    <div>อ</div>
+                    <div>พ</div>
+                    <div>พฤ</div>
+                    <div>ศ</div>
+                    <div class="sat">ส</div>
+                </div>
+
+                <div class="cal-grid" id="calDaysGrid"></div>
+
+                <div class="cal-tasks-section">
+                    <div class="cal-tasks-head">
+                        <span id="calSelectedDateLabel">📌 งานวันนี้</span>
+                        <button class="btn-add-cal" onclick="openCalModal()">
+                            <i class="fa-solid fa-plus"></i> เพิ่มงาน
+                        </button>
+                    </div>
+
+                    <div id="calHolidayDisplay" style="display: none;" class="cal-holiday-banner">
+                        <i class="fa-solid fa-flag"></i> <span id="calHolidayName"></span>
+                    </div>
+
+                    <div class="cal-task-items" id="calTaskList">
+                        <div style="text-align: center; color: #94a3b8; font-size: 0.8rem; padding: 10px 0;">ไม่มีงานที่บันทึกไว้</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <p class="section-label" id="sectionLabel">เลือกรายการที่ต้องการปฏิบัติ</p>
         
         <div id="notFoundMsg" style="display: none; text-align: center; padding: 40px 20px; color: var(--text-light);">
@@ -224,7 +511,6 @@
         </div>
 
         <div id="toolsContainer">
-            <!-- ใช้สีเดิมตามต้นฉบับ เพิ่มแค่ hover-zoom-card -->
             <a href="duty/duty.html" class="menu-card theme-green hover-zoom-card" tabindex="0">
                 <div class="menu-icon"><i class="fa-solid fa-calendar-days"></i></div>
                 <div class="menu-info">
@@ -281,17 +567,312 @@
         </div>
     </div>
 
+    <!-- Modal เพิ่ม/แก้ไขงานปฏิทิน -->
+    <div id="calTaskModal" class="cal-modal-overlay">
+        <div class="cal-modal-card">
+            <div class="cal-modal-header">
+                <h3 id="calModalTitle">📋 บันทึกภารกิจ</h3>
+                <button onclick="closeCalModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="calTaskForm" onsubmit="saveCalTaskToSheet(event)">
+                <input type="hidden" id="calSelectedDateInput">
+                <div style="margin-bottom: 12px;">
+                    <label style="display:block; font-size:0.85rem; color:#475569; margin-bottom:4px; font-weight:500;">ภารกิจ / รายละเอียดงาน</label>
+                    <input type="text" id="calTaskTitleInput" required placeholder="ระบุภารกิจที่ต้องทำ..." style="width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-family:'Kanit'; font-size:0.9rem; outline:none;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block; font-size:0.85rem; color:#475569; margin-bottom:4px; font-weight:500;">⏰ เวลา (ระบุ เช่น 09:30 หรือเว้นว่างได้)</label>
+                    <input type="text" id="calTaskTimeInput" placeholder="เช่น 09:00, 13:30" maxlength="20" style="width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid #cbd5e1; border-radius:8px; font-family:'Kanit'; font-size:0.9rem; outline:none;">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" onclick="closeCalModal()" style="padding:8px 16px; border:1px solid #cbd5e1; background:#f8fafc; border-radius:8px; cursor:pointer; font-family:'Kanit'; color:#475569;">ยกเลิก</button>
+                    <button type="submit" id="btnCalSave" style="padding:8px 18px; border:none; background:var(--navy-main, #0f2b5c); color:#fff; border-radius:8px; cursor:pointer; font-family:'Kanit'; font-weight:500;">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="hbdFloatingWrapper" class="hbd-floating-wrapper"></div>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
         const SUMMONS_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
+        
+        // 🔴 นำ Web App URL ของ Apps Script ที่ได้จากส่วนที่ 2 มาใส่ตรงนี้
+        const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        let calTasks = {};
+        let calCurrentDate = new Date();
+        let calSelectedDateStr = getFormattedDateKey(new Date());
+
+        const thaiMonthList = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+        const fixedThaiHolidays = {
+            "01-01": "วันขึ้นปีใหม่",
+            "04-06": "วันพระบาทสมเด็จพระพุทธยอดฟ้าจุฬาโลกฯ และวันที่ระลึกมหาจักรีบรมราชวงศ์",
+            "04-13": "วันสงกรานต์",
+            "04-14": "วันสงกรานต์",
+            "04-15": "วันสงกรานต์",
+            "05-01": "วันแรงงานแห่งชาติ",
+            "05-04": "วันฉัตรมงคล",
+            "06-03": "วันเฉลิมพระชนมพรรษาสมเด็จพระนางเจ้าฯ พระบรมราชินี",
+            "07-28": "วันเฉลิมพระชนมพรรษาพระบาทสมเด็จพระเจ้าอยู่หัว",
+            "08-12": "วันแม่แห่งชาติ / วันเฉลิมพระชนมพรรษาสมเด็จพระบรมราชชนนีพันปีหลวง",
+            "10-13": "วันนวมินทรมหาราช",
+            "10-23": "วันปิยมหาราช",
+            "12-05": "วันคล้ายวันพระบรมราชสมภพ ร.9 / วันชาติ / วันพ่อแห่งชาติ",
+            "12-10": "วันรัฐธรรมนูญ",
+            "12-31": "วันสิ้นปี"
+        };
+
+        const lunarThaiHolidays = {
+            "2024-02-24": "วันมาฆบูชา", "2024-05-22": "วันวิสาขบูชา", "2024-07-20": "วันอาสาฬหบูชา", "2024-07-21": "วันเข้าพรรษา",
+            "2025-02-12": "วันมาฆบูชา", "2025-05-11": "วันวิสาขบูชา", "2025-07-10": "วันอาสาฬหบูชา", "2025-07-11": "วันเข้าพรรษา",
+            "2026-03-03": "วันมาฆบูชา", "2026-05-31": "วันวิสาขบูชา", "2026-07-29": "วันอาสาฬหบูชา", "2026-07-30": "วันเข้าพรรษา",
+            "2027-02-21": "วันมาฆบูชา", "2027-05-20": "วันวิสาขบูชา", "2027-07-18": "วันอาสาฬหบูชา", "2027-07-19": "วันเข้าพรรษา",
+            "2028-02-09": "วันมาฆบูชา", "2028-05-08": "วันวิสาขบูชา", "2028-07-07": "วันอาสาฬหบูชา", "2028-07-08": "วันเข้าพรรษา",
+            "2029-02-28": "วันมาฆบูชา", "2029-05-27": "วันวิสาขบูชา", "2029-07-26": "วันอาสาฬหบูชา", "2029-07-27": "วันเข้าพรรษา",
+            "2030-02-17": "วันมาฆบูชา", "2030-05-17": "วันวิสาขบูชา", "2030-07-15": "วันอาสาฬหบูชา", "2030-07-16": "วันเข้าพรรษา",
+            "2031-02-07": "วันมาฆบูชา", "2031-05-06": "วันวิสาขบูชา", "2031-07-05": "วันอาสาฬหบูชา", "2031-07-06": "วันเข้าพรรษา",
+            "2032-02-25": "วันมาฆบูชา", "2032-05-23": "วันวิสาขบูชา", "2032-07-22": "วันอาสาฬหบูชา", "2032-07-23": "วันเข้าพรรษา",
+            "2033-02-14": "วันมาฆบูชา", "2033-05-13": "วันวิสาขบูชา", "2033-07-12": "วันอาสาฬหบูชา", "2033-07-13": "วันเข้าพรรษา",
+            "2034-03-05": "วันมาฆบูชา", "2034-06-02": "วันวิสาขบูชา", "2034-07-31": "วันอาสาฬหบูชา", "2034-08-01": "วันเข้าพรรษา",
+            "2035-02-22": "วันมาฆบูชา", "2035-05-22": "วันวิสาขบูชา", "2035-07-20": "วันอาสาฬหบูชา", "2035-07-21": "วันเข้าพรรษา"
+        };
+
+        function getThaiHoliday(dateKey) {
+            if (lunarThaiHolidays[dateKey]) return lunarThaiHolidays[dateKey];
+            const monthDay = dateKey.substring(5);
+            if (fixedThaiHolidays[monthDay]) return fixedThaiHolidays[monthDay];
+            return null;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             checkBirthdays();
             setupSearch();
             checkSummonsAlert();
+
+            renderMiniCalendar();
+            fetchCalTasks();
         });
+
+        function getFormattedDateKey(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        async function fetchCalTasks() {
+            if (!CALENDAR_API_URL || CALENDAR_API_URL.includes('YOUR_CALENDAR_APPS_SCRIPT_URL_HERE')) {
+                renderMiniCalendar();
+                renderCalTaskList(calSelectedDateStr);
+                return;
+            }
+            try {
+                const res = await fetch(CALENDAR_API_URL);
+                const data = await res.json();
+                calTasks = {};
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        if (!calTasks[item.date]) calTasks[item.date] = [];
+                        calTasks[item.date].push(item);
+                    });
+                }
+                renderMiniCalendar();
+                renderCalTaskList(calSelectedDateStr);
+            } catch (err) {
+                console.error("โหลดข้อมูลปฏิทินล้มเหลว:", err);
+            }
+        }
+
+        function renderMiniCalendar() {
+            const year = calCurrentDate.getFullYear();
+            const month = calCurrentDate.getMonth();
+            document.getElementById('calMonthYearTitle').innerText = `${thaiMonthList[month]} ${year + 543}`;
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calDaysGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'cal-day empty';
+                grid.appendChild(emptyCell);
+            }
+
+            const today = new Date();
+            const todayKey = getFormattedDateKey(today);
+
+            for (let day = 1; day <= totalDays; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'cal-day';
+                dayCell.innerText = day;
+
+                const thisDateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const holidayName = getThaiHoliday(thisDateKey);
+
+                if (holidayName) {
+                    dayCell.classList.add('holiday');
+                    dayCell.title = `🚩 ${holidayName}`;
+                }
+
+                if (thisDateKey === todayKey) dayCell.classList.add('today');
+                if (thisDateKey === calSelectedDateStr) dayCell.classList.add('selected');
+                if (calTasks[thisDateKey] && calTasks[thisDateKey].length > 0) dayCell.classList.add('has-task');
+
+                dayCell.onclick = () => {
+                    calSelectedDateStr = thisDateKey;
+                    renderMiniCalendar();
+                    renderCalTaskList(thisDateKey);
+                };
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        function renderCalTaskList(dateKey) {
+            const container = document.getElementById('calTaskList');
+            const label = document.getElementById('calSelectedDateLabel');
+            const holidayBanner = document.getElementById('calHolidayDisplay');
+            const holidayNameSpan = document.getElementById('calHolidayName');
+
+            const parts = dateKey.split('-');
+            const d = parseInt(parts[2], 10);
+            const m = thaiMonthList[parseInt(parts[1], 10) - 1];
+            const y = parseInt(parts[0], 10) + 543;
+            label.innerText = `📌 วันที่ ${d} ${m} ${y}`;
+
+            const holiday = getThaiHoliday(dateKey);
+            if (holiday) {
+                holidayNameSpan.innerText = `วันหยุด: ${holiday}`;
+                holidayBanner.style.display = 'flex';
+            } else {
+                holidayBanner.style.display = 'none';
+            }
+
+            container.innerHTML = '';
+            const list = calTasks[dateKey] || [];
+
+            if (list.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:#94a3b8; font-size:0.8rem; padding:8px 0;">ไม่มีภารกิจบันทึกไว้</div>`;
+                return;
+            }
+
+            list.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'cal-task-item';
+                const safeTime = escapeHtml(item.time ? item.time : 'ทั้งวัน');
+                const safeTitle = escapeHtml(item.title);
+                const safeId = encodeURIComponent(String(item.id || ''));
+                const safeDateKey = escapeHtml(dateKey);
+
+                row.innerHTML = `
+                    <div class="cal-task-left">
+                        <span class="cal-task-time">${safeTime}</span>
+                        <span class="cal-task-text" title="${safeTitle}">${safeTitle}</span>
+                    </div>
+                    <button class="cal-task-del" onclick="deleteCalTask('${safeDateKey}', '${safeId}')" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function calPrevMonth() { calCurrentDate.setMonth(calCurrentDate.getMonth() - 1); renderMiniCalendar(); }
+        function calNextMonth() { calCurrentDate.setMonth(calCurrentDate.getMonth() + 1); renderMiniCalendar(); }
+        function calGoToday() { 
+            calCurrentDate = new Date(); 
+            calSelectedDateStr = getFormattedDateKey(calCurrentDate);
+            renderMiniCalendar(); 
+            renderCalTaskList(calSelectedDateStr);
+        }
+
+        function openCalModal() {
+            document.getElementById('calSelectedDateInput').value = calSelectedDateStr;
+            const parts = calSelectedDateStr.split('-');
+            document.getElementById('calModalTitle').innerText = `📋 บันทึกงาน: ${parseInt(parts[2], 10)} ${thaiMonthList[parseInt(parts[1], 10) - 1]}`;
+            document.getElementById('calTaskTitleInput').value = '';
+            document.getElementById('calTaskTimeInput').value = '';
+            document.getElementById('calTaskModal').style.display = 'flex';
+        }
+
+        function closeCalModal() {
+            document.getElementById('calTaskModal').style.display = 'none';
+        }
+
+        async function saveCalTaskToSheet(e) {
+            e.preventDefault();
+            const dateKey = document.getElementById('calSelectedDateInput').value;
+            const title = document.getElementById('calTaskTitleInput').value.trim();
+            const timeStr = document.getElementById('calTaskTimeInput').value.trim();
+            const btn = document.getElementById('btnCalSave');
+
+            if (!CALENDAR_API_URL || CALENDAR_API_URL.includes('YOUR_CALENDAR_APPS_SCRIPT_URL_HERE')) {
+                Swal.fire({ icon: 'warning', title: 'ยังไม่ได้ใส่ URL หลังบ้าน', text: 'กรุณานำ Web App URL ของ Google Apps Script มาใส่ใน CALENDAR_API_URL' });
+                return;
+            }
+
+            btn.innerText = "กำลังบันทึก...";
+            btn.disabled = true;
+
+            try {
+                await fetch(CALENDAR_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ 
+                        action: 'add', 
+                        date: dateKey, 
+                        time: timeStr, 
+                        title: title
+                    })
+                });
+                await fetchCalTasks();
+                closeCalModal();
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'บันทึกไม่สำเร็จ', text: err.message });
+            } finally {
+                btn.innerText = "บันทึกข้อมูล";
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteCalTask(dateKey, id) {
+            Swal.fire({
+                title: 'ยืนยันการลบภารกิจนี้?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'ลบข้อมูล',
+                cancelButtonText: 'ยกเลิก'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        await fetch(CALENDAR_API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({ 
+                                action: 'delete', 
+                                id: decodeURIComponent(id)
+                            })
+                        });
+                        await fetchCalTasks();
+                    } catch (err) {
+                        Swal.fire({ icon: 'error', title: 'ลบไม่สำเร็จ', text: err.message });
+                    }
+                }
+            });
+        }
 
         function toggleSidebar(show) {
             const sidebar = document.getElementById('rightSidebar');
@@ -313,6 +894,7 @@
             const btnBack = document.getElementById('btnBack');
             const searchIcon = document.querySelector('#searchBtn i');
             const summonsBanner = document.getElementById('summonsAlertBanner');
+            const calSection = document.getElementById('calendarSectionWrapper');
 
             if (isSearchActive) {
                 title.style.display = 'none';
@@ -321,6 +903,7 @@
                 input.focus();
                 searchIcon.className = 'fa-solid fa-xmark';
                 if (summonsBanner) summonsBanner.style.display = 'none';
+                if (calSection) calSection.style.display = 'none';
             } else {
                 title.style.display = 'block';
                 btnBack.style.display = 'flex';
@@ -331,6 +914,7 @@
                 if (summonsBanner && summonsBanner.dataset.hasUrgent === 'true') {
                     summonsBanner.style.display = 'block';
                 }
+                if (calSection) calSection.style.display = 'block';
             }
         }
 
@@ -346,10 +930,14 @@
             const notFoundMsg = document.getElementById('notFoundMsg');
             const sectionLabel = document.getElementById('sectionLabel');
             const summonsBanner = document.getElementById('summonsAlertBanner');
+            const calSection = document.getElementById('calendarSectionWrapper');
             let hasVisible = false;
 
             if (summonsBanner) {
                 summonsBanner.style.display = (term ? 'none' : (summonsBanner.dataset.hasUrgent === 'true' ? 'block' : 'none'));
+            }
+            if (calSection) {
+                calSection.style.display = (term ? 'none' : 'block');
             }
 
             cards.forEach(card => {
@@ -373,7 +961,6 @@
             }
         }
 
-        /* ฟังก์ชันตรวจสอบการแจ้งเตือนหมายเรียกเร่งด่วน */
         async function checkSummonsAlert() {
             try {
                 const res = await fetch(SUMMONS_API_URL, {
