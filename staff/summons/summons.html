@@ -92,7 +92,7 @@
             gap: 16px; 
         }
 
-        /* ---------------- Modern Stats Grid ---------------- */
+        /* Stats Grid */
         .stats-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -156,7 +156,7 @@
         .stat-value { font-size: 1.85rem; font-weight: 700; color: #0f172a; line-height: 1.1; letter-spacing: -0.5px; }
         .stat-meta { font-size: 0.72rem; margin-top: 4px; font-weight: 500; }
 
-        /* ---------------- Table Container ---------------- */
+        /* Table Container */
         .table-container { 
             background: #fff; 
             border-radius: 20px; 
@@ -230,7 +230,11 @@
             color: #1e293b; 
             transition: background 0.15s;
         }
-        tbody tr:hover td { background-color: #f8fafc; }
+        tbody tr { 
+            cursor: pointer; 
+            transition: background 0.15s ease; 
+        }
+        tbody tr:hover td { background-color: #f1f5f9; }
         
         .action-btns { display: flex; gap: 8px; justify-content: center; }
         .btn-act { 
@@ -251,7 +255,7 @@
         .btn-act-result { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
         .btn-act-result:hover { background: #2563eb; color: #ffffff; border-color: #2563eb; }
 
-        /* ---------------- High Impact Countdown Badges ---------------- */
+        /* High Impact Countdown Badges */
         .badge-due { 
             padding: 6px 14px; 
             border-radius: 10px; 
@@ -269,7 +273,6 @@
             display: inline-block;
         }
         
-        /* เกินกำหนด - สีแดงสะดุดตา เด่นสุด */
         .due-over { 
             background: #fef2f2; 
             color: #dc2626; 
@@ -279,7 +282,6 @@
         }
         .due-over .pulse-dot { background: #dc2626; animation: redGlow 1.2s infinite; }
 
-        /* วันนี้ - สีส้มแดงแจ้งเตือนด่วน */
         .due-today { 
             background: #fff7ed; 
             color: #ea580c; 
@@ -290,7 +292,6 @@
         }
         .due-today .pulse-dot { background: #ea580c; animation: amberGlow 1s infinite; }
 
-        /* ใกล้ถึงนัด (<= 3 วัน) - สีเหลืองอำพัน */
         .due-soon { 
             background: #fffbeb; 
             color: #b45309; 
@@ -299,7 +300,6 @@
         }
         .due-soon .pulse-dot { background: #d97706; }
 
-        /* ปกติ */
         .due-normal { 
             background: #f8fafc; 
             color: #475569; 
@@ -307,7 +307,6 @@
         }
         .due-normal .pulse-dot { background: #94a3b8; }
 
-        /* สถานะการส่ง */
         .status-badge { 
             padding: 5px 12px; 
             border-radius: 8px; 
@@ -388,6 +387,133 @@
         .btn-primary:hover { background: #1d4ed8; }
         .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-size: 0.92rem; }
         .btn-secondary:hover { background: #e2e8f0; }
+
+        /* สไตล์หน้าต่างแจ้งเตือนสรุปหมายด่วนประจำวัน */
+        .briefing-card {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .briefing-card:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 6px 16px rgba(37,99,235,0.08);
+            transform: translateY(-1px);
+        }
+        .briefing-card.card-urgent-highlight {
+            border-left: 5px solid #dc2626;
+            background: #fffdfd;
+        }
+        .briefing-card.card-warning-highlight {
+            border-left: 5px solid #f59e0b;
+        }
+        .briefing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 8px;
+        }
+        .briefing-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .briefing-address-box {
+            background: #f8fafc;
+            border: 1px solid #edf2f7;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #334155;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.45;
+        }
+        .briefing-footer-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* ---------------- สไตล์หน้าต่าง Preview ข้อมูลหมายเรียก ---------------- */
+        .preview-section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1.5px solid #e2e8f0;
+        }
+        .preview-card-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 18px;
+        }
+        @media (max-width: 600px) {
+            .preview-grid { grid-template-columns: 1fr; }
+        }
+        .preview-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .preview-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .preview-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .preview-value {
+            font-size: 0.95rem;
+            color: #0f172a;
+            font-weight: 500;
+            word-break: break-word;
+        }
+        .preview-highlight {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        .preview-address-tag {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            color: #1e293b;
+            line-height: 1.5;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
         
         /* Animations */
         @keyframes redGlow {
@@ -512,6 +638,73 @@
                     <span id="pageInfo" style="font-size: 0.88rem; font-weight: 600; color: #334155; padding: 0 4px;">1 / 1</span>
                     <button class="btn-page" id="btnNextPage" onclick="changePage(1)"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PREVIEW: แสดงรายละเอียดข้อมูลหมายเรียกทั้งหมดแบบอ่านอย่างเดียว -->
+    <div id="previewModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 760px;">
+            <div class="modal-header-area" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="background: #e0e7ff; color: #1e40af; width: 42px; height: 42px; border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 1.25rem;">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; color: #0f172a; font-size: 1.15rem; font-weight: 600;">รายละเอียดข้อมูลหมายเรียก</h3>
+                        <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #64748b;">พรีวิวสรุปข้อมูลและผลการปฏิบัติงาน</p>
+                    </div>
+                </div>
+                <button class="btn-act" onclick="closeModal('previewModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body" id="previewModalBody">
+                <!-- ข้อมูลจะถูก render โดย Javascript -->
+            </div>
+
+            <div class="modal-footer" id="previewModalFooter" style="background: #f8fafc;">
+                <!-- ปุ่ม Action ถูกเติมโดย Javascript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL แจ้งเตือนสรุปหมายด่วนประจำวัน (Daily Briefing Modal) -->
+    <div id="dailyBriefingModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 740px;">
+            <div class="modal-header-area" style="background: linear-gradient(135deg, #0f2b5c 0%, #1e40af 100%); color: #fff;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="background: rgba(255,255,255,0.15); width: 44px; height: 44px; border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 1.3rem;">
+                        <i class="fa-solid fa-bell-concierge"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; color: #ffffff; font-size: 1.2rem; font-weight: 600;">สรุปหมายที่ต้องดำเนินการเร่งด่วน</h3>
+                        <p style="margin: 2px 0 0 0; font-size: 0.82rem; color: #cbd5e1; font-weight: 300;">รายการหมายเรียกที่ใกล้ถึงกำหนดนัดพบภายใน 5 วัน หรือเลยกำหนด</p>
+                    </div>
+                </div>
+                <button class="btn-act" onclick="closeModal('dailyBriefingModal')" style="background: rgba(255,255,255,0.15); color: #fff; border:none;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body" style="padding: 18px 22px; max-height: 65vh;">
+                <!-- สรุปจำนวน -->
+                <div id="briefingAlertBanner" style="margin-bottom: 14px; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; background: #fff7ed; border: 1px solid #ffedd5; color: #c2410c;">
+                    <div style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem;">
+                        <i class="fa-solid fa-triangle-exclamation fa-lg"></i>
+                        <span id="briefingAlertTitle">พบหมายที่ต้องเร่งนำส่ง</span>
+                    </div>
+                    <span id="briefingCountBadge" style="background: #ea580c; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">0 รายการ</span>
+                </div>
+
+                <!-- รายการหมาย -->
+                <div id="briefingListContainer"></div>
+            </div>
+
+            <div class="modal-footer" style="background: #f8fafc;">
+                <span style="font-size: 0.82rem; color: #64748b;">
+                    <i class="fa-solid fa-circle-info"></i> กรุณาตรวจสอบและดำเนินการก่อนถึงวันนัดพบ
+                </span>
+                <button type="button" class="btn-primary" onclick="closeModal('dailyBriefingModal')">
+                    <i class="fa-solid fa-check"></i> รับทราบ / เริ่มทำงาน
+                </button>
             </div>
         </div>
     </div>
@@ -916,12 +1109,332 @@
                 rawDataList = json.data || [];
                 updateStatsWidget();
                 applyFilter();
+
+                // เด้งแจ้งเตือนสรุปหมายด่วนที่มีกำหนดภายใน 5 วัน หรือเลยกำหนด
+                showDailyBriefingModal();
             } catch (e) {
                 console.error("loadData error:", e);
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:#ef4444; padding:30px;"><i class="fa-solid fa-triangle-exclamation"></i> โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
             } finally {
                 document.getElementById('mainLoader').style.display = 'none';
             }
+        }
+
+        // ================= ฟังก์ชันแสดงสรุปหมายที่ต้องดำเนินการ (ไม่เกิน 5 วัน) =================
+        function showDailyBriefingModal() {
+            const urgentWarrants = rawDataList.filter(item => {
+                const raw = item.rawData || {};
+                const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
+                if (isDelivered) return false;
+
+                const diff = getAppointmentDiff(raw.appointmentDate);
+                return (diff !== null && diff <= 5);
+            }).sort((a, b) => {
+                const diffA = getAppointmentDiff(a.rawData.appointmentDate) ?? 999;
+                const diffB = getAppointmentDiff(b.rawData.appointmentDate) ?? 999;
+                return diffA - diffB;
+            });
+
+            const container = document.getElementById('briefingListContainer');
+            const countBadge = document.getElementById('briefingCountBadge');
+            const alertTitle = document.getElementById('briefingAlertTitle');
+            const alertBanner = document.getElementById('briefingAlertBanner');
+
+            countBadge.innerText = `${urgentWarrants.length} รายการ`;
+
+            if (urgentWarrants.length === 0) {
+                alertBanner.style.background = '#ecfdf5';
+                alertBanner.style.borderColor = '#a7f3d0';
+                alertBanner.style.color = '#065f46';
+                alertTitle.innerHTML = `<i class="fa-solid fa-circle-check"></i> เรียบร้อยดี! ไม่มีหมายค้างส่งที่ครบกำหนดภายใน 5 วัน`;
+                countBadge.style.background = '#10b981';
+
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 35px 20px; color: #64748b;">
+                        <i class="fa-solid fa-shield-heart fa-3x" style="color: #10b981; margin-bottom: 12px; display: block;"></i>
+                        <h4 style="margin: 0; color: #1e293b; font-size: 1.05rem;">ไม่มีหมายที่ต้องเร่งนำส่งในขณะนี้</h4>
+                        <p style="margin: 5px 0 0 0; font-size: 0.88rem;">หมายทั้งหมดได้รับการดำเนินการหรือยังไม่ถึงรอบกำหนดส่ง</p>
+                    </div>
+                `;
+            } else {
+                alertBanner.style.background = '#fff7ed';
+                alertBanner.style.borderColor = '#ffedd5';
+                alertBanner.style.color = '#c2410c';
+                alertTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> พบหมายที่ต้องเร่งรัดดำเนินการ`;
+                countBadge.style.background = '#ea580c';
+
+                let html = '';
+                urgentWarrants.forEach(item => {
+                    const raw = item.rawData || {};
+                    const diff = getAppointmentDiff(raw.appointmentDate);
+                    
+                    let badgeHtml = '';
+                    let cardClass = 'briefing-card';
+
+                    if (diff < 0) {
+                        cardClass += ' card-urgent-highlight';
+                        badgeHtml = `<span class="badge-due due-over"><span class="pulse-dot"></span>เลยกำหนด ${Math.abs(diff)} วัน</span>`;
+                    } else if (diff === 0) {
+                        cardClass += ' card-urgent-highlight';
+                        badgeHtml = `<span class="badge-due due-today"><span class="pulse-dot"></span>⚡ ต้องส่งวันนี้!</span>`;
+                    } else {
+                        cardClass += ' card-warning-highlight';
+                        badgeHtml = `<span class="badge-due due-soon"><span class="pulse-dot"></span>⏳ อีก ${diff} วัน</span>`;
+                    }
+
+                    html += `
+                        <div class="${cardClass}">
+                            <div class="briefing-header">
+                                <div class="briefing-name">
+                                    <span>${raw.targetName || '-'}</span>
+                                    <span style="font-size:0.75rem; background:#eff6ff; color:#1e40af; padding:2px 8px; border-radius:6px; font-weight:500;">
+                                        ${raw.targetStatus || 'ผู้รับหมาย'} (ครั้งที่ ${raw.roundNo || 1})
+                                    </span>
+                                </div>
+                                <div>${badgeHtml}</div>
+                            </div>
+
+                            <div class="briefing-address-box">
+                                <i class="fa-solid fa-location-dot" style="color:#ef4444; margin-top:3px; font-size:1rem;"></i>
+                                <div>
+                                    <span style="font-weight:600; color:#0f172a;">ที่อยู่ตามหมาย:</span> 
+                                    <span>${raw.targetAddress || 'ไม่ได้ระบุที่อยู่'}</span>
+                                </div>
+                            </div>
+
+                            <div class="briefing-footer-action">
+                                <div>
+                                    <span><i class="fa-solid fa-calendar-day" style="color:#2563eb;"></i> นัดพบ: <b>${item.display.appointmentDate || '-'}</b></span>
+                                    <span style="margin-left: 10px; color:#64748b;"><i class="fa-solid fa-building-shield"></i> ${raw.agency || '-'}</span>
+                                </div>
+                                <button type="button" class="btn-act btn-act-result" title="บันทึกผลการส่งหมายนี้ทันที" onclick="closeModal('dailyBriefingModal'); openResultModal(${item.rowIndex});" style="width: auto; padding: 4px 12px; gap: 5px; height: 30px; font-size: 0.82rem; font-weight: 500;">
+                                    <i class="fa-solid fa-file-signature"></i> รายงานผลส่ง
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            openModal('dailyBriefingModal');
+        }
+
+        // ================= ฟังก์ชัน Preview ดูข้อมูลทั้งหมดของหมาย =================
+        function openPreviewModal(rowIndex) {
+            const row = rawDataList.find(r => r.rowIndex === rowIndex);
+            if (!row) return;
+
+            const raw = row.rawData || {};
+            const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
+            const diff = getAppointmentDiff(raw.appointmentDate);
+
+            // Badge กำหนดเวลา
+            let dueBadge = '-';
+            if (!isDelivered && diff !== null) {
+                if (diff < 0) {
+                    dueBadge = `<span class="badge-due due-over"><span class="pulse-dot"></span>เกินกำหนด ${Math.abs(diff)} วัน</span>`;
+                } else if (diff === 0) {
+                    dueBadge = `<span class="badge-due due-today"><span class="pulse-dot"></span>⚡ วันนี้เท่านั้น!</span>`;
+                } else if (diff <= 3) {
+                    dueBadge = `<span class="badge-due due-soon"><span class="pulse-dot"></span>⏳ อีก ${diff} วัน (เคสด่วน)</span>`;
+                } else {
+                    dueBadge = `<span class="badge-due due-normal"><span class="pulse-dot"></span>อีก ${diff} วัน</span>`;
+                }
+            } else if (isDelivered) {
+                dueBadge = `<span style="color:#059669; font-weight:600;"><i class="fa-solid fa-circle-check"></i> ดำเนินการส่งแล้ว</span>`;
+            }
+
+            // Badge สถานะ
+            let statusBadge = '';
+            if (!isDelivered) {
+                statusBadge = `<span class="status-badge badge-pending"><i class="fa-solid fa-clock"></i> รอดำเนินการส่งหมาย</span>`;
+            } else if (raw.deliveryStatus === 'ส่งหมายสำเร็จ') {
+                if (raw.receiveType === 'รับหมายแทน') {
+                    statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-people-arrows"></i> ส่งสำเร็จ (รับหมายแทน)</span>`;
+                } else {
+                    statusBadge = `<span class="status-badge badge-success"><i class="fa-solid fa-check"></i> ส่งสำเร็จ (รับด้วยตนเอง)</span>`;
+                }
+            } else {
+                statusBadge = `<span class="status-badge badge-danger"><i class="fa-solid fa-file-excel"></i> ไม่สามารถส่งหมายได้ (บันทึกหลังหมาย)</span>`;
+            }
+
+            // จัดการเนื้อหาผลการส่ง
+            let deliveryResultHtml = '';
+            if (!isDelivered) {
+                deliveryResultHtml = `
+                    <div style="background: #fff7ed; border: 1px dashed #fed7aa; padding: 14px; border-radius: 12px; text-align: center; color: #c2410c;">
+                        <i class="fa-solid fa-hourglass-half fa-lg" style="margin-bottom: 6px; display: block;"></i>
+                        หมายฉบับนี้ยังอยู่ในสถานะ <b>"รอดำเนินการนำส่ง"</b> ยังไม่มีการบันทึกรายงานผล
+                    </div>
+                `;
+            } else if (raw.deliveryStatus === 'ส่งหมายสำเร็จ') {
+                deliveryResultHtml = `
+                    <div class="preview-grid">
+                        <div class="preview-item">
+                            <span class="preview-label">วันที่ส่งหมาย</span>
+                            <span class="preview-value">${raw.sendDate || '-'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">ลักษณะการรับหมาย</span>
+                            <span class="preview-value" style="color:#15803d; font-weight:600;">${raw.receiveType || 'รับด้วยตนเอง'}</span>
+                        </div>
+                        ${raw.receiveType === 'รับหมายแทน' ? `
+                            <div class="preview-item">
+                                <span class="preview-label">ชื่อผู้รับหมายแทน</span>
+                                <span class="preview-value">${raw.substituteName || '-'}</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">ความสัมพันธ์กับผู้รับหมาย</span>
+                                <span class="preview-value">${raw.substituteRelation || '-'}</span>
+                            </div>
+                            <div class="preview-item full-width">
+                                <span class="preview-label">ข้อความบันทึกการรับแทน</span>
+                                <span class="preview-value" style="background:#fff; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+                                    ${raw.substituteStatement || raw.proxyText || '-'}
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                deliveryResultHtml = `
+                    <div class="preview-grid">
+                        <div class="preview-item">
+                            <span class="preview-label">วันที่ไปส่งหมาย</span>
+                            <span class="preview-value">${raw.sendDate || '-'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">สาเหตุที่ไม่สามารถส่งได้</span>
+                            <span class="preview-value" style="color:#dc2626; font-weight:600;">${raw.failReason || '-'}</span>
+                        </div>
+                        <div class="preview-item full-width">
+                            <span class="preview-label">ปรากฏผลการส่งหมาย</span>
+                            <span class="preview-value">${raw.recordChoice || '-'}</span>
+                        </div>
+                        <div class="preview-item full-width">
+                            <span class="preview-label">รายละเอียดบันทึกหลังหมาย (สิ่งที่พบ)</span>
+                            <div class="preview-value" style="background:#fff; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0; line-height:1.5;">
+                                ${raw.recordDetail || '-'}
+                            </div>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">เจ้าหน้าที่ผู้ส่งหมาย</span>
+                            <span class="preview-value">${raw.officerName || '-'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">ตำแหน่ง</span>
+                            <span class="preview-value">${raw.officerRank || '-'}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const bodyHtml = `
+                <!-- ส่วนหัว: ผู้รับหมาย & สถานะ -->
+                <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #dbeafe; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: #1e40af; font-weight: 600; text-transform: uppercase;">
+                            ${raw.targetStatus || 'ผู้รับหมาย'} (ส่งหมายครั้งที่ ${raw.roundNo || 1})
+                        </div>
+                        <div class="preview-highlight" style="margin-top: 2px;">
+                            ${raw.targetName || '-'}
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                        ${statusBadge}
+                        ${dueBadge}
+                    </div>
+                </div>
+
+                <!-- กล่องที่ 1: ข้อมูลการนัดพบ & บุคคล -->
+                <div class="preview-card-box">
+                    <div class="preview-section-title">
+                        <i class="fa-solid fa-user-clock"></i> ข้อมูลการนัดพบและที่อยู่
+                    </div>
+                    <div class="preview-grid">
+                        <div class="preview-item">
+                            <span class="preview-label">วันที่นัดให้ไปพบตามหมายเรียก</span>
+                            <span class="preview-value" style="color: #ea580c; font-weight: 700; font-size: 1.05rem;">
+                                <i class="fa-solid fa-calendar-day"></i> ${row.display.appointmentDate || '-'}
+                            </span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">พนักงานสอบสวนเจ้าของคดี (ที่ต้องไปพบ)</span>
+                            <span class="preview-value">${raw.investigator || '-'}</span>
+                        </div>
+                        <div class="preview-item full-width">
+                            <span class="preview-label">ที่อยู่ตามหมายเรียก</span>
+                            <div class="preview-address-tag">
+                                <i class="fa-solid fa-location-dot" style="color:#ef4444; font-size:1.1rem; margin-top:2px;"></i>
+                                <span>${raw.targetAddress || 'ไม่ได้ระบุที่อยู่'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- กล่องที่ 2: ข้อมูลหนังสือขอความร่วมมือ -->
+                <div class="preview-card-box">
+                    <div class="preview-section-title">
+                        <i class="fa-solid fa-envelope-open-text"></i> ข้อมูลหนังสือขอความร่วมมือส่งหมาย
+                    </div>
+                    <div class="preview-grid">
+                        <div class="preview-item">
+                            <span class="preview-label">ตามหนังสือของ (สภ./หน่วยงาน)</span>
+                            <span class="preview-value">${raw.agency || '-'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">เลขหนังสือ</span>
+                            <span class="preview-value">${raw.bookNo || '-'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">ลงวันที่ในหนังสือ</span>
+                            <span class="preview-value">${raw.bookDate || '-'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">เรียน (ผู้รับเรื่อง)</span>
+                            <span class="preview-value">${raw.recipient || '-'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- กล่องที่ 3: รายงานผลการส่งหมาย -->
+                <div class="preview-card-box" style="margin-bottom: 0;">
+                    <div class="preview-section-title">
+                        <i class="fa-solid fa-clipboard-check"></i> รายงานผลการปฏิบัติงานส่งหมาย
+                    </div>
+                    ${deliveryResultHtml}
+                </div>
+
+                <!-- กล่องที่ 4: ลิงก์เอกสาร Doc (ถ้ามี) -->
+                ${row.display.docUrl ? `
+                    <div style="margin-top: 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display:flex; align-items:center; gap:10px; color:#1e40af; font-weight:500; font-size:0.92rem;">
+                            <i class="fa-solid fa-file-word fa-lg"></i> มีเอกสารรายงานผล Google Doc พร้อมใช้งาน
+                        </div>
+                        <a href="${row.display.docUrl}" target="_blank" class="btn-primary" style="padding:6px 14px; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดดูเอกสาร
+                        </a>
+                    </div>
+                ` : ''}
+            `;
+
+            document.getElementById('previewModalBody').innerHTML = bodyHtml;
+
+            // ตั้งค่า Footer พร้อมปุ่มลัด
+            document.getElementById('previewModalFooter').innerHTML = `
+                <button type="button" class="btn-secondary" onclick="closeModal('previewModal')">ปิดหน้าต่าง</button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-secondary" onclick="closeModal('previewModal'); editWarrantModal(${row.rowIndex});">
+                        <i class="fa-solid fa-pen"></i> แก้ไขข้อมูลหมาย
+                    </button>
+                    <button type="button" class="btn-primary" onclick="closeModal('previewModal'); openResultModal(${row.rowIndex});">
+                        <i class="fa-solid fa-file-circle-check"></i> ${isDelivered ? 'แก้ไขผลส่งหมาย' : 'บันทึกผลส่งหมาย'}
+                    </button>
+                </div>
+            `;
+
+            openModal('previewModal');
         }
 
         function updateStatsWidget() {
@@ -991,7 +1504,6 @@
                 const raw = row.rawData || {};
                 const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
                 
-                // คำนวณนับถอยหลัง - ออกแบบเด่นชัดขึ้น
                 const diff = getAppointmentDiff(raw.appointmentDate);
                 let dueBadge = '-';
                 if (!isDelivered && diff !== null) {
@@ -1022,8 +1534,11 @@
                 }
 
                 const tr = document.createElement('tr');
+                tr.title = "คลิกที่แถวเพื่อดูรายละเอียดข้อมูลทั้งหมดของหมายฉบับนี้";
+                tr.onclick = () => openPreviewModal(row.rowIndex); // คลิกแถวเพื่อดูพรีวิวทั้งหมด
+
                 tr.innerHTML = `
-                    <td style="text-align: center;">
+                    <td style="text-align: center;" onclick="event.stopPropagation()">
                         <div class="action-btns">
                             <button class="btn-act" title="แก้ไขข้อมูลหมาย" onclick="editWarrantModal(${row.rowIndex})">
                                 <i class="fa-solid fa-pen"></i>
@@ -1040,7 +1555,7 @@
                     <td style="text-align: center;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:6px; font-weight:600;">${raw.roundNo || '1'}</span></td>
                     <td><b style="color:#1e40af;">${raw.targetName || '-'}</b></td>
                     <td style="color:#475569;">${raw.agency || '-'}</td>
-                    <td style="text-align: center;">
+                    <td style="text-align: center;" onclick="event.stopPropagation()">
                         ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="nav-btn" style="width:32px; height:32px; margin:auto; color:#2563eb; background:#eff6ff;" title="เปิดดูเอกสาร Google Doc"><i class="fa-solid fa-file-word"></i></a>` : '-'}
                     </td>
                 `;
