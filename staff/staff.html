@@ -283,18 +283,43 @@
             border: 2px solid var(--navy-main, #0f2b5c);
             font-weight: 700;
         }
+
+        /* 🌟 วันที่มีภารกิจ ให้เด่นชัดเจนเป็นพิเศษ */
+        .cal-day.has-task:not(.today) {
+            background: #f0fdf4 !important;
+            border: 1.5px solid #10b981 !important;
+            color: #065f46 !important;
+            font-weight: 700 !important;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.22);
+        }
+        .cal-day.has-task:not(.today):hover {
+            background: #dcfce7 !important;
+            transform: translateY(-2px);
+        }
         .cal-day.has-task::after {
             content: '';
-            width: 5px;
-            height: 5px;
+            width: 7px;
+            height: 7px;
             background: #10b981;
             border-radius: 50%;
             position: absolute;
-            bottom: 4px;
+            bottom: 3px;
+            box-shadow: 0 0 5px rgba(16, 185, 129, 0.85);
+        }
+        .cal-day.today.has-task {
+            box-shadow: 0 0 0 2.5px #ffd700, 0 4px 12px rgba(15, 43, 92, 0.35);
         }
         .cal-day.today.has-task::after {
             background: #ffd700;
+            width: 7px;
+            height: 7px;
+            box-shadow: 0 0 6px #ffd700;
         }
+        .cal-day.selected.has-task:not(.today) {
+            border: 2px solid #0f2b5c !important;
+            background: #dcfce7 !important;
+        }
+
         .cal-tasks-section {
             margin-top: 14px;
             padding-top: 12px;
@@ -635,7 +660,7 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
         const SUMMONS_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
         
-        // 🔴 นำ Web App URL ของ Apps Script ที่ได้จากส่วนที่ 2 มาใส่ตรงนี้
+        // 🔴 Web App URL ปฏิทินที่ถูกต้อง
         const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbyFXp0zDFDEiBOCf-bTNywAGgU3aRQNBbFz0VQn6JPGvvwoIUJLxxSbGJY9_EtrINseGw/exec';
 
         function escapeHtml(str) {
@@ -717,15 +742,40 @@
                 return;
             }
             try {
-                const res = await fetch(CALENDAR_API_URL);
-                const data = await res.json();
-                calTasks = {};
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        if (!calTasks[item.date]) calTasks[item.date] = [];
-                        calTasks[item.date].push(item);
-                    });
+                // ป้องกัน Browser Cache ด้วย timestamp
+                const sep = CALENDAR_API_URL.includes('?') ? '&' : '?';
+                const res = await fetch(`${CALENDAR_API_URL}${sep}_=${Date.now()}`);
+                let data = await res.json();
+                
+                if (typeof data === 'string') {
+                    try { data = JSON.parse(data); } catch (e) {}
                 }
+
+                let items = [];
+                if (Array.isArray(data)) {
+                    items = data;
+                } else if (data && typeof data === 'object') {
+                    if (Array.isArray(data.data)) items = data.data;
+                    else if (Array.isArray(data.tasks)) items = data.tasks;
+                    else if (Array.isArray(data.events)) items = data.events;
+                    else if (Array.isArray(data.items)) items = data.items;
+                }
+
+                calTasks = {};
+                items.forEach(item => {
+                    const rawDate = item.date || item.Date || item.event_date || item.dueDate || '';
+                    const dateKey = cleanToISODate(rawDate) || String(rawDate).trim();
+                    if (!dateKey) return;
+
+                    if (!calTasks[dateKey]) calTasks[dateKey] = [];
+                    calTasks[dateKey].push({
+                        id: item.id || item.ID || item.row || item._id || '',
+                        date: dateKey,
+                        time: item.time || item.Time || '',
+                        title: item.title || item.Title || item.task || item.name || item.detail || ''
+                    });
+                });
+
                 renderMiniCalendar();
                 renderCalTaskList(calSelectedDateStr);
             } catch (err) {
@@ -864,7 +914,7 @@
             btn.disabled = true;
 
             try {
-                await fetch(CALENDAR_API_URL, {
+                const response = await fetch(CALENDAR_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ 
@@ -874,6 +924,7 @@
                         title: title
                     })
                 });
+                await response.text();
                 await fetchCalTasks();
                 closeCalModal();
             } catch (err) {
@@ -895,7 +946,7 @@
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        await fetch(CALENDAR_API_URL, {
+                        const response = await fetch(CALENDAR_API_URL, {
                             method: 'POST',
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({ 
@@ -903,6 +954,7 @@
                                 id: decodeURIComponent(id)
                             })
                         });
+                        await response.text();
                         await fetchCalTasks();
                     } catch (err) {
                         Swal.fire({ icon: 'error', title: 'ลบไม่สำเร็จ', text: err.message });
