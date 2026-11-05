@@ -295,10 +295,11 @@
         .due-soon { 
             background: #fffbeb; 
             color: #b45309; 
-            border: 1px solid #fde68a; 
-            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+            border: 1.5px solid #fde68a; 
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
+            font-weight: 700;
         }
-        .due-soon .pulse-dot { background: #d97706; }
+        .due-soon .pulse-dot { background: #d97706; animation: amberGlow 1.5s infinite; }
 
         .due-normal { 
             background: #f8fafc; 
@@ -545,7 +546,7 @@
     </nav>
 
     <div class="main-wrapper">
-        <!-- 4 Stat Summary Cards -->
+        <!-- 4 Stat Summary Cards (ปรับด่วนมากเป็น 5 วัน) -->
         <div class="stats-grid">
             <div class="stat-card card-pending">
                 <div class="stat-icon stat-pending"><i class="fa-solid fa-clock-rotate-left"></i></div>
@@ -559,7 +560,7 @@
             <div class="stat-card card-urgent">
                 <div class="stat-icon stat-urgent"><i class="fa-solid fa-bell"></i></div>
                 <div class="stat-info">
-                    <div class="stat-title">ด่วนมาก (ภายใน 3 วัน)</div>
+                    <div class="stat-title">ด่วนมาก (ภายใน 5 วัน)</div>
                     <div class="stat-value" id="countUrgent" style="color:#dc2626;">0</div>
                     <span class="stat-meta" style="color:#ef4444;">ใกล้ถึงกำหนดวันนัด</span>
                 </div>
@@ -729,7 +730,6 @@
                             <input type="text" class="form-input" id="appointmentDate" placeholder="คลิกเพื่อเลือกวันนัดพบ..." required style="background: #fff; cursor: pointer;">
                         </div>
 
-                        <!-- เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย & ตำแหน่ง -->
                         <div class="form-group">
                             <label class="form-label">เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย</label>
                             <input type="text" class="form-input" id="warrantOfficerName" placeholder="ยศ ชื่อ สกุล ผู้ส่งหมาย">
@@ -906,7 +906,6 @@
         let selectedRowIndex = -1;
         let autocompleteData = { agencies: [], recipients: [] };
 
-        // ตัวแปรล็อกให้แสดงหน้าต่างสรุปด่วนเฉพาะครั้งแรกตอนเปิดหน้าเว็บเท่านั้น
         let hasShownDailyBriefing = false;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1108,7 +1107,6 @@
                 updateStatsWidget();
                 applyFilter();
 
-                // เด้งเฉพาะครั้งแรกตอนโหลดเข้าหน้าเว็บเท่านั้น
                 if (!hasShownDailyBriefing) {
                     showDailyBriefingModal();
                     hasShownDailyBriefing = true;
@@ -1228,13 +1226,14 @@
             const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
             const diff = getAppointmentDiff(raw.appointmentDate);
 
+            // แจ้งเตือนเคสด่วนตั้งแต่เหลือ 5 วัน
             let dueBadge = '-';
             if (!isDelivered && diff !== null) {
                 if (diff < 0) {
                     dueBadge = `<span class="badge-due due-over"><span class="pulse-dot"></span>เกินกำหนด ${Math.abs(diff)} วัน</span>`;
                 } else if (diff === 0) {
                     dueBadge = `<span class="badge-due due-today"><span class="pulse-dot"></span>⚡ วันนี้เท่านั้น!</span>`;
-                } else if (diff <= 3) {
+                } else if (diff <= 5) {
                     dueBadge = `<span class="badge-due due-soon"><span class="pulse-dot"></span>⏳ อีก ${diff} วัน (เคสด่วน)</span>`;
                 } else {
                     dueBadge = `<span class="badge-due due-normal"><span class="pulse-dot"></span>อีก ${diff} วัน</span>`;
@@ -1319,7 +1318,7 @@
             }
 
             const bodyHtml = `
-                <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #dbeafe; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #dbeafe; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: gap: 10px;">
                     <div>
                         <div style="font-size: 0.85rem; color: #1e40af; font-weight: 600; text-transform: uppercase;">
                             ${raw.targetStatus || 'ผู้รับหมาย'} (ส่งหมายครั้งที่ ${raw.roundNo || 1})
@@ -1429,6 +1428,7 @@
             openModal('previewModal');
         }
 
+        // นับสถิติเคสด่วน: ภายใน 5 วัน
         function updateStatsWidget() {
             let pending = 0;
             let urgent = 0;
@@ -1441,7 +1441,7 @@
                 if (!isDelivered) {
                     pending++;
                     const diff = getAppointmentDiff(raw.appointmentDate);
-                    if (diff !== null && diff <= 3) urgent++;
+                    if (diff !== null && diff <= 5) urgent++; // นับด่วนมากถ้าเหลือ <= 5 วัน
                 } else {
                     done++;
                 }
@@ -1461,6 +1461,7 @@
             applyFilter();
         }
 
+        // กรองข้อมูลพร้อมจัดลำดับ: เอาหมายที่ใกล้ถึงกำหนดนัดที่สุดไว้ด้านบนเสมอ
         function applyFilter() {
             filteredData = rawDataList.filter(item => {
                 const raw = item.rawData || {};
@@ -1469,6 +1470,31 @@
                 if (activeFilter === 'done') return isDelivered;
                 return true;
             });
+
+            // จัดลำดับ: เอาหมายที่ใกล้ถึงกำหนดนัดที่สุดไว้ด้านบน
+            filteredData.sort((a, b) => {
+                const rawA = a.rawData || {};
+                const rawB = b.rawData || {};
+                const isDeliveredA = rawA.deliveryStatus && rawA.deliveryStatus !== 'รอส่งหมาย' && rawA.deliveryStatus !== '';
+                const isDeliveredB = rawB.deliveryStatus && rawB.deliveryStatus !== 'รอส่งหมาย' && rawB.deliveryStatus !== '';
+
+                // หากดูแท็บ "ทั้งหมด": หมายที่ค้างส่ง (ต้องรีบทำ) จะอยู่ด้านบนก่อนหมายที่ส่งสำเร็จแล้วเสมอ
+                if (activeFilter === 'all') {
+                    if (!isDeliveredA && isDeliveredB) return -1;
+                    if (isDeliveredA && !isDeliveredB) return 1;
+                }
+
+                const diffA = getAppointmentDiff(rawA.appointmentDate);
+                const diffB = getAppointmentDiff(rawB.appointmentDate);
+
+                // หากไม่มีวันที่นัดพบให้ส่งไปอยู่ล่างสุด
+                const valA = diffA !== null ? diffA : 99999;
+                const valB = diffB !== null ? diffB : 99999;
+
+                // เรียงลำดับ: ค่าน้อยสุด (เกินกำหนด, วันนี้, 1 วัน, 2 วัน, ...) ขึ้นก่อน
+                return valA - valB;
+            });
+
             renderTable();
         }
 
@@ -1503,7 +1529,7 @@
                         dueBadge = `<span class="badge-due due-over"><span class="pulse-dot"></span><i class="fa-solid fa-triangle-exclamation"></i> เกินกำหนด ${Math.abs(diff)} วัน</span>`;
                     } else if (diff === 0) {
                         dueBadge = `<span class="badge-due due-today"><span class="pulse-dot"></span><i class="fa-solid fa-bell"></i> วันนี้เท่านั้น!</span>`;
-                    } else if (diff <= 3) {
+                    } else if (diff <= 5) { // แจ้งเตือนเคสด่วนตั้งแต่เหลือ 5 วัน
                         dueBadge = `<span class="badge-due due-soon"><span class="pulse-dot"></span><i class="fa-solid fa-hourglass-half"></i> อีก ${diff} วัน (เคสด่วน)</span>`;
                     } else {
                         dueBadge = `<span class="badge-due due-normal"><span class="pulse-dot"></span>อีก ${diff} วัน</span>`;
@@ -1595,7 +1621,6 @@
             setDateValue('appointmentDate', raw.appointmentDate);
             setDateValue('bookDate', raw.bookDate);
 
-            // ใส่ข้อมูลเจ้าหน้าที่ผู้ส่งหมาย
             document.getElementById('warrantOfficerName').value = raw.officerName || '';
             document.getElementById('warrantOfficerRank').value = raw.officerRank || '';
 
@@ -1640,7 +1665,6 @@
                     targetName: document.getElementById('targetName').value.trim(),
                     targetAddress: document.getElementById('targetAddress').value.trim()
                 },
-                // แนบไว้ที่ root ด้วยเผื่อ backend ดึงจากตัวนอก
                 officerName: officerName,
                 officerRank: officerRank
             };
