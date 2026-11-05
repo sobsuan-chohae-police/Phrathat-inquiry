@@ -388,7 +388,6 @@
         .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: 'Kanit'; font-size: 0.92rem; }
         .btn-secondary:hover { background: #e2e8f0; }
 
-        /* สไตล์หน้าต่างแจ้งเตือนสรุปหมายด่วนประจำวัน */
         .briefing-card {
             background: #ffffff;
             border: 1.5px solid #e2e8f0;
@@ -451,7 +450,6 @@
             margin-top: 2px;
         }
 
-        /* Preview Details Box */
         .preview-section-title {
             font-size: 0.95rem;
             font-weight: 600;
@@ -515,7 +513,6 @@
             align-items: flex-start;
         }
         
-        /* Animations */
         @keyframes redGlow {
             0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
             50% { opacity: 0.7; transform: scale(1.15); box-shadow: 0 0 0 5px rgba(220, 38, 38, 0); }
@@ -656,9 +653,7 @@
                 </div>
                 <button class="btn-act" onclick="closeModal('previewModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
             <div class="modal-body" id="previewModalBody"></div>
-
             <div class="modal-footer" id="previewModalFooter" style="background: #f8fafc;"></div>
         </div>
     </div>
@@ -687,7 +682,6 @@
                     </div>
                     <span id="briefingCountBadge" style="background: #ea580c; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">0 รายการ</span>
                 </div>
-
                 <div id="briefingListContainer"></div>
             </div>
 
@@ -702,7 +696,7 @@
         </div>
     </div>
 
-    <!-- MODAL 1: บันทึกข้อมูลหมายเรียก -->
+    <!-- MODAL 1: บันทึก/แก้ไขข้อมูลหมายเรียก -->
     <div id="warrantModal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header-area">
@@ -735,7 +729,7 @@
                             <input type="text" class="form-input" id="appointmentDate" placeholder="คลิกเพื่อเลือกวันนัดพบ..." required style="background: #fff; cursor: pointer;">
                         </div>
 
-                        <!-- เพิ่มเจ้าหน้าที่ผู้รับผิดชอบส่งหมาย -->
+                        <!-- เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย & ตำแหน่ง -->
                         <div class="form-group">
                             <label class="form-label">เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย</label>
                             <input type="text" class="form-input" id="warrantOfficerName" placeholder="ยศ ชื่อ สกุล ผู้ส่งหมาย">
@@ -815,7 +809,6 @@
                             </select>
                         </div>
 
-                        <!-- ย้ายเจ้าหน้าที่ผู้ส่งหมายและตำแหน่งมาอยู่ข้างนอก เพื่อใช้ร่วมกันทั้งส่งได้และไม่ได้ -->
                         <div class="form-group">
                             <label class="form-label">เจ้าหน้าที่ผู้ส่งหมาย <span style="color:#dc2626;">*</span></label>
                             <input type="text" class="form-input" id="officerName" placeholder="ยศ ชื่อ นามสกุล" required>
@@ -826,7 +819,7 @@
                         </div>
                     </div>
 
-                    <!-- ส่วนที่ 1: กรณีส่งหมายสำเร็จ -->
+                    <!-- ส่งสำเร็จ -->
                     <div id="successSection" class="success-section">
                         <div class="form-grid">
                             <div class="form-group full-width">
@@ -860,7 +853,7 @@
                         </div>
                     </div>
 
-                    <!-- ส่วนที่ 2: กรณีไม่สามารถส่งหมายได้ -->
+                    <!-- ส่งไม่สำเร็จ -->
                     <div id="failedSection" class="failed-section">
                         <h4 style="margin: 0 0 12px 0; color: #c2410c; font-size: 0.98rem; font-weight: 600;">
                             <i class="fa-solid fa-file-pen"></i> ข้อมูลบันทึกหลังหมาย
@@ -912,6 +905,9 @@
         let editMode = false;
         let selectedRowIndex = -1;
         let autocompleteData = { agencies: [], recipients: [] };
+
+        // ตัวแปรล็อกให้แสดงหน้าต่างสรุปด่วนเฉพาะครั้งแรกตอนเปิดหน้าเว็บเท่านั้น
+        let hasShownDailyBriefing = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             initSafeDatePicker('#appointmentDate');
@@ -1112,7 +1108,11 @@
                 updateStatsWidget();
                 applyFilter();
 
-                showDailyBriefingModal();
+                // เด้งเฉพาะครั้งแรกตอนโหลดเข้าหน้าเว็บเท่านั้น
+                if (!hasShownDailyBriefing) {
+                    showDailyBriefingModal();
+                    hasShownDailyBriefing = true;
+                }
             } catch (e) {
                 console.error("loadData error:", e);
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:#ef4444; padding:30px;"><i class="fa-solid fa-triangle-exclamation"></i> โหลดข้อมูลไม่สำเร็จ: ${e.message}</td></tr>`;
@@ -1205,7 +1205,7 @@
                             <div class="briefing-footer-action">
                                 <div>
                                     <span><i class="fa-solid fa-calendar-day" style="color:#2563eb;"></i> นัดพบ: <b>${item.display.appointmentDate || '-'}</b></span>
-                                    <span style="margin-left: 10px; color:#64748b;"><i class="fa-solid fa-user-shield"></i> ${raw.officerName || 'ยังไม่กำหนด'}</span>
+                                    <span style="margin-left: 10px; color:#64748b;"><i class="fa-solid fa-user-shield"></i> ${raw.officerName || 'ยังไม่ระบุ'}</span>
                                 </div>
                                 <button type="button" class="btn-act btn-act-result" title="บันทึกผลการส่งหมายนี้ทันที" onclick="closeModal('dailyBriefingModal'); openResultModal(${item.rowIndex});" style="width: auto; padding: 4px 12px; gap: 5px; height: 30px; font-size: 0.82rem; font-weight: 500;">
                                     <i class="fa-solid fa-file-signature"></i> รายงานผลส่ง
@@ -1319,7 +1319,6 @@
             }
 
             const bodyHtml = `
-                <!-- ส่วนหัว -->
                 <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #dbeafe; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
                     <div>
                         <div style="font-size: 0.85rem; color: #1e40af; font-weight: 600; text-transform: uppercase;">
@@ -1335,7 +1334,6 @@
                     </div>
                 </div>
 
-                <!-- กล่องที่ 1: ข้อมูลการนัดพบ & บุคคล & เจ้าหน้าที่ -->
                 <div class="preview-card-box">
                     <div class="preview-section-title">
                         <i class="fa-solid fa-user-clock"></i> ข้อมูลการนัดพบและผู้รับผิดชอบ
@@ -1352,7 +1350,6 @@
                             <span class="preview-value">${raw.investigator || '-'}</span>
                         </div>
 
-                        <!-- แสดงเจ้าหน้าที่ผู้ส่งหมาย/ผู้รับผิดชอบ -->
                         <div class="preview-item">
                             <span class="preview-label">เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย</span>
                             <span class="preview-value" style="color:#1e40af; font-weight:600;"><i class="fa-solid fa-user-shield"></i> ${raw.officerName || 'ยังไม่ระบุ'}</span>
@@ -1372,7 +1369,6 @@
                     </div>
                 </div>
 
-                <!-- กล่องที่ 2: ข้อมูลหนังสือขอความร่วมมือ -->
                 <div class="preview-card-box">
                     <div class="preview-section-title">
                         <i class="fa-solid fa-envelope-open-text"></i> ข้อมูลหนังสือขอความร่วมมือส่งหมาย
@@ -1397,7 +1393,6 @@
                     </div>
                 </div>
 
-                <!-- กล่องที่ 3: รายงานผลการส่งหมาย -->
                 <div class="preview-card-box" style="margin-bottom: 0;">
                     <div class="preview-section-title">
                         <i class="fa-solid fa-clipboard-check"></i> รายงานผลการปฏิบัติงานส่งหมาย
@@ -1405,7 +1400,6 @@
                     ${deliveryResultHtml}
                 </div>
 
-                <!-- กล่องที่ 4: ลิงก์เอกสาร Doc (ถ้ามี) -->
                 ${row.display.docUrl ? `
                     <div style="margin-top: 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
                         <div style="display:flex; align-items:center; gap:10px; color:#1e40af; font-weight:500; font-size:0.92rem;">
@@ -1535,7 +1529,6 @@
                 tr.title = "คลิกที่แถวเพื่อดูรายละเอียดข้อมูลทั้งหมดของหมายฉบับนี้";
                 tr.onclick = () => openPreviewModal(row.rowIndex);
 
-                // คอลัมน์แสดงเจ้าหน้าที่ผู้รับผิดชอบ
                 const officerHtml = raw.officerName 
                     ? `<div><span style="font-weight:600; color:#1e293b;">${raw.officerName}</span>${raw.officerRank ? `<div style="font-size:0.75rem; color:#64748b;">${raw.officerRank}</div>` : ''}</div>`
                     : `<span style="color:#94a3b8; font-style:italic;">ยังไม่ได้ระบุ</span>`;
@@ -1591,7 +1584,7 @@
 
             editMode = true;
             selectedRowIndex = rowIndex;
-            const raw = row.rawData;
+            const raw = row.rawData || {};
 
             document.getElementById('warrantModalTitle').innerText = 'แก้ไขข้อมูลหมายเรียก';
             document.getElementById('btnDeleteWarrant').style.display = 'block';
@@ -1626,6 +1619,9 @@
                 return;
             }
 
+            const officerName = document.getElementById('warrantOfficerName').value.trim();
+            const officerRank = document.getElementById('warrantOfficerRank').value.trim();
+
             const payload = {
                 action: 'saveWarrantInfo',
                 mode: editMode ? 'edit' : 'add',
@@ -1634,16 +1630,19 @@
                     targetStatus: document.getElementById('targetStatus').value,
                     roundNo: document.getElementById('roundNo').value,
                     appointmentDate: aDate,
-                    officerName: document.getElementById('warrantOfficerName').value,
-                    officerRank: document.getElementById('warrantOfficerRank').value,
-                    agency: document.getElementById('agency').value,
-                    bookNo: document.getElementById('bookNo').value,
+                    officerName: officerName,
+                    officerRank: officerRank,
+                    agency: document.getElementById('agency').value.trim(),
+                    bookNo: document.getElementById('bookNo').value.trim(),
                     bookDate: bDate,
-                    recipient: document.getElementById('recipient').value,
-                    investigator: document.getElementById('investigator').value,
-                    targetName: document.getElementById('targetName').value,
-                    targetAddress: document.getElementById('targetAddress').value
-                }
+                    recipient: document.getElementById('recipient').value.trim(),
+                    investigator: document.getElementById('investigator').value.trim(),
+                    targetName: document.getElementById('targetName').value.trim(),
+                    targetAddress: document.getElementById('targetAddress').value.trim()
+                },
+                // แนบไว้ที่ root ด้วยเผื่อ backend ดึงจากตัวนอก
+                officerName: officerName,
+                officerRank: officerRank
             };
 
             Swal.fire({ title: 'กำลังบันทึกข้อมูลหมาย...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -1721,7 +1720,6 @@
             setDateValue('sendDate', raw.sendDate || '');
             document.getElementById('deliveryStatus').value = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' ? raw.deliveryStatus : 'ส่งหมายสำเร็จ';
             
-            // นำข้อมูลเจ้าหน้าที่ผู้ส่งหมายมาใส่เป็นค่าเริ่มต้น
             document.getElementById('officerName').value = raw.officerName || '';
             document.getElementById('officerRank').value = raw.officerRank || '';
 
