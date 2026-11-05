@@ -451,7 +451,7 @@
             margin-top: 2px;
         }
 
-        /* ---------------- สไตล์หน้าต่าง Preview ข้อมูลหมายเรียก ---------------- */
+        /* Preview Details Box */
         .preview-section-title {
             font-size: 0.95rem;
             font-weight: 600;
@@ -531,7 +531,6 @@
             95% { transform: translate(-1px, 0); }
         }
 
-        /* Flatpickr Thai */
         .flatpickr-calendar { font-family: 'Kanit', sans-serif !important; border-radius: 16px !important; box-shadow: 0 12px 36px rgba(0,0,0,0.12) !important; border: 1px solid #e2e8f0 !important; }
         .flatpickr-day.selected, .flatpickr-day.selected:hover { background: #1e40af !important; border-color: #1e40af !important; }
         .flatpickr-current-month { font-size: 1.05rem !important; padding-top: 5px !important; }
@@ -623,7 +622,7 @@
                             <th>ประเภท</th>
                             <th style="text-align: center;">ครั้งที่</th>
                             <th>ผู้รับหมาย</th>
-                            <th>หน่วยงานขอความร่วมมือ</th>
+                            <th>เจ้าหน้าที่ผู้รับผิดชอบ</th>
                             <th style="text-align: center;">เอกสาร</th>
                         </tr>
                     </thead>
@@ -642,7 +641,7 @@
         </div>
     </div>
 
-    <!-- MODAL PREVIEW: แสดงรายละเอียดข้อมูลหมายเรียกทั้งหมดแบบอ่านอย่างเดียว -->
+    <!-- MODAL PREVIEW -->
     <div id="previewModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 760px;">
             <div class="modal-header-area" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
@@ -658,17 +657,13 @@
                 <button class="btn-act" onclick="closeModal('previewModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="modal-body" id="previewModalBody">
-                <!-- ข้อมูลจะถูก render โดย Javascript -->
-            </div>
+            <div class="modal-body" id="previewModalBody"></div>
 
-            <div class="modal-footer" id="previewModalFooter" style="background: #f8fafc;">
-                <!-- ปุ่ม Action ถูกเติมโดย Javascript -->
-            </div>
+            <div class="modal-footer" id="previewModalFooter" style="background: #f8fafc;"></div>
         </div>
     </div>
 
-    <!-- MODAL แจ้งเตือนสรุปหมายด่วนประจำวัน (Daily Briefing Modal) -->
+    <!-- MODAL สรุปหมายด่วน -->
     <div id="dailyBriefingModal" class="modal-overlay">
         <div class="modal-card" style="max-width: 740px;">
             <div class="modal-header-area" style="background: linear-gradient(135deg, #0f2b5c 0%, #1e40af 100%); color: #fff;">
@@ -685,7 +680,6 @@
             </div>
 
             <div class="modal-body" style="padding: 18px 22px; max-height: 65vh;">
-                <!-- สรุปจำนวน -->
                 <div id="briefingAlertBanner" style="margin-bottom: 14px; padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; background: #fff7ed; border: 1px solid #ffedd5; color: #c2410c;">
                     <div style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem;">
                         <i class="fa-solid fa-triangle-exclamation fa-lg"></i>
@@ -694,7 +688,6 @@
                     <span id="briefingCountBadge" style="background: #ea580c; color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">0 รายการ</span>
                 </div>
 
-                <!-- รายการหมาย -->
                 <div id="briefingListContainer"></div>
             </div>
 
@@ -740,6 +733,16 @@
                                 <i class="fa-solid fa-calendar-check"></i> วันที่นัดให้ไปพบตามหมายเรียก
                             </label>
                             <input type="text" class="form-input" id="appointmentDate" placeholder="คลิกเพื่อเลือกวันนัดพบ..." required style="background: #fff; cursor: pointer;">
+                        </div>
+
+                        <!-- เพิ่มเจ้าหน้าที่ผู้รับผิดชอบส่งหมาย -->
+                        <div class="form-group">
+                            <label class="form-label">เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย</label>
+                            <input type="text" class="form-input" id="warrantOfficerName" placeholder="ยศ ชื่อ สกุล ผู้ส่งหมาย">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ตำแหน่ง</label>
+                            <input type="text" class="form-input" id="warrantOfficerRank" placeholder="เช่น ผบ.หมู่(ป.) สภ.พระธาตุช่อแฮ">
                         </div>
 
                         <div class="form-group full-width autocomplete-wrapper">
@@ -811,6 +814,16 @@
                                 <option value="ไม่สามารถส่งหมายได้">ไม่สามารถส่งหมายได้ (ทำบันทึกหลังหมาย)</option>
                             </select>
                         </div>
+
+                        <!-- ย้ายเจ้าหน้าที่ผู้ส่งหมายและตำแหน่งมาอยู่ข้างนอก เพื่อใช้ร่วมกันทั้งส่งได้และไม่ได้ -->
+                        <div class="form-group">
+                            <label class="form-label">เจ้าหน้าที่ผู้ส่งหมาย <span style="color:#dc2626;">*</span></label>
+                            <input type="text" class="form-input" id="officerName" placeholder="ยศ ชื่อ นามสกุล" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ตำแหน่งผู้ส่งหมาย <span style="color:#dc2626;">*</span></label>
+                            <input type="text" class="form-input" id="officerRank" placeholder="เช่น ผบ.หมู่(ป.) สภ.พระธาตุช่อแฮ" required>
+                        </div>
                     </div>
 
                     <!-- ส่วนที่ 1: กรณีส่งหมายสำเร็จ -->
@@ -872,15 +885,6 @@
                                 <label class="form-label">เมื่อเดินทางไปถึงที่บ้านดังกล่าว (รายละเอียดบันทึกหลังหมาย)</label>
                                 <textarea class="form-input" id="recordDetail" style="min-height: 75px;" placeholder="ระบุสิ่งที่พบ เช่น พบบ้านปิดเงียบ สอบถามเพื่อนบ้านแจ้งว่า..."></textarea>
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label">เจ้าหน้าที่ผู้ส่งหมาย</label>
-                                <input type="text" class="form-input" id="officerName" placeholder="ยศ ชื่อ นามสกุล">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">ตำแหน่งผู้ส่งหมาย</label>
-                                <input type="text" class="form-input" id="officerRank" placeholder="เช่น ผบ.หมู่(ป.) สภ.เมืองแพร่">
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -920,7 +924,6 @@
             loadOptions();
         });
 
-        // ================= ปฏิทินภาษาไทย ป้องกันบั๊ก 3112 / วันไม่ตรง 100% =================
         function initSafeDatePicker(selector) {
             flatpickr(selector, {
                 locale: 'th',
@@ -1094,7 +1097,6 @@
             return Math.round((targetDate - today) / (1000 * 60 * 60 * 24));
         }
 
-        // โหลดข้อมูล
         async function loadData() {
             document.getElementById('mainLoader').style.display = 'flex';
             try {
@@ -1110,7 +1112,6 @@
                 updateStatsWidget();
                 applyFilter();
 
-                // เด้งแจ้งเตือนสรุปหมายด่วนที่มีกำหนดภายใน 5 วัน หรือเลยกำหนด
                 showDailyBriefingModal();
             } catch (e) {
                 console.error("loadData error:", e);
@@ -1120,7 +1121,6 @@
             }
         }
 
-        // ================= ฟังก์ชันแสดงสรุปหมายที่ต้องดำเนินการ (ไม่เกิน 5 วัน) =================
         function showDailyBriefingModal() {
             const urgentWarrants = rawDataList.filter(item => {
                 const raw = item.rawData || {};
@@ -1205,7 +1205,7 @@
                             <div class="briefing-footer-action">
                                 <div>
                                     <span><i class="fa-solid fa-calendar-day" style="color:#2563eb;"></i> นัดพบ: <b>${item.display.appointmentDate || '-'}</b></span>
-                                    <span style="margin-left: 10px; color:#64748b;"><i class="fa-solid fa-building-shield"></i> ${raw.agency || '-'}</span>
+                                    <span style="margin-left: 10px; color:#64748b;"><i class="fa-solid fa-user-shield"></i> ${raw.officerName || 'ยังไม่กำหนด'}</span>
                                 </div>
                                 <button type="button" class="btn-act btn-act-result" title="บันทึกผลการส่งหมายนี้ทันที" onclick="closeModal('dailyBriefingModal'); openResultModal(${item.rowIndex});" style="width: auto; padding: 4px 12px; gap: 5px; height: 30px; font-size: 0.82rem; font-weight: 500;">
                                     <i class="fa-solid fa-file-signature"></i> รายงานผลส่ง
@@ -1220,7 +1220,6 @@
             openModal('dailyBriefingModal');
         }
 
-        // ================= ฟังก์ชัน Preview ดูข้อมูลทั้งหมดของหมาย =================
         function openPreviewModal(rowIndex) {
             const row = rawDataList.find(r => r.rowIndex === rowIndex);
             if (!row) return;
@@ -1229,7 +1228,6 @@
             const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
             const diff = getAppointmentDiff(raw.appointmentDate);
 
-            // Badge กำหนดเวลา
             let dueBadge = '-';
             if (!isDelivered && diff !== null) {
                 if (diff < 0) {
@@ -1245,7 +1243,6 @@
                 dueBadge = `<span style="color:#059669; font-weight:600;"><i class="fa-solid fa-circle-check"></i> ดำเนินการส่งแล้ว</span>`;
             }
 
-            // Badge สถานะ
             let statusBadge = '';
             if (!isDelivered) {
                 statusBadge = `<span class="status-badge badge-pending"><i class="fa-solid fa-clock"></i> รอดำเนินการส่งหมาย</span>`;
@@ -1259,7 +1256,6 @@
                 statusBadge = `<span class="status-badge badge-danger"><i class="fa-solid fa-file-excel"></i> ไม่สามารถส่งหมายได้ (บันทึกหลังหมาย)</span>`;
             }
 
-            // จัดการเนื้อหาผลการส่ง
             let deliveryResultHtml = '';
             if (!isDelivered) {
                 deliveryResultHtml = `
@@ -1318,20 +1314,12 @@
                                 ${raw.recordDetail || '-'}
                             </div>
                         </div>
-                        <div class="preview-item">
-                            <span class="preview-label">เจ้าหน้าที่ผู้ส่งหมาย</span>
-                            <span class="preview-value">${raw.officerName || '-'}</span>
-                        </div>
-                        <div class="preview-item">
-                            <span class="preview-label">ตำแหน่ง</span>
-                            <span class="preview-value">${raw.officerRank || '-'}</span>
-                        </div>
                     </div>
                 `;
             }
 
             const bodyHtml = `
-                <!-- ส่วนหัว: ผู้รับหมาย & สถานะ -->
+                <!-- ส่วนหัว -->
                 <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #dbeafe; border-radius: 14px; padding: 16px 20px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
                     <div>
                         <div style="font-size: 0.85rem; color: #1e40af; font-weight: 600; text-transform: uppercase;">
@@ -1347,10 +1335,10 @@
                     </div>
                 </div>
 
-                <!-- กล่องที่ 1: ข้อมูลการนัดพบ & บุคคล -->
+                <!-- กล่องที่ 1: ข้อมูลการนัดพบ & บุคคล & เจ้าหน้าที่ -->
                 <div class="preview-card-box">
                     <div class="preview-section-title">
-                        <i class="fa-solid fa-user-clock"></i> ข้อมูลการนัดพบและที่อยู่
+                        <i class="fa-solid fa-user-clock"></i> ข้อมูลการนัดพบและผู้รับผิดชอบ
                     </div>
                     <div class="preview-grid">
                         <div class="preview-item">
@@ -1363,6 +1351,17 @@
                             <span class="preview-label">พนักงานสอบสวนเจ้าของคดี (ที่ต้องไปพบ)</span>
                             <span class="preview-value">${raw.investigator || '-'}</span>
                         </div>
+
+                        <!-- แสดงเจ้าหน้าที่ผู้ส่งหมาย/ผู้รับผิดชอบ -->
+                        <div class="preview-item">
+                            <span class="preview-label">เจ้าหน้าที่ผู้รับผิดชอบส่งหมาย</span>
+                            <span class="preview-value" style="color:#1e40af; font-weight:600;"><i class="fa-solid fa-user-shield"></i> ${raw.officerName || 'ยังไม่ระบุ'}</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">ตำแหน่ง</span>
+                            <span class="preview-value">${raw.officerRank || '-'}</span>
+                        </div>
+
                         <div class="preview-item full-width">
                             <span class="preview-label">ที่อยู่ตามหมายเรียก</span>
                             <div class="preview-address-tag">
@@ -1421,7 +1420,6 @@
 
             document.getElementById('previewModalBody').innerHTML = bodyHtml;
 
-            // ตั้งค่า Footer พร้อมปุ่มลัด
             document.getElementById('previewModalFooter').innerHTML = `
                 <button type="button" class="btn-secondary" onclick="closeModal('previewModal')">ปิดหน้าต่าง</button>
                 <div style="display: flex; gap: 8px;">
@@ -1535,7 +1533,12 @@
 
                 const tr = document.createElement('tr');
                 tr.title = "คลิกที่แถวเพื่อดูรายละเอียดข้อมูลทั้งหมดของหมายฉบับนี้";
-                tr.onclick = () => openPreviewModal(row.rowIndex); // คลิกแถวเพื่อดูพรีวิวทั้งหมด
+                tr.onclick = () => openPreviewModal(row.rowIndex);
+
+                // คอลัมน์แสดงเจ้าหน้าที่ผู้รับผิดชอบ
+                const officerHtml = raw.officerName 
+                    ? `<div><span style="font-weight:600; color:#1e293b;">${raw.officerName}</span>${raw.officerRank ? `<div style="font-size:0.75rem; color:#64748b;">${raw.officerRank}</div>` : ''}</div>`
+                    : `<span style="color:#94a3b8; font-style:italic;">ยังไม่ได้ระบุ</span>`;
 
                 tr.innerHTML = `
                     <td style="text-align: center;" onclick="event.stopPropagation()">
@@ -1554,7 +1557,7 @@
                     <td><span style="font-weight:500; color:#334155;">${raw.targetStatus || '-'}</span></td>
                     <td style="text-align: center;"><span style="background:#f1f5f9; padding:2px 8px; border-radius:6px; font-weight:600;">${raw.roundNo || '1'}</span></td>
                     <td><b style="color:#1e40af;">${raw.targetName || '-'}</b></td>
-                    <td style="color:#475569;">${raw.agency || '-'}</td>
+                    <td>${officerHtml}</td>
                     <td style="text-align: center;" onclick="event.stopPropagation()">
                         ${row.display.docUrl ? `<a href="${row.display.docUrl}" target="_blank" class="nav-btn" style="width:32px; height:32px; margin:auto; color:#2563eb; background:#eff6ff;" title="เปิดดูเอกสาร Google Doc"><i class="fa-solid fa-file-word"></i></a>` : '-'}
                     </td>
@@ -1577,6 +1580,8 @@
             document.getElementById('btnDeleteWarrant').style.display = 'none';
             setDateValue('appointmentDate', '');
             setDateValue('bookDate', '');
+            document.getElementById('warrantOfficerName').value = '';
+            document.getElementById('warrantOfficerRank').value = '';
             openModal('warrantModal');
         }
 
@@ -1596,6 +1601,10 @@
             
             setDateValue('appointmentDate', raw.appointmentDate);
             setDateValue('bookDate', raw.bookDate);
+
+            // ใส่ข้อมูลเจ้าหน้าที่ผู้ส่งหมาย
+            document.getElementById('warrantOfficerName').value = raw.officerName || '';
+            document.getElementById('warrantOfficerRank').value = raw.officerRank || '';
 
             document.getElementById('agency').value = raw.agency || '';
             document.getElementById('bookNo').value = raw.bookNo || '';
@@ -1625,6 +1634,8 @@
                     targetStatus: document.getElementById('targetStatus').value,
                     roundNo: document.getElementById('roundNo').value,
                     appointmentDate: aDate,
+                    officerName: document.getElementById('warrantOfficerName').value,
+                    officerRank: document.getElementById('warrantOfficerRank').value,
                     agency: document.getElementById('agency').value,
                     bookNo: document.getElementById('bookNo').value,
                     bookDate: bDate,
@@ -1710,6 +1721,10 @@
             setDateValue('sendDate', raw.sendDate || '');
             document.getElementById('deliveryStatus').value = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' ? raw.deliveryStatus : 'ส่งหมายสำเร็จ';
             
+            // นำข้อมูลเจ้าหน้าที่ผู้ส่งหมายมาใส่เป็นค่าเริ่มต้น
+            document.getElementById('officerName').value = raw.officerName || '';
+            document.getElementById('officerRank').value = raw.officerRank || '';
+
             document.getElementById('receiveType').value = raw.receiveType || 'รับด้วยตนเอง';
             document.getElementById('substituteName').value = raw.substituteName || '';
             document.getElementById('substituteRelation').value = raw.substituteRelation || '';
@@ -1717,8 +1732,6 @@
             document.getElementById('failReason').value = raw.failReason || '';
             document.getElementById('recordChoice').value = raw.recordChoice || 'มีบ้านเลขที่ แต่ไม่พบตัวผู้ต้องหา และไม่มีผู้รับหมาย';
             document.getElementById('recordDetail').value = raw.recordDetail || '';
-            document.getElementById('officerName').value = raw.officerName || '';
-            document.getElementById('officerRank').value = raw.officerRank || '';
 
             toggleDeliveryResultUI();
             openModal('resultModal');
@@ -1740,8 +1753,6 @@
             }
 
             document.getElementById('failReason').required = isFailed;
-            document.getElementById('officerName').required = isFailed;
-            document.getElementById('officerRank').required = isFailed;
         }
 
         function toggleProxyUI() {
@@ -1772,6 +1783,13 @@
             const sDate = getDateValue('sendDate');
             if (!sDate) {
                 Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณาระบุวันที่ส่งหมาย' });
+                return;
+            }
+
+            const officerName = document.getElementById('officerName').value.trim();
+            const officerRank = document.getElementById('officerRank').value.trim();
+            if (!officerName || !officerRank) {
+                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณาระบุชื่อและตำแหน่งของเจ้าหน้าที่ผู้ส่งหมาย' });
                 return;
             }
 
@@ -1810,6 +1828,8 @@
                 resultData: {
                     sendDate: sDate,
                     deliveryStatus: deliveryStatus,
+                    officerName: officerName,
+                    officerRank: officerRank,
                     receiveType: receiveType,
                     substituteName: substituteName,
                     substituteRelation: substituteRelation,
@@ -1818,9 +1838,7 @@
                     proxyText: substituteStatement,
                     failReason: document.getElementById('failReason').value,
                     recordChoice: document.getElementById('recordChoice').value,
-                    recordDetail: document.getElementById('recordDetail').value,
-                    officerName: document.getElementById('officerName').value,
-                    officerRank: document.getElementById('officerRank').value
+                    recordDetail: document.getElementById('recordDetail').value
                 }
             };
 
@@ -1854,7 +1872,6 @@
             }
         }
 
-        // ================= Utilities =================
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
