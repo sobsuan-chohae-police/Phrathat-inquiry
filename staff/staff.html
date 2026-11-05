@@ -132,11 +132,42 @@
         }
 
         /* =========================================================
+           Layout 2 คอลัมน์ (ปฏิทินซ้าย - เมนูขวา)
+           ========================================================= */
+        @media (min-width: 900px) {
+            .container.container-sm {
+                max-width: 1100px;
+            }
+        }
+        .dashboard-grid {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+        .dashboard-main-tools {
+            flex: 1;
+            min-width: 0;
+        }
+        .calendar-section-wrapper {
+            width: 360px;
+            flex-shrink: 0;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 80px;
+        }
+        @media (max-width: 899px) {
+            .dashboard-grid {
+                flex-direction: column;
+            }
+            .calendar-section-wrapper {
+                width: 100%;
+                position: static;
+            }
+        }
+
+        /* =========================================================
            Style ปฏิทินบันทึกงาน
            ========================================================= */
-        .calendar-section-wrapper {
-            margin-bottom: 25px;
-        }
         .mini-cal-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -456,114 +487,120 @@
             </a>
         </div>
 
-        <!-- 🗓️ ปฏิทินบันทึกงานและเวลา (เชื่อมต่อ Google Sheet) -->
-        <div class="calendar-section-wrapper" id="calendarSectionWrapper">
-            <div class="mini-cal-card">
-                <div class="cal-header-bar">
-                    <h4 class="cal-header-title">
-                        <i class="fa-regular fa-calendar-check" style="color: var(--navy-main, #0f2b5c);"></i> 
-                        <span id="calMonthYearTitle">กำลังโหลด...</span>
-                    </h4>
-                    <div class="cal-nav-group">
-                        <button class="cal-mini-btn" onclick="calPrevMonth()" title="เดือนก่อน">‹</button>
-                        <button class="cal-mini-btn today-btn" onclick="calGoToday()">วันนี้</button>
-                        <button class="cal-mini-btn" onclick="calNextMonth()" title="เดือนถัดไป">›</button>
-                    </div>
-                </div>
-
-                <div class="cal-weekdays">
-                    <div class="sun">อา</div>
-                    <div>จ</div>
-                    <div>อ</div>
-                    <div>พ</div>
-                    <div>พฤ</div>
-                    <div>ศ</div>
-                    <div class="sat">ส</div>
-                </div>
-
-                <div class="cal-grid" id="calDaysGrid"></div>
-
-                <div class="cal-tasks-section">
-                    <div class="cal-tasks-head">
-                        <span id="calSelectedDateLabel">📌 งานวันนี้</span>
-                        <button class="btn-add-cal" onclick="openCalModal()">
-                            <i class="fa-solid fa-plus"></i> เพิ่มงาน
-                        </button>
+        <!-- โครงสร้าง 2 คอลัมน์ (ซ้าย: ปฏิทิน / ขวา: เมนูเครื่องมือ) -->
+        <div class="dashboard-grid">
+            <!-- 🗓️ ปฏิทินบันทึกงานและเวลา (ฝั่งซ้ายมือ) -->
+            <div class="calendar-section-wrapper" id="calendarSectionWrapper">
+                <div class="mini-cal-card">
+                    <div class="cal-header-bar">
+                        <h4 class="cal-header-title">
+                            <i class="fa-regular fa-calendar-check" style="color: var(--navy-main, #0f2b5c);"></i> 
+                            <span id="calMonthYearTitle">กำลังโหลด...</span>
+                        </h4>
+                        <div class="cal-nav-group">
+                            <button class="cal-mini-btn" onclick="calPrevMonth()" title="เดือนก่อน">‹</button>
+                            <button class="cal-mini-btn today-btn" onclick="calGoToday()">วันนี้</button>
+                            <button class="cal-mini-btn" onclick="calNextMonth()" title="เดือนถัดไป">›</button>
+                        </div>
                     </div>
 
-                    <div id="calHolidayDisplay" style="display: none;" class="cal-holiday-banner">
-                        <i class="fa-solid fa-flag"></i> <span id="calHolidayName"></span>
+                    <div class="cal-weekdays">
+                        <div class="sun">อา</div>
+                        <div>จ</div>
+                        <div>อ</div>
+                        <div>พ</div>
+                        <div>พฤ</div>
+                        <div>ศ</div>
+                        <div class="sat">ส</div>
                     </div>
 
-                    <div class="cal-task-items" id="calTaskList">
-                        <div style="text-align: center; color: #94a3b8; font-size: 0.8rem; padding: 10px 0;">ไม่มีงานที่บันทึกไว้</div>
+                    <div class="cal-grid" id="calDaysGrid"></div>
+
+                    <div class="cal-tasks-section">
+                        <div class="cal-tasks-head">
+                            <span id="calSelectedDateLabel">📌 งานวันนี้</span>
+                            <button class="btn-add-cal" onclick="openCalModal()">
+                                <i class="fa-solid fa-plus"></i> เพิ่มงาน
+                            </button>
+                        </div>
+
+                        <div id="calHolidayDisplay" style="display: none;" class="cal-holiday-banner">
+                            <i class="fa-solid fa-flag"></i> <span id="calHolidayName"></span>
+                        </div>
+
+                        <div class="cal-task-items" id="calTaskList">
+                            <div style="text-align: center; color: #94a3b8; font-size: 0.8rem; padding: 10px 0;">ไม่มีงานที่บันทึกไว้</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <p class="section-label" id="sectionLabel">เลือกรายการที่ต้องการปฏิบัติ</p>
-        
-        <div id="notFoundMsg" style="display: none; text-align: center; padding: 40px 20px; color: var(--text-light);">
-            <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
-            <h3 style="font-size: 1.2rem; font-weight: 500; color: var(--text-main);">ไม่พบเครื่องมือที่ค้นหา</h3>
-            <p style="font-size: 0.95rem;">ลองใช้คำค้นหาอื่นอีกครั้ง</p>
-        </div>
+            <!-- เมนูงานและเครื่องมือ (ฝั่งขวามือ) -->
+            <div class="dashboard-main-tools">
+                <p class="section-label" id="sectionLabel" style="margin-top: 0;">เลือกรายการที่ต้องการปฏิบัติ</p>
+                
+                <div id="notFoundMsg" style="display: none; text-align: center; padding: 40px 20px; color: var(--text-light);">
+                    <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                    <h3 style="font-size: 1.2rem; font-weight: 500; color: var(--text-main);">ไม่พบเครื่องมือที่ค้นหา</h3>
+                    <p style="font-size: 0.95rem;">ลองใช้คำค้นหาอื่นอีกครั้ง</p>
+                </div>
 
-        <div id="toolsContainer">
-            <a href="duty/duty.html" class="menu-card theme-green hover-zoom-card" tabindex="0">
-                <div class="menu-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                <div class="menu-info">
-                    <h3>ตารางเวรงานสอบสวน</h3>
-                    <p>จัดการและดูตารางเวรปฏิบัติหน้าที่</p>
-                </div>
-                <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
+                <div id="toolsContainer">
+                    <a href="duty/duty.html" class="menu-card theme-green hover-zoom-card" tabindex="0">
+                        <div class="menu-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                        <div class="menu-info">
+                            <h3>ตารางเวรงานสอบสวน</h3>
+                            <p>จัดการและดูตารางเวรปฏิบัติหน้าที่</p>
+                        </div>
+                        <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </a>
 
-            <a href="drunk-case/drunk-case.html" class="menu-card theme-red hover-zoom-card" tabindex="0">
-                <div class="menu-icon"><i class="fa-solid fa-wine-bottle"></i></div>
-                <div class="menu-info">
-                    <h3>ฟ้องวาจาเมาขับ</h3>
-                    <p>สร้างสำนวนฟ้องวาจาขับรถขณะเมาสุรา</p>
-                </div>
-                <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
-            
-            <a href="docf/docf.html" class="menu-card theme-blue hover-zoom-card" tabindex="0">
-                <div class="menu-icon"><i class="fa-solid fa-pills"></i></div>
-                <div class="menu-info">
-                    <h3>ระบบคดียาเสพติด</h3>
-                    <p>บันทึกข้อมูลและสร้างเอกสารคดียาเสพติด</p>
-                </div>
-                <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
+                    <a href="drunk-case/drunk-case.html" class="menu-card theme-red hover-zoom-card" tabindex="0">
+                        <div class="menu-icon"><i class="fa-solid fa-wine-bottle"></i></div>
+                        <div class="menu-info">
+                            <h3>ฟ้องวาจาเมาขับ</h3>
+                            <p>สร้างสำนวนฟ้องวาจาขับรถขณะเมาสุรา</p>
+                        </div>
+                        <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </a>
+                    
+                    <a href="docf/docf.html" class="menu-card theme-blue hover-zoom-card" tabindex="0">
+                        <div class="menu-icon"><i class="fa-solid fa-pills"></i></div>
+                        <div class="menu-info">
+                            <h3>ระบบคดียาเสพติด</h3>
+                            <p>บันทึกข้อมูลและสร้างเอกสารคดียาเสพติด</p>
+                        </div>
+                        <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </a>
 
-            <a href="arrest warrant/arrest warrant.html" class="menu-card theme-yellow hover-zoom-card" tabindex="0">
-                <div class="menu-icon"><i class="fa-solid fa-handcuffs"></i></div>
-                <div class="menu-info">
-                    <h3>หมายจับ</h3>
-                    <p>บันทึกข้อมูลและสร้างเอกสารเกี่ยวกับหมายจับ</p>
-                </div>
-                <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
+                    <a href="arrest warrant/arrest warrant.html" class="menu-card theme-yellow hover-zoom-card" tabindex="0">
+                        <div class="menu-icon"><i class="fa-solid fa-handcuffs"></i></div>
+                        <div class="menu-info">
+                            <h3>หมายจับ</h3>
+                            <p>บันทึกข้อมูลและสร้างเอกสารเกี่ยวกับหมายจับ</p>
+                        </div>
+                        <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </a>
 
-            <a href="witness-fee/witness-fee.html" class="menu-card theme-orange hover-zoom-card" tabindex="0">
-                <div class="menu-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                <div class="menu-info">
-                    <h3>เบิกค่าตอบแทนพยาน</h3>
-                    <p>บันทึกข้อมูลและสร้างเอกสารเบิกค่าตอบแทนพยาน</p>
-                </div>
-                <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
+                    <a href="witness-fee/witness-fee.html" class="menu-card theme-orange hover-zoom-card" tabindex="0">
+                        <div class="menu-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <div class="menu-info">
+                            <h3>เบิกค่าตอบแทนพยาน</h3>
+                            <p>บันทึกข้อมูลและสร้างเอกสารเบิกค่าตอบแทนพยาน</p>
+                        </div>
+                        <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </a>
 
-            <a href="summons/summons.html" class="menu-card theme-orange hover-zoom-card" tabindex="0">
-                <div class="menu-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                <div class="menu-info">
-                    <h3>ส่งหมายเรียกผู้ต้องหา/พยาน</h3>
-                    <p>บันทึกข้อมูลและสร้างเอกสารเบิกค่าตอบแทนพยาน</p>
+                    <a href="summons/summons.html" class="menu-card theme-orange hover-zoom-card" tabindex="0">
+                        <div class="menu-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <div class="menu-info">
+                            <h3>ส่งหมายเรียกผู้ต้องหา/พยาน</h3>
+                            <p>บันทึกข้อมูลและสร้างเอกสารเบิกค่าตอบแทนพยาน</p>
+                        </div>
+                        <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </a>
                 </div>
-                <div class="menu-arrow"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
+            </div>
         </div>
     </div>
 
@@ -599,7 +636,7 @@
         const SUMMONS_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
         
         // 🔴 นำ Web App URL ของ Apps Script ที่ได้จากส่วนที่ 2 มาใส่ตรงนี้
-        const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
+        const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbyFXp0zDFDEiBOCf-bTNywAGgU3aRQNBbFz0VQn6JPGvvwoIUJLxxSbGJY9_EtrINseGw/exec';
 
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
