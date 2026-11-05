@@ -12,21 +12,90 @@
     <link rel="stylesheet" href="../assets/theme.css">
 
     <style>
+        /* แถบข้อมูลระบบด้านบนสุด (วันเวลา + ผู้ใช้งาน) */
+        .top-info-bar {
+            background: #0f172a;
+            color: #cbd5e1;
+            font-size: 0.82rem;
+            padding: 6px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-family: 'Kanit', sans-serif;
+        }
+        .top-info-left, .top-info-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .top-info-time {
+            color: #f8fafc;
+            font-weight: 500;
+        }
+        .top-info-user {
+            color: #fbbf24;
+            font-weight: 500;
+        }
+        @media (max-width: 600px) {
+            .top-info-bar {
+                font-size: 0.74rem;
+                padding: 5px 12px;
+            }
+        }
+
         .nav-btn { 
             background: #f1f5f9; border: none; font-size: 1.1rem; color: var(--text-light); 
             cursor: pointer; width: 42px; height: 42px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            text-decoration: none; flex-shrink: 0; 
+            text-decoration: none; flex-shrink: 0; position: relative;
         }
         .btn-back { background: transparent !important; color: var(--text-main); font-size: 1.3rem; width: auto; height: auto; padding: 5px 15px 5px 0; }
         .btn-back:hover { color: var(--navy-main); }
         
         .nav-left { flex: 1; min-width: 0; display: flex; align-items: center; }
+        .nav-right { display: flex; align-items: center; gap: 8px; }
         .page-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
         @media (max-width: 768px) { .page-title { font-size: 1.15rem; } }
         
         .btn-action:hover { background: var(--gold-light); color: var(--gold-dark); }
         
+        /* 🔔 สไตล์ระฆังแจ้งเตือนกระดุกกระดิก (Wiggle) */
+        .bell-btn {
+            position: relative;
+        }
+        .bell-btn.has-urgent i {
+            color: #ea580c;
+            animation: bellRing 2.2s infinite ease-in-out;
+            transform-origin: top center;
+        }
+        @keyframes bellRing {
+            0% { transform: rotate(0); }
+            5% { transform: rotate(18deg); }
+            10% { transform: rotate(-16deg); }
+            15% { transform: rotate(12deg); }
+            20% { transform: rotate(-10deg); }
+            25% { transform: rotate(6deg); }
+            30% { transform: rotate(0); }
+            100% { transform: rotate(0); }
+        }
+        .bell-badge-count {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+            border: 2px solid #ffffff;
+            line-height: 1.2;
+            display: none;
+        }
+
         .section-label { font-size: 1rem; color: var(--text-light); margin-bottom: 20px; font-weight: 500; }
         .menu-card { padding: 25px; display: flex; align-items: center; margin-bottom: 20px; }
         .menu-icon { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-right: 20px; transition: var(--transition); }
@@ -35,100 +104,64 @@
         .menu-arrow { margin-left: auto; color: #cbd5e1; transition: var(--transition); font-size: 1.2rem; }
         .menu-card:hover .menu-arrow { color: var(--gold-dark); transform: translateX(5px); }
 
-        /* Summons Alert Banner */
-        .summons-alert-banner {
-            margin-bottom: 20px;
-            animation: fadeIn 0.4s ease;
+        /* Modal แจ้งเตือนของกระดิ่ง */
+        .notif-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+            z-index: 1100; display: none; align-items: center; justify-content: center; padding: 16px;
         }
-        .summons-alert-link {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-            border: 1.5px solid #fdba74;
-            border-radius: var(--radius-lg, 16px);
-            padding: 12px 18px;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.12);
-            transition: var(--transition, all 0.2s ease);
+        .notif-modal-card {
+            background: #ffffff; border-radius: 20px; width: 100%; max-width: 480px;
+            padding: 22px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25);
+            max-height: 85vh; display: flex; flex-direction: column;
+            animation: zoomFade 0.25s ease;
         }
-        .summons-alert-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.22);
-            border-color: #f97316;
+        @keyframes zoomFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
-        .summons-alert-icon {
-            width: 40px;
-            height: 40px;
+        .notif-modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 14px;
+        }
+        .notif-modal-header h3 {
+            margin: 0; font-size: 1.1rem; color: var(--navy-main, #0f2b5c);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .notif-modal-body {
+            overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px;
+        }
+        .notif-item {
+            background: #fff7ed;
+            border: 1px solid #fdba74;
             border-radius: 12px;
-            background: #ea580c;
-            color: #ffffff;
+            padding: 12px 14px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            box-shadow: 0 3px 10px rgba(234, 88, 12, 0.35);
+            gap: 12px;
         }
-        .summons-alert-content {
-            flex: 1;
-            min-width: 0;
+        .notif-item.overdue {
+            background: #fef2f2;
+            border-color: #fca5a5;
         }
-        .summons-alert-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.98rem;
-            font-weight: 600;
-            color: #9a3412;
-            margin-bottom: 2px;
+        .notif-item-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: #ea580c; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; flex-shrink: 0;
         }
-        .summons-alert-badge {
-            background: #ea580c;
-            color: #ffffff;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .summons-alert-badge.badge-danger {
+        .notif-item.overdue .notif-item-icon {
             background: #dc2626;
         }
-        .summons-alert-desc {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #c2410c;
-            font-weight: 400;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .notif-item-content { flex: 1; min-width: 0; }
+        .notif-item-title {
+            font-size: 0.92rem; font-weight: 600; color: #9a3412; margin-bottom: 2px;
         }
-        .summons-alert-action {
-            color: #ea580c;
-            font-size: 1rem;
-            margin-left: auto;
-            flex-shrink: 0;
-            transition: transform 0.2s ease;
+        .notif-item.overdue .notif-item-title {
+            color: #991b1b;
         }
-        .summons-alert-link:hover .summons-alert-action {
-            transform: translateX(4px);
-        }
-        @media (max-width: 600px) {
-            .summons-alert-link {
-                padding: 10px 14px;
-                gap: 10px;
-            }
-            .summons-alert-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 1rem;
-            }
-            .summons-alert-title {
-                font-size: 0.9rem;
-            }
-            .summons-alert-desc {
-                font-size: 0.78rem;
-            }
+        .notif-item-desc {
+            font-size: 0.82rem; color: #64748b; margin: 0;
         }
 
         /* =========================================================
@@ -553,6 +586,19 @@
     </style>
 </head>
 <body>
+    <!-- 🕒 แถบแสดงวัน-เวลา และชื่อผู้เข้าสู่ระบบ (อยู่บนสุด) -->
+    <div class="top-info-bar">
+        <div class="top-info-left">
+            <i class="fa-regular fa-clock" style="color: #38bdf8;"></i>
+            <span class="top-info-time" id="topDateTime">กำลังโหลดเวลา...</span>
+        </div>
+        <div class="top-info-right">
+            <i class="fa-solid fa-circle-user" style="color: #fbbf24;"></i>
+            <span>ผู้ใช้งาน:</span>
+            <span class="top-info-user" id="topUserName">กำลังโหลด...</span>
+        </div>
+    </div>
+
     <nav>
         <div class="nav-left">
             <a href="../index.html" class="nav-btn btn-back hover-zoom-btn" id="btnBack">
@@ -563,10 +609,16 @@
         </div>
         
         <div class="nav-right">
-            <button class="nav-btn btn-action hover-zoom-btn" id="searchBtn" onclick="toggleSearch()">
+            <!-- 🔔 ระฆังแจ้งเตือนกระดุกกระดิก (กดแล้วเด้งดูรายการ) -->
+            <button class="nav-btn btn-action hover-zoom-btn bell-btn" id="btnNotifBell" onclick="openNotifModal()" title="การแจ้งเตือน">
+                <i class="fa-solid fa-bell"></i>
+                <span class="bell-badge-count" id="bellBadgeCount">0</span>
+            </button>
+
+            <button class="nav-btn btn-action hover-zoom-btn" id="searchBtn" onclick="toggleSearch()" title="ค้นหาเครื่องมือ">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </button>
-            <button class="nav-btn btn-action hover-zoom-btn" onclick="toggleSidebar(true)">
+            <button class="nav-btn btn-action hover-zoom-btn" onclick="toggleSidebar(true)" title="เมนูตัวเลือก">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
@@ -598,26 +650,29 @@
         </div>
     </div>
 
-    <div class="container container-sm">
-        <!-- แถบแจ้งเตือนส่งหมายเรียก -->
-        <div id="summonsAlertBanner" class="summons-alert-banner" style="display: none;">
-            <a href="summons/summons.html" class="summons-alert-link">
-                <div class="summons-alert-icon">
-                    <i class="fa-solid fa-bell"></i>
+    <!-- Modal รายการแจ้งเตือนจากระฆัง -->
+    <div id="notifModal" class="notif-modal-overlay" onclick="closeNotifModal(event)">
+        <div class="notif-modal-card" onclick="event.stopPropagation()">
+            <div class="notif-modal-header">
+                <h3><i class="fa-solid fa-bell" style="color:#ea580c;"></i> การแจ้งเตือนทั้งหมด</h3>
+                <button onclick="closeNotifModal()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notif-modal-body" id="notifModalBody">
+                <div style="text-align:center; padding:25px; color:#94a3b8;">
+                    <i class="fa-regular fa-bell-slash" style="font-size:2rem; margin-bottom:8px; display:block;"></i>
+                    ไม่มีการแจ้งเตือนในขณะนี้
                 </div>
-                <div class="summons-alert-content">
-                    <div class="summons-alert-title">
-                        <span>แจ้งเตือนหมายเรียกเร่งด่วน</span>
-                        <span class="summons-alert-badge" id="summonsAlertBadge">0 รายการ</span>
-                    </div>
-                    <p class="summons-alert-desc" id="summonsAlertDesc">พบหมายที่ครบกำหนดนัดพบภายใน 5 วัน หรือเลยกำหนด</p>
-                </div>
-                <div class="summons-alert-action">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </div>
-            </a>
+            </div>
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <a href="summons/summons.html" style="font-size:0.86rem; color:#ea580c; text-decoration:none; font-weight:500;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> ไปหน้าระบบหมายเรียก
+                </a>
+                <button type="button" onclick="closeNotifModal()" style="padding:6px 14px; border:1px solid #cbd5e1; background:#f8fafc; border-radius:8px; cursor:pointer; font-family:'Kanit'; font-size:0.85rem;">ปิด</button>
+            </div>
         </div>
+    </div>
 
+    <div class="container container-sm">
         <!-- โครงสร้าง 2 คอลัมน์ (ซ้าย: ปฏิทิน + กระดาษโน้ต / ขวา: เมนูเครื่องมือ) -->
         <div class="dashboard-grid">
             <!-- ฝั่งซ้ายมือ: ปฏิทินบันทึกงาน + กระดาษโน้ต -->
@@ -787,6 +842,8 @@
         const SUMMONS_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
         const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbyFXp0zDFDEiBOCf-bTNywAGgU3aRQNBbFz0VQn6JPGvvwoIUJLxxSbGJY9_EtrINseGw/exec';
 
+        let urgentAlertList = []; // เก็บรายการแจ้งเตือนสำหรับ Modal
+
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -802,6 +859,7 @@
         let calSelectedDateStr = getFormattedDateKey(new Date());
 
         const thaiMonthList = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        const thaiDayList = ["วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"];
 
         const fixedThaiHolidays = {
             "01-01": "วันขึ้นปีใหม่",
@@ -843,7 +901,36 @@
             return null;
         }
 
+        /* 🕒 นาฬิกาและวันเวลาแบบ Real-time ด้านบน */
+        function startTopClock() {
+            function updateClock() {
+                const now = new Date();
+                const dayName = thaiDayList[now.getDay()];
+                const date = now.getDate();
+                const monthName = thaiMonthList[now.getMonth()];
+                const yearBE = now.getFullYear() + 543;
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                const timeStr = `${dayName}ที่ ${date} ${monthName} ${yearBE} | ${hours}:${minutes}:${seconds} น.`;
+                const elem = document.getElementById('topDateTime');
+                if (elem) elem.innerText = timeStr;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        /* โหลดชื่อผู้เข้าสู่ระบบขึ้นแถบด้านบน */
+        function syncTopUserInfo() {
+            const userDisplay = localStorage.getItem('user_name') || localStorage.getItem('username') || sessionStorage.getItem('user_name') || 'เจ้าหน้าที่งานสอบสวน';
+            const topUserElem = document.getElementById('topUserName');
+            if (topUserElem) topUserElem.innerText = userDisplay;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            startTopClock();
+            syncTopUserInfo();
             checkBirthdays();
             setupSearch();
             checkSummonsAlert();
@@ -1105,7 +1192,6 @@
             updateLabel.innerText = updatedAt ? `อัปเดต: ${updatedAt}` : '';
         }
 
-        // เด้งแจ้งเตือนตอนเข้าใช้งานครั้งแรก (ต่อ Session)
         function checkFirstTimeNotePopup(content) {
             if (!content || !content.trim()) return;
             const lastSeen = sessionStorage.getItem('last_seen_sticky_note');
@@ -1180,7 +1266,6 @@
             const input = document.getElementById('searchInput');
             const btnBack = document.getElementById('btnBack');
             const searchIcon = document.querySelector('#searchBtn i');
-            const summonsBanner = document.getElementById('summonsAlertBanner');
             const calSection = document.getElementById('calendarSectionWrapper');
 
             if (isSearchActive) {
@@ -1189,7 +1274,6 @@
                 input.style.display = 'block';
                 input.focus();
                 searchIcon.className = 'fa-solid fa-xmark';
-                if (summonsBanner) summonsBanner.style.display = 'none';
                 if (calSection) calSection.style.display = 'none';
             } else {
                 title.style.display = 'block';
@@ -1198,9 +1282,6 @@
                 input.value = ''; 
                 searchIcon.className = 'fa-solid fa-magnifying-glass';
                 filterTools(''); 
-                if (summonsBanner && summonsBanner.dataset.hasUrgent === 'true') {
-                    summonsBanner.style.display = 'block';
-                }
                 if (calSection) calSection.style.display = 'block';
             }
         }
@@ -1216,13 +1297,9 @@
             const cards = document.querySelectorAll('.menu-card');
             const notFoundMsg = document.getElementById('notFoundMsg');
             const sectionLabel = document.getElementById('sectionLabel');
-            const summonsBanner = document.getElementById('summonsAlertBanner');
             const calSection = document.getElementById('calendarSectionWrapper');
             let hasVisible = false;
 
-            if (summonsBanner) {
-                summonsBanner.style.display = (term ? 'none' : (summonsBanner.dataset.hasUrgent === 'true' ? 'block' : 'none'));
-            }
             if (calSection) {
                 calSection.style.display = (term ? 'none' : 'block');
             }
@@ -1248,6 +1325,7 @@
             }
         }
 
+        /* 🔔 ตรวจสอบแจ้งเตือนหมายเรียกและผูกกับระฆังกระดุกกระดิก */
         async function checkSummonsAlert() {
             try {
                 const res = await fetch(SUMMONS_API_URL, {
@@ -1256,43 +1334,79 @@
                     body: JSON.stringify({ action: 'getData' })
                 });
                 const json = await res.json();
-                if (json.status === 'success' && Array.isArray(json.data)) {
-                    let urgentCount = 0;
-                    let overdueCount = 0;
+                urgentAlertList = [];
 
+                if (json.status === 'success' && Array.isArray(json.data)) {
                     json.data.forEach(item => {
                         const raw = item.rawData || {};
                         const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
                         if (!isDelivered) {
                             const diff = getAppointmentDiff(raw.appointmentDate);
                             if (diff !== null && diff <= 5) {
-                                urgentCount++;
-                                if (diff < 0) overdueCount++;
+                                urgentAlertList.push({
+                                    diff: diff,
+                                    targetName: raw.personName || raw.witnessName || 'ไม่ระบุชื่อ',
+                                    caseNo: raw.caseNo || raw.blackCaseNo || 'ไม่ระบุเลขคดี',
+                                    appointmentDate: raw.appointmentDate || '-',
+                                    isOverdue: diff < 0
+                                });
                             }
                         }
                     });
 
-                    if (urgentCount > 0) {
-                        const banner = document.getElementById('summonsAlertBanner');
-                        const badge = document.getElementById('summonsAlertBadge');
-                        const desc = document.getElementById('summonsAlertDesc');
+                    const bellBtn = document.getElementById('btnNotifBell');
+                    const bellBadge = document.getElementById('bellBadgeCount');
 
-                        badge.innerText = `${urgentCount} รายการ`;
-                        if (overdueCount > 0) {
-                            badge.classList.add('badge-danger');
-                            desc.innerText = `มีหมายเลยกำหนดแล้ว ${overdueCount} รายการ และใกล้ครบกำหนด (ภายใน 5 วัน)`;
-                        } else {
-                            badge.classList.remove('badge-danger');
-                            desc.innerText = `มีหมายเรียกที่ใกล้ถึงกำหนดวันนัดพบภายใน 5 วัน`;
-                        }
-
-                        banner.dataset.hasUrgent = 'true';
-                        banner.style.display = 'block';
+                    if (urgentAlertList.length > 0) {
+                        bellBtn.classList.add('has-urgent');
+                        bellBadge.innerText = urgentAlertList.length;
+                        bellBadge.style.display = 'block';
+                    } else {
+                        bellBtn.classList.remove('has-urgent');
+                        bellBadge.style.display = 'none';
                     }
                 }
             } catch (err) {
                 console.error('ไม่สามารถโหลดข้อมูลแจ้งเตือนหมายเรียกได้:', err);
             }
+        }
+
+        /* เปิด/ปิด กล่องแจ้งเตือนของระฆัง */
+        function openNotifModal() {
+            const body = document.getElementById('notifModalBody');
+            if (urgentAlertList.length === 0) {
+                body.innerHTML = `
+                    <div style="text-align:center; padding:30px 10px; color:#94a3b8;">
+                        <i class="fa-regular fa-circle-check" style="font-size:2.5rem; color:#10b981; margin-bottom:10px; display:block;"></i>
+                        <p style="margin:0; font-size:0.95rem; color:#334155; font-weight:500;">เรียบร้อย ไม่มีหมายเรียกค้างส่งที่เร่งด่วน</p>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = urgentAlertList.map(item => `
+                    <div class="notif-item ${item.isOverdue ? 'overdue' : ''}">
+                        <div class="notif-item-icon">
+                            <i class="fa-solid ${item.isOverdue ? 'fa-triangle-exclamation' : 'fa-clock'}"></i>
+                        </div>
+                        <div class="notif-item-content">
+                            <div class="notif-item-title">
+                                ${escapeHtml(item.targetName)} (${escapeHtml(item.caseNo)})
+                            </div>
+                            <div class="notif-item-desc">
+                                กำหนดนัดพบ: <b>${escapeHtml(item.appointmentDate)}</b> 
+                                <span style="font-weight:600; color:${item.isOverdue ? '#dc2626' : '#ea580c'};">
+                                    (${item.isOverdue ? `เลยกำหนดมาแล้ว ${Math.abs(item.diff)} วัน` : (item.diff === 0 ? 'ครบกำหนดวันนี้' : `เหลืออีก ${item.diff} วัน`)})
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('notifModal').style.display = 'flex';
+        }
+
+        function closeNotifModal(e) {
+            if (e && e.target !== e.currentTarget && e.target.id !== 'notifModal') return;
+            document.getElementById('notifModal').style.display = 'none';
         }
 
         function cleanToISODate(input) {
