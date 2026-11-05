@@ -35,6 +35,102 @@
         .menu-arrow { margin-left: auto; color: #cbd5e1; transition: var(--transition); font-size: 1.2rem; }
         .menu-card:hover .menu-arrow { color: var(--gold-dark); transform: translateX(5px); }
 
+        /* Summons Alert Banner (แถบแจ้งเตือนส่งหมายเรียกขนาดเล็กด้านบน) */
+        .summons-alert-banner {
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        .summons-alert-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border: 1.5px solid #fdba74;
+            border-radius: var(--radius-lg, 16px);
+            padding: 12px 18px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.12);
+            transition: var(--transition, all 0.2s ease);
+        }
+        .summons-alert-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(234, 88, 12, 0.22);
+            border-color: #f97316;
+        }
+        .summons-alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #ea580c;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 3px 10px rgba(234, 88, 12, 0.35);
+        }
+        .summons-alert-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .summons-alert-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: #9a3412;
+            margin-bottom: 2px;
+        }
+        .summons-alert-badge {
+            background: #ea580c;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .summons-alert-badge.badge-danger {
+            background: #dc2626;
+        }
+        .summons-alert-desc {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #c2410c;
+            font-weight: 400;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .summons-alert-action {
+            color: #ea580c;
+            font-size: 1rem;
+            margin-left: auto;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+        .summons-alert-link:hover .summons-alert-action {
+            transform: translateX(4px);
+        }
+        @media (max-width: 600px) {
+            .summons-alert-link {
+                padding: 10px 14px;
+                gap: 10px;
+            }
+            .summons-alert-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            .summons-alert-title {
+                font-size: 0.9rem;
+            }
+            .summons-alert-desc {
+                font-size: 0.78rem;
+            }
+        }
+
         /* HBD Floating Widget */
         .hbd-floating-wrapper { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; z-index: 900; animation: slideUpFade 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; display: none; }
         @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 50px); } to { opacity: 1; transform: translate(-50%, 0); } }
@@ -100,6 +196,25 @@
     </div>
 
     <div class="container container-sm">
+        <!-- ✨ แถบแจ้งเตือนส่งหมายเรียก (จะแสดงอัตโนมัติเฉพาะเมื่อมีหมายด่วน) -->
+        <div id="summonsAlertBanner" class="summons-alert-banner" style="display: none;">
+            <a href="summons/summons.html" class="summons-alert-link">
+                <div class="summons-alert-icon">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="summons-alert-content">
+                    <div class="summons-alert-title">
+                        <span>แจ้งเตือนหมายเรียกเร่งด่วน</span>
+                        <span class="summons-alert-badge" id="summonsAlertBadge">0 รายการ</span>
+                    </div>
+                    <p class="summons-alert-desc" id="summonsAlertDesc">พบหมายที่ครบกำหนดนัดพบภายใน 5 วัน หรือเลยกำหนด</p>
+                </div>
+                <div class="summons-alert-action">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+        </div>
+
         <p class="section-label" id="sectionLabel">เลือกรายการที่ต้องการปฏิบัติ</p>
         
         <div id="notFoundMsg" style="display: none; text-align: center; padding: 40px 20px; color: var(--text-light);">
@@ -170,10 +285,12 @@
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbxFrju7Ml8KoMQ6fEEr7V4Fy-u6bsvBWf8PAeBPqHpoEutHVTigMiJyjpzdbHIJ-zzL/exec';
+        const SUMMONS_API_URL = 'https://script.google.com/macros/s/AKfycbwugrk1-UmsIDDp2mqSW0B26DhKQjn76omTMAsnFabfAkdh-SIJosVwrMcCDcI1w4Cf/exec';
 
         document.addEventListener('DOMContentLoaded', () => {
             checkBirthdays();
             setupSearch();
+            checkSummonsAlert();
         });
 
         function toggleSidebar(show) {
@@ -195,6 +312,7 @@
             const input = document.getElementById('searchInput');
             const btnBack = document.getElementById('btnBack');
             const searchIcon = document.querySelector('#searchBtn i');
+            const summonsBanner = document.getElementById('summonsAlertBanner');
 
             if (isSearchActive) {
                 title.style.display = 'none';
@@ -202,6 +320,7 @@
                 input.style.display = 'block';
                 input.focus();
                 searchIcon.className = 'fa-solid fa-xmark';
+                if (summonsBanner) summonsBanner.style.display = 'none';
             } else {
                 title.style.display = 'block';
                 btnBack.style.display = 'flex';
@@ -209,6 +328,9 @@
                 input.value = ''; 
                 searchIcon.className = 'fa-solid fa-magnifying-glass';
                 filterTools(''); 
+                if (summonsBanner && summonsBanner.dataset.hasUrgent === 'true') {
+                    summonsBanner.style.display = 'block';
+                }
             }
         }
 
@@ -223,7 +345,12 @@
             const cards = document.querySelectorAll('.menu-card');
             const notFoundMsg = document.getElementById('notFoundMsg');
             const sectionLabel = document.getElementById('sectionLabel');
+            const summonsBanner = document.getElementById('summonsAlertBanner');
             let hasVisible = false;
+
+            if (summonsBanner) {
+                summonsBanner.style.display = (term ? 'none' : (summonsBanner.dataset.hasUrgent === 'true' ? 'block' : 'none'));
+            }
 
             cards.forEach(card => {
                 const title = card.querySelector('h3').innerText.toLowerCase();
@@ -244,6 +371,115 @@
                 notFoundMsg.style.display = 'block';
                 sectionLabel.style.display = 'none';
             }
+        }
+
+        /* ฟังก์ชันตรวจสอบการแจ้งเตือนหมายเรียกเร่งด่วน */
+        async function checkSummonsAlert() {
+            try {
+                const res = await fetch(SUMMONS_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getData' })
+                });
+                const json = await res.json();
+                if (json.status === 'success' && Array.isArray(json.data)) {
+                    let urgentCount = 0;
+                    let overdueCount = 0;
+
+                    json.data.forEach(item => {
+                        const raw = item.rawData || {};
+                        const isDelivered = raw.deliveryStatus && raw.deliveryStatus !== 'รอส่งหมาย' && raw.deliveryStatus !== '';
+                        if (!isDelivered) {
+                            const diff = getAppointmentDiff(raw.appointmentDate);
+                            if (diff !== null && diff <= 5) {
+                                urgentCount++;
+                                if (diff < 0) overdueCount++;
+                            }
+                        }
+                    });
+
+                    if (urgentCount > 0) {
+                        const banner = document.getElementById('summonsAlertBanner');
+                        const badge = document.getElementById('summonsAlertBadge');
+                        const desc = document.getElementById('summonsAlertDesc');
+
+                        badge.innerText = `${urgentCount} รายการ`;
+                        if (overdueCount > 0) {
+                            badge.classList.add('badge-danger');
+                            desc.innerText = `มีหมายเลยกำหนดแล้ว ${overdueCount} รายการ และใกล้ครบกำหนด (ภายใน 5 วัน)`;
+                        } else {
+                            badge.classList.remove('badge-danger');
+                            desc.innerText = `มีหมายเรียกที่ใกล้ถึงกำหนดวันนัดพบภายใน 5 วัน`;
+                        }
+
+                        banner.dataset.hasUrgent = 'true';
+                        banner.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                console.error('ไม่สามารถโหลดข้อมูลแจ้งเตือนหมายเรียกได้:', err);
+            }
+        }
+
+        function cleanToISODate(input) {
+            if (!input) return '';
+            let str = String(input).trim().replace(/^'/, '');
+            if (!str || str === '-') return '';
+
+            let day, month, year;
+            let m = str.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+            if (m) {
+                year = parseInt(m[1], 10);
+                month = parseInt(m[2], 10);
+                day = parseInt(m[3], 10);
+            } else {
+                m = str.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+                if (m) {
+                    day = parseInt(m[1], 10);
+                    month = parseInt(m[2], 10);
+                    year = parseInt(m[3], 10);
+                } else {
+                    const thaiMonths = [
+                        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                        'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+                    ];
+                    const thaiMonthsShort = [
+                        'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+                        'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+                    ];
+                    for (let i = 0; i < 12; i++) {
+                        if (str.includes(thaiMonths[i]) || str.includes(thaiMonthsShort[i])) {
+                            month = i + 1;
+                            break;
+                        }
+                    }
+                    const nums = str.match(/\d+/g);
+                    if (nums && nums.length >= 2) {
+                        day = parseInt(nums[0], 10);
+                        year = parseInt(nums[nums.length - 1], 10);
+                    }
+                }
+            }
+
+            if (!year || !month || !day) return str;
+            while (year > 2800) year -= 543;
+            if (year >= 2400) year -= 543;
+
+            return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+
+        function getAppointmentDiff(dateStr) {
+            const iso = cleanToISODate(dateStr);
+            if (!iso || !iso.includes('-')) return null;
+            const parts = iso.split('-');
+            const targetDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            if (isNaN(targetDate.getTime())) return null;
+
+            targetDate.setHours(0,0,0,0);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            return Math.round((targetDate - today) / (1000 * 60 * 60 * 24));
         }
 
         async function checkBirthdays() {
