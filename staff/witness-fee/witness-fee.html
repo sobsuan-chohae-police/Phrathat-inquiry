@@ -52,18 +52,28 @@
         .btn-add-nav i { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .btn-add-nav:hover { background: #365f70 !important; color: white !important; transform: none !important; box-shadow: 0 6px 15px rgba(54, 95, 112, 0.4) !important; }
         .btn-add-nav:hover i { transform: scale(1.3); }
-        
-        .btn-menu-nav { background: #e2e8f0 !important; color: #365f70 !important; border: none !important; }
-        .btn-menu-nav i { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .btn-menu-nav:hover, .btn-menu-nav.active { background: #365f70 !important; color: white !important; transform: none !important; box-shadow: 0 6px 15px rgba(54, 95, 112, 0.4) !important; }
-        .btn-menu-nav:hover i, .btn-menu-nav.active i { transform: scale(1.3); }
+
+        .btn-police-nav {
+            background: #e2e8f0; color: #365f70; border: none;
+            height: 42px; padding: 0 16px; border-radius: 50px;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: inherit; font-size: 0.92rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition); flex-shrink: 0;
+        }
+        .btn-police-nav:hover {
+            background: #365f70; color: white;
+            box-shadow: 0 6px 15px rgba(54, 95, 112, 0.35);
+        }
+        @media (max-width: 576px) {
+            .btn-police-nav { padding: 0 12px; font-size: 0.85rem; }
+        }
         
         /* Dropdown Styles */
         .dropdown-container { position: relative; display: inline-block; }
         @keyframes fadeDown { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
         .dropdown-menu {
             display: none; position: absolute; top: 100%; right: 0;
-            background: white; min-width: 210px;
+            background: white; min-width: 180px;
             border-radius: 16px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
             padding: 8px; flex-direction: column; gap: 4px;
             z-index: 1000; transform-origin: top right; border: 1px solid #f1f5f9;
@@ -260,12 +270,19 @@
             border-radius: 14px;
             padding: 14px 16px;
             animation: fadeDown 0.25s ease;
+            transition: all 0.3s ease;
+        }
+        .police-pull-box.pulled {
+            background: #f0fdf4;
+            border-color: #86efac;
         }
         .police-pull-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
             margin-bottom: 8px;
+            flex-wrap: wrap;
         }
         .police-pull-header label {
             margin: 0;
@@ -274,7 +291,22 @@
             font-size: 0.92rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .police-applied-badge {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 2px 9px;
+            border-radius: 20px;
+        }
+        .police-applied-badge.show {
+            display: inline-flex;
         }
         .btn-manage-inline {
             background: none;
@@ -431,19 +463,13 @@
             <span class="page-title">เบิกค่าตอบแทนพยาน</span>
         </div>
         <div class="nav-right">
+            <button class="btn-police-nav" onclick="openPoliceModal()">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>ข้อมูลพยานตำรวจ</span>
+            </button>
             <button class="nav-btn btn-add-nav tooltip-right" onclick="openModal()" data-tooltip="เพิ่มข้อมูล">
                 <i class="fa-solid fa-plus"></i>
             </button>
-            <div class="dropdown-container">
-                <button class="nav-btn btn-menu-nav tooltip-right" onclick="toggleDropdown(event)" data-tooltip="เรียกเมนู">
-                    <i class="fa-solid fa-caret-down"></i>
-                </button>
-                <div class="dropdown-menu" id="toolsDropdown">
-                    <button class="dropdown-item action-blue" onclick="openPoliceModal()">
-                        <i class="fa-solid fa-user-shield"></i> ข้อมูลพยานตำรวจ
-                    </button>
-                </div>
-            </div>
         </div>
     </nav>
 
@@ -588,7 +614,12 @@
                             <!-- ส่วนดึงข้อมูลพยานตำรวจที่บันทึกไว้ล่วงหน้า -->
                             <div class="form-group full-width police-pull-box" id="policeSelectorGroup" style="display: none;">
                                 <div class="police-pull-header">
-                                    <label><i class="fa-solid fa-user-shield"></i> ดึงข้อมูลพยานตำรวจที่บันทึกไว้</label>
+                                    <label>
+                                        <i class="fa-solid fa-user-shield"></i> ดึงข้อมูลพยานตำรวจที่บันทึกไว้
+                                        <span id="policeAppliedBadge" class="police-applied-badge">
+                                            <i class="fa-solid fa-check"></i> กรอกข้อมูลแล้ว
+                                        </span>
+                                    </label>
                                     <button type="button" class="btn-manage-inline" onclick="openPoliceModal()">
                                         <i class="fa-solid fa-gear"></i> จัดการรายชื่อ
                                     </button>
@@ -852,28 +883,6 @@
             }
         }
 
-        function toggleDropdown(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('toolsDropdown');
-            const btn = event.currentTarget;
-            
-            if (activeDropdown && activeDropdown !== dropdown) {
-                activeDropdown.classList.remove('show');
-                if (activeDropdownBtn) activeDropdownBtn.classList.remove('active');
-            }
-            
-            dropdown.classList.toggle('show');
-            btn.classList.toggle('active');
-            
-            if (dropdown.classList.contains('show')) {
-                activeDropdown = dropdown;
-                activeDropdownBtn = btn;
-            } else {
-                activeDropdown = null;
-                activeDropdownBtn = null;
-            }
-        }
-
         window.addEventListener('click', function() {
             if (activeDropdown) {
                 activeDropdown.classList.remove('show');
@@ -1123,6 +1132,11 @@
         // ==========================================================================
         // POLICE WITNESS SELECTION IN MAIN FORM
         // ==========================================================================
+        function resetPolicePullIndicator() {
+            document.getElementById('policeSelectorGroup').classList.remove('pulled');
+            document.getElementById('policeAppliedBadge').classList.remove('show');
+        }
+
         function handleWitnessTypeChange() {
             const type = document.getElementById('witnessType').value;
             const selectorGroup = document.getElementById('policeSelectorGroup');
@@ -1132,13 +1146,17 @@
             } else {
                 selectorGroup.style.display = 'none';
                 document.getElementById('savedPoliceSelect').value = '';
+                resetPolicePullIndicator();
             }
             checkFormChanges();
         }
 
         function applyPoliceWitness() {
             const selectedId = document.getElementById('savedPoliceSelect').value;
-            if (!selectedId) return;
+            if (!selectedId) {
+                resetPolicePullIndicator();
+                return;
+            }
 
             const pw = policeWitnesses.find(item => item.id === selectedId);
             if (!pw) return;
@@ -1159,15 +1177,10 @@
             document.getElementById('address').value = pw.address || '';
             document.getElementById('phone').value = formatPhone(pw.phone);
 
+            document.getElementById('policeSelectorGroup').classList.add('pulled');
+            document.getElementById('policeAppliedBadge').classList.add('show');
+
             checkFormChanges();
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: `ดึงข้อมูล ${pw.titleName}${pw.firstName} ${pw.lastName} แล้ว`,
-                showConfirmButton: false,
-                timer: 2000
-            });
         }
 
         // ==========================================================================
@@ -1365,6 +1378,7 @@
             ThaiDatePicker.clear('witnessDate');
             document.getElementById('policeSelectorGroup').style.display = 'none';
             document.getElementById('savedPoliceSelect').value = '';
+            resetPolicePullIndicator();
             toggleOtherTitle();
             
             document.getElementById('modalTitle').innerText = 'เพิ่มข้อมูลใหม่';
@@ -1481,6 +1495,7 @@
             document.getElementById('time').value = raw.time;
             document.getElementById('witnessType').value = raw.witnessType;
             document.getElementById('savedPoliceSelect').value = '';
+            resetPolicePullIndicator();
             document.getElementById('policeSelectorGroup').style.display = (raw.witnessType === 'ตำรวจ') ? 'block' : 'none';
             
             const title = raw.titleName;
